@@ -94,15 +94,15 @@ namespace FilmRentalStore.API.Controllers
             return Ok(updated);
         }
 
-        // DELETE api/category/{id}
-        [HttpDelete("{id:int}")]
-        [ProducesResponseType(StatusCodes.Status204NoContent)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status409Conflict)]
-        public async Task<IActionResult> Delete(byte id)
-        {
-            await _categoryService.DeleteAsync(id);
-            return NoContent();
-        }
+        //// DELETE api/category/{id}
+        //[HttpDelete("{id:int}")]
+        //[ProducesResponseType(StatusCodes.Status204NoContent)]
+        //[ProducesResponseType(StatusCodes.Status404NotFound)]
+        //[ProducesResponseType(StatusCodes.Status409Conflict)]
+        //public async Task<IActionResult> Delete(byte id)
+        //{
+        //    await _categoryService.DeleteAsync(id);
+        //    return NoContent();
+        //}
     }
 }
