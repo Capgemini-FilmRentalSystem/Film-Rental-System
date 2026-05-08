@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.24" />
     <PackageReference Include="AutoMapper" Version="16.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.24">
       <PrivateAssets>all</PrivateAssets>
@@ -25,12 +26,14 @@
     <Folder Include="DTOs\Customer\" />
     <Folder Include="DTOs\Inventory\" />
     <Folder Include="DTOs\Category\" />
-    <Folder Include="DTOs\Actor\" />
     <Folder Include="DTOs\Address\" />
     <Folder Include="DTOs\Language\" />
     <Folder Include="DTOs\Store\" />
     <Folder Include="DTOs\Payment\" />
     <Folder Include="DTOs\Rental\" />
+    <Folder Include="Middleware\" />
+    <Folder Include="Exceptions\" />
+    <Folder Include="Mappings\" />
     <Folder Include="Validators\" />
   </ItemGroup>
 
