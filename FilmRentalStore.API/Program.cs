@@ -1,25 +1,51 @@
-var builder = WebApplication.CreateBuilder(args);
+using FilmRentalStore.API.Data;
+using FilmRentalStore.API.Mappings;
+using FilmRentalStore.API.Repositories.Implementations;
+using FilmRentalStore.API.Repositories.Interfaces;
+using FilmRentalStore.API.Services.Implementations;
+using FilmRentalStore.API.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
+using FilmRentalStore.API.Middleware;
 
-// Add services to the container.
-
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+internal class Program
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    private static void Main(string[] args)
+    {
+        var builder = WebApplication.CreateBuilder(args);
+
+        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+        // Dependency Injection
+        builder.Services.AddScoped<IStaffRepository, StaffRepository>();
+        builder.Services.AddScoped<IStaffService, StaffService>();
+
+        // AutoMapper
+        builder.Services.AddAutoMapper(cfg =>
+        {
+            cfg.AddProfile<StaffMappingProfile>();
+        });
+
+        builder.Services.AddControllers();
+        builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen();
+
+        var app = builder.Build();
+
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
+        }
+
+        app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+        app.UseHttpsRedirection();
+
+        app.UseAuthorization();
+
+        app.MapControllers();
+
+        app.Run();
+    }
 }
-
-app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
-
-app.Run();
