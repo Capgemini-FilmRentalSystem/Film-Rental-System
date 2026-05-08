@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.24" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.24">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -20,12 +21,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
     <Folder Include="DTOs\Film\" />
     <Folder Include="DTOs\Customer\" />
     <Folder Include="DTOs\Inventory\" />
     <Folder Include="DTOs\Category\" />
-    <Folder Include="DTOs\Actor\" />
     <Folder Include="DTOs\Address\" />
     <Folder Include="DTOs\Language\" />
     <Folder Include="DTOs\Store\" />
@@ -35,10 +34,6 @@
     <Folder Include="Middleware\" />
     <Folder Include="Exceptions\" />
     <Folder Include="Mappings\" />
-    <Folder Include="Repositories\Interfaces\" />
-    <Folder Include="Repositories\Implementations\" />
-    <Folder Include="Services\Interfaces\" />
-    <Folder Include="Services\Implementations\" />
     <Folder Include="Validators\" />
   </ItemGroup>
 
