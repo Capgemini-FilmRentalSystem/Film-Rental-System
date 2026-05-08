@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.24" />
+    <PackageReference Include="AutoMapper" Version="16.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.24">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -28,7 +29,6 @@
     <Folder Include="DTOs\Address\" />
     <Folder Include="DTOs\Language\" />
     <Folder Include="DTOs\Store\" />
-    <Folder Include="DTOs\Staff\" />
     <Folder Include="DTOs\Payment\" />
     <Folder Include="DTOs\Rental\" />
     <Folder Include="Middleware\" />
