@@ -1,12 +1,11 @@
-﻿using FilmRentalStore.API.Models;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FilmRentalStore.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RentalController : ControllerBase
+    public class InventoryController : ControllerBase
     {
     }
 }
