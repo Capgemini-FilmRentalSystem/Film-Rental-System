@@ -9,7 +9,7 @@ namespace FilmRentalStore.API.Repositories.Interfaces
         Task<bool> UsernameExistsAsync(string username);
         Task<bool> IsActiveAsync(byte staffId);
         Task<bool> IsAssignedToStore(byte staffid, int storeId);
-        Task AddSync(Staff staff);
+        Task AddAsync(Staff staff);
         void Update(Staff staff);
         void Deactivate(Staff staff);
         Task<bool> SaveChangesAsync();

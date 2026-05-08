@@ -1,4 +1,5 @@
-﻿using FilmRentalStore.API.Models;
+﻿using FilmRentalStore.API.Data;
+using FilmRentalStore.API.Models;
 using FilmRentalStore.API.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,7 +13,7 @@ namespace FilmRentalStore.API.Repositories.Implementations
         {
             _context = context;
         }
-        public async Task AddSync(Staff staff)
+        public async Task AddAsync(Staff staff)
         {
             await _context.Staff.AddAsync(staff);
         }

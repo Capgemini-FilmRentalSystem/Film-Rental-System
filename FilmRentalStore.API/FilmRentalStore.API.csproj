@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="16.1.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.24">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -20,7 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
     <Folder Include="DTOs\Film\" />
     <Folder Include="DTOs\Customer\" />
     <Folder Include="DTOs\Inventory\" />
@@ -31,10 +31,6 @@
     <Folder Include="DTOs\Store\" />
     <Folder Include="DTOs\Payment\" />
     <Folder Include="DTOs\Rental\" />
-    <Folder Include="Middleware\" />
-    <Folder Include="Exceptions\" />
-    <Folder Include="Services\Interfaces\" />
-    <Folder Include="Services\Implementations\" />
     <Folder Include="Validators\" />
   </ItemGroup>
 
