@@ -23,7 +23,6 @@
   <ItemGroup>
     <Folder Include="DTOs\Customer\" />
     <Folder Include="DTOs\Inventory\" />
-    <Folder Include="DTOs\Category\" />
     <Folder Include="DTOs\Actor\" />
     <Folder Include="DTOs\Address\" />
     <Folder Include="DTOs\Language\" />
