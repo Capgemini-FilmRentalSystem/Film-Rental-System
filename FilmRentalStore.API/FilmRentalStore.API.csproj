@@ -29,14 +29,10 @@
     <Folder Include="DTOs\Address\" />
     <Folder Include="DTOs\Language\" />
     <Folder Include="DTOs\Store\" />
-    <Folder Include="DTOs\Staff\" />
     <Folder Include="DTOs\Payment\" />
     <Folder Include="DTOs\Rental\" />
     <Folder Include="Middleware\" />
     <Folder Include="Exceptions\" />
-    <Folder Include="Mappings\" />
-    <Folder Include="Repositories\Interfaces\" />
-    <Folder Include="Repositories\Implementations\" />
     <Folder Include="Services\Interfaces\" />
     <Folder Include="Services\Implementations\" />
     <Folder Include="Validators\" />
