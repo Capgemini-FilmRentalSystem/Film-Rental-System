@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using FilmRentalStore.API.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace FilmRentalStore.API.Models;
+namespace FilmRentalStore.API.Data;
 
 public partial class ApplicationDbContext : DbContext
 {
