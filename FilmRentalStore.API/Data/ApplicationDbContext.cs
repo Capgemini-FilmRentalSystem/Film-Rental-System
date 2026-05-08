@@ -48,6 +48,8 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<Rental> Rentals { get; set; }
 
+    public virtual DbSet<Role> Roles { get; set; }
+
     public virtual DbSet<SalesByFilmCategory> SalesByFilmCategories { get; set; }
 
     public virtual DbSet<SalesByStore> SalesByStores { get; set; }
@@ -593,6 +595,23 @@ public partial class ApplicationDbContext : DbContext
                 .HasConstraintName("fk_rental_staff");
         });
 
+        modelBuilder.Entity<Role>(entity =>
+        {
+            entity.HasKey(e => e.RoleId).HasName("PK__roles__760965CC64C8D3DF");
+
+            entity.ToTable("roles");
+
+            entity.HasIndex(e => e.RoleTitle, "UQ__roles__B000D98BAA36FD30").IsUnique();
+
+            entity.Property(e => e.RoleId)
+                .ValueGeneratedNever()
+                .HasColumnName("role_id");
+            entity.Property(e => e.RoleTitle)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .HasColumnName("role_title");
+        });
+
         modelBuilder.Entity<SalesByFilmCategory>(entity =>
         {
             entity
@@ -671,6 +690,9 @@ public partial class ApplicationDbContext : DbContext
                 .HasDefaultValueSql("(NULL)")
                 .HasColumnType("image")
                 .HasColumnName("picture");
+            entity.Property(e => e.RoleId)
+                .HasDefaultValue(3)
+                .HasColumnName("role_id");
             entity.Property(e => e.StoreId).HasColumnName("store_id");
             entity.Property(e => e.Username)
                 .HasMaxLength(16)
@@ -681,6 +703,11 @@ public partial class ApplicationDbContext : DbContext
                 .HasForeignKey(d => d.AddressId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_staff_address");
+
+            entity.HasOne(d => d.Role).WithMany(p => p.Staff)
+                .HasForeignKey(d => d.RoleId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_staff_role");
 
             entity.HasOne(d => d.Store).WithMany(p => p.Staff)
                 .HasForeignKey(d => d.StoreId)
