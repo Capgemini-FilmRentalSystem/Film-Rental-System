@@ -1,7 +1,9 @@
-namespace FilmRentalStore.API.Exceptions
+﻿namespace FilmRentalStore.API.Exceptions
 {
-    public class NotFoundException : Exception
+    public class NotFoundException : ApiException
     {
-        public NotFoundException(string message) : base(message) { }
+        public NotFoundException(string message) : base(message, 404)
+        {
+        }
     }
 }
