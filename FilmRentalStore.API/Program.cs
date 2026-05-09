@@ -19,11 +19,14 @@ internal class Program
         // Dependency Injection
         builder.Services.AddScoped<IStaffRepository, StaffRepository>();
         builder.Services.AddScoped<IStaffService, StaffService>();
+        builder.Services.AddScoped<IStoreRepository, StoreRepository>();
+        builder.Services.AddScoped<IStoreService, StoreService>();
 
         // AutoMapper
         builder.Services.AddAutoMapper(cfg =>
         {
             cfg.AddProfile<StaffMappingProfile>();
+            cfg.AddProfile<StoreMappingProfile>();
         });
 
         builder.Services.AddControllers();
