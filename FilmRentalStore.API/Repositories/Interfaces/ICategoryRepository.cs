@@ -6,13 +6,10 @@ namespace FilmRentalStore.API.Repositories.Interfaces
     {
         Task<IEnumerable<Category>> GetAllAsync();
         Task<Category?> GetByIdAsync(byte id);
-        Task<Category?> GetByNameAsync(string name);
-        Task<IEnumerable<Category>> GetCategoriesWithFilmCountAsync();
-        Task<Category> CreateAsync(Category category);
-        Task<Category> UpdateAsync(Category category);
-        Task DeleteAsync(Category category);
+        Task<Category> AddAsync(Category category);
+        void Update(Category category);
         Task<bool> ExistsAsync(byte id);
-        Task<bool> NameExistsAsync(string name, byte? excludeId = null);
-        Task<bool> HasFilmsAsync(byte id);
+        Task<bool> NameExistsAsync(string name);
+        Task<bool> SaveChangesAsync();
     }
 }

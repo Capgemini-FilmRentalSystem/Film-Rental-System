@@ -1,4 +1,4 @@
-﻿using FilmRentalStore.API.Models;
+﻿using FilmRentalStore.API.DTOs.Inventory;
 using FilmRentalStore.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,96 +8,47 @@ namespace FilmRentalStore.API.Controllers
     [ApiController]
     public class InventoryController : ControllerBase
     {
-        private readonly IInventoryService _service;
+        private readonly IInventoryService _inventoryService;
 
-        public InventoryController(IInventoryService service)
+        public InventoryController(IInventoryService inventoryService)
         {
-            _service = service;
+            _inventoryService = inventoryService;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllInventory()
         {
-            var inventories = await _service.GetAllAsync();
-            return Ok(inventories);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetInventoryById(int id)
-        {
-            var inventory = await _service.GetByIdAsync(id);
-
-            if (inventory == null)
-                return NotFound();
+            var inventory = await _inventoryService.GetAllInventoryAsync();
 
             return Ok(inventory);
         }
 
-        [HttpGet("film/{filmId}")]
-        public async Task<IActionResult> GetInventoryByFilm(int filmId)
+        [HttpGet("{inventoryId}")]
+        public async Task<IActionResult> GetInventoryById(int inventoryId)
         {
-            var inventories = await _service.GetByFilmAsync(filmId);
+            var inventory = await _inventoryService.GetInventoryByIdAsync(inventoryId);
 
-            return Ok(inventories);
-        }
-
-        [HttpGet("store/{storeId}")]
-        public async Task<IActionResult> GetInventoryByStore(int storeId)
-        {
-            var inventories = await _service.GetByStoreAsync(storeId);
-
-            return Ok(inventories);
-        }
-
-        [HttpGet("available")]
-        public async Task<IActionResult> GetAvailableInventory()
-        {
-            var inventories = await _service.GetAvailableInventoryAsync();
-
-            return Ok(inventories);
-        }
-
-        [HttpGet("search/{title}")]
-        public async Task<IActionResult> SearchInventory(string title)
-        {
-            var inventories = await _service.SearchInventoryAsync(title);
-
-            return Ok(inventories);
+            return Ok(inventory);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AddInventory(Inventory inventory)
+        public async Task<IActionResult> CreateInventory([FromBody] InventoryDto inventoryDto)
         {
-            await _service.AddAsync(inventory);
+            var createdInventory = await _inventoryService.CreateInventoryAsync(inventoryDto);
 
-            return Ok("Inventory Added Successfully");
+            return CreatedAtAction(
+                nameof(GetInventoryById),
+                new { inventoryId = createdInventory.InventoryId },
+                createdInventory
+            );
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateInventory(int id, Inventory inventory)
+        [HttpPut("{inventoryId}")]
+        public async Task<IActionResult> UpdateInventory(int inventoryId, [FromBody] InventoryDto inventoryDto)
         {
-            if (id != inventory.InventoryId)
-                return BadRequest();
+            var updatedInventory = await _inventoryService.UpdateInventoryAsync(inventoryId, inventoryDto);
 
-            await _service.UpdateAsync(inventory);
-
-            return Ok("Inventory Updated Successfully");
+            return Ok(updatedInventory);
         }
-
-        [HttpPatch("status/{id}")]
-        public async Task<IActionResult> UpdateInventoryStatus(int id)
-        {
-            await _service.UpdateInventoryStatusAsync(id);
-
-            return Ok("Inventory Status Updated");
-        }
-
-        //[HttpDelete("{id}")]
-        //public async Task<IActionResult> DeleteInventory(int id)
-        //{
-        //    await _service.DeleteAsync(id);
-
-        //    return Ok("Inventory Deleted Successfully");
-        //}
     }
 }

@@ -15,109 +15,102 @@ namespace FilmRentalStore.API.Repositories.Implementations
         }
 
         public async Task<IEnumerable<Film>> GetAllAsync()
-            => await _context.Films
-                .Include(f => f.Language)
-                .AsNoTracking()
-                .ToListAsync();
-
-        public async Task<Film?> GetByIdAsync(int id)
-            => await _context.Films
-                .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.FilmId == id);
-
-        public async Task<Film?> GetByIdWithDetailsAsync(int id)
-            => await _context.Films
+        {
+            return await _context.Films
                 .Include(f => f.Language)
                 .Include(f => f.OriginalLanguage)
-                .Include(f => f.FilmActors)
-                    .ThenInclude(fa => fa.Actor)
-                .Include(f => f.FilmCategories)
-                    .ThenInclude(fc => fc.Category)
-                .Include(f => f.Inventories)
-                .AsNoTracking()
-                .FirstOrDefaultAsync(f => f.FilmId == id);
-
-        public async Task<IEnumerable<Film>> SearchByTitleAsync(string title)
-            => await _context.Films
-                .Include(f => f.Language)
-                .Where(f => f.Title.Contains(title))
-                .AsNoTracking()
                 .ToListAsync();
-
-        public async Task<IEnumerable<Film>> GetByRatingAsync(string rating)
-            => await _context.Films
-                .Include(f => f.Language)
-                .Where(f => f.Rating == rating)
-                .AsNoTracking()
-                .ToListAsync();
-
-        public async Task<IEnumerable<Film>> GetByCategoryAsync(byte categoryId)
-            => await _context.Films
-                .Include(f => f.Language)
-                .Include(f => f.FilmCategories)
-                    .ThenInclude(fc => fc.Category)
-                .Where(f => f.FilmCategories.Any(fc => fc.CategoryId == categoryId))
-                .AsNoTracking()
-                .ToListAsync();
-
-        public async Task<IEnumerable<Film>> GetByActorAsync(int actorId)
-            => await _context.Films
-                .Include(f => f.Language)
-                .Include(f => f.FilmActors)
-                    .ThenInclude(fa => fa.Actor)
-                .Where(f => f.FilmActors.Any(fa => fa.ActorId == actorId))
-                .AsNoTracking()
-                .ToListAsync();
-
-        public async Task<IEnumerable<Film>> GetByLanguageAsync(byte languageId)
-            => await _context.Films
-                .Include(f => f.Language)
-                .Where(f => f.LanguageId == languageId)
-                .AsNoTracking()
-                .ToListAsync();
-
-        public async Task<IEnumerable<Film>> GetByReleaseYearAsync(string year)
-            => await _context.Films
-                .Include(f => f.Language)
-                .Where(f => f.ReleaseYear == year)
-                .AsNoTracking()
-                .ToListAsync();
-
-        public async Task<Film> CreateAsync(Film film)
-        {
-            film.LastUpdate = DateTime.UtcNow;
-            _context.Films.Add(film);
-            await _context.SaveChangesAsync();
-            return film;
         }
 
-        public async Task<Film> UpdateAsync(Film film)
+        public async Task<Film?> GetByIdAsync(int filmId)
         {
-            film.LastUpdate = DateTime.UtcNow;
+            return await _context.Films
+                .Include(f => f.Language)
+                .Include(f => f.OriginalLanguage)
+                .FirstOrDefaultAsync(f => f.FilmId == filmId);
+        }
+
+        public async Task<bool> FilmExistsAsync(int filmId)
+        {
+            return await _context.Films
+                .AnyAsync(f => f.FilmId == filmId);
+        }
+
+        public async Task AddAsync(Film film)
+        {
+            film.LastUpdate = DateTime.Now;
+
+            await _context.Films.AddAsync(film);
+        }
+
+        public void Update(Film film)
+        {
+            film.LastUpdate = DateTime.Now;
+
             _context.Films.Update(film);
-            await _context.SaveChangesAsync();
-            return film;
         }
 
-        public async Task DeleteAsync(Film film)
+        public async Task<bool> IsActorAssignedAsync(int filmId, short actorId)
         {
-            _context.Films.Remove(film);
-            await _context.SaveChangesAsync();
+            return await _context.FilmActors
+                .AnyAsync(fa => fa.FilmId == filmId && fa.ActorId == actorId);
         }
 
-        public async Task<bool> ExistsAsync(int id)
-            => await _context.Films.AnyAsync(f => f.FilmId == id);
-
-        public async Task UpdateRentalRateAsync(int id, decimal rate)
+        public async Task<bool> IsCategoryAssignedAsync(int filmId, byte categoryId)
         {
-            await _context.Films
-                .Where(f => f.FilmId == id)
-                .ExecuteUpdateAsync(s => s
-                    .SetProperty(f => f.RentalRate, rate)
-                    .SetProperty(f => f.LastUpdate, DateTime.UtcNow));
+            return await _context.FilmCategories
+                .AnyAsync(fc => fc.FilmId == filmId && fc.CategoryId == categoryId);
         }
 
-        public async Task<int> GetInventoryCountAsync(int id)
-            => await _context.Inventories.CountAsync(i => i.FilmId == id);
+        public async Task AssignActorAsync(int filmId, short actorId)
+        {
+            var filmActor = new FilmActor
+            {
+                FilmId = filmId,
+                ActorId = actorId,
+                LastUpdate = DateTime.Now
+            };
+
+            await _context.FilmActors.AddAsync(filmActor);
+        }
+
+        public async Task RemoveActorAsync(int filmId, short actorId)
+        {
+            var filmActor = await _context.FilmActors
+                .FirstOrDefaultAsync(fa => fa.FilmId == filmId && fa.ActorId == actorId);
+
+            if (filmActor != null)
+            {
+                _context.FilmActors.Remove(filmActor);
+            }
+        }
+
+        public async Task AssignCategoryAsync(int filmId, byte categoryId)
+        {
+            var filmCategory = new FilmCategory
+            {
+                FilmId = filmId,
+                CategoryId = categoryId,
+                LastUpdate = DateTime.Now
+            };
+
+            await _context.FilmCategories.AddAsync(filmCategory);
+        }
+
+        public async Task RemoveCategoryAsync(int filmId, byte categoryId)
+        {
+            var filmCategory = await _context.FilmCategories
+                .FirstOrDefaultAsync(fc => fc.FilmId == filmId && fc.CategoryId == categoryId);
+
+            if (filmCategory != null)
+            {
+                _context.FilmCategories.Remove(filmCategory);
+            }
+        }
+
+        public async Task<bool> SaveChangesAsync()
+        {
+            return await _context.SaveChangesAsync() > 0;
+        }
     }
 }

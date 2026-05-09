@@ -1,4 +1,5 @@
-﻿using FilmRentalStore.API.DTOs.Category;
+﻿using AutoMapper;
+using FilmRentalStore.API.DTOs.Category;
 using FilmRentalStore.API.Models;
 using FilmRentalStore.API.Repositories.Interfaces;
 using FilmRentalStore.API.Services.Interfaces;
@@ -9,90 +10,78 @@ namespace FilmRentalStore.API.Services.Implementations
     public class CategoryService : ICategoryService
     {
         private readonly ICategoryRepository _categoryRepo;
+        private readonly IMapper _mapper;
 
-        public CategoryService(ICategoryRepository categoryRepo)
+        public CategoryService(ICategoryRepository categoryRepo, IMapper mapper)
         {
             _categoryRepo = categoryRepo;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<CategoryResponseDto>> GetAllAsync()
         {
             var categories = await _categoryRepo.GetAllAsync();
-            return categories.Select(MapToResponse);
+
+            return _mapper.Map<IEnumerable<CategoryResponseDto>>(categories);
         }
 
         public async Task<CategoryResponseDto> GetByIdAsync(byte id)
         {
-            var category = await _categoryRepo.GetByIdAsync(id)
-                ?? throw new NotFoundException("Category", id);
-            return MapToResponse(category);
+            var category = await _categoryRepo.GetByIdAsync(id);
+
+            if (category == null) throw new NotFoundException("Category not found");
+
+            return _mapper.Map<CategoryResponseDto>(category);
         }
 
-        public async Task<CategoryResponseDto> GetByNameAsync(string name)
+        public async Task<CategoryResponseDto> CreateAsync(CategoryDto dto)
         {
-            var category = await _categoryRepo.GetByNameAsync(name)
-                ?? throw new NotFoundException($"Category with name '{name}' was not found.");
-            return MapToResponse(category);
-        }
+            if (dto == null)
+                throw new BadRequestException("Category data is required.");
 
-        public async Task<IEnumerable<CategoryWithFilmCountDto>> GetCategoriesWithFilmCountAsync()
-        {
-            var categories = await _categoryRepo.GetCategoriesWithFilmCountAsync();
-            return categories.Select(c => new CategoryWithFilmCountDto
-            {
-                CategoryId = c.CategoryId,
-                Name = c.Name,
-                LastUpdate = c.LastUpdate,
-                FilmCount = c.FilmCategories?.Count ?? 0
-            });
-        }
+            var nameExists = await _categoryRepo.NameExistsAsync(dto.Name);
 
-        public async Task<CategoryResponseDto> CreateAsync(CreateCategoryDto dto)
-        {
-            if (await _categoryRepo.NameExistsAsync(dto.Name))
+            if (nameExists)
                 throw new ConflictException($"Category '{dto.Name}' already exists.");
 
-            var category = new Category
-            {
-                Name = dto.Name,
-                LastUpdate = DateTime.UtcNow
-            };
+            var category = _mapper.Map<Category>(dto);
 
-            var created = await _categoryRepo.CreateAsync(category);
-            return MapToResponse(created);
+            category.LastUpdate = DateTime.Now;
+
+            await _categoryRepo.AddAsync(category);
+            await _categoryRepo.SaveChangesAsync();
+
+            var createdCategory = await _categoryRepo.GetByIdAsync(category.CategoryId);
+
+            if (createdCategory == null)
+                throw new NotFoundException("Created category record not found.");
+
+            return _mapper.Map<CategoryResponseDto>(createdCategory);
         }
 
-        public async Task<CategoryResponseDto> UpdateAsync(byte id, UpdateCategoryDto dto)
+        public async Task<CategoryResponseDto> UpdateAsync(byte id, CategoryDto dto)
         {
-            var category = await _categoryRepo.GetByIdAsync(id)
-                ?? throw new NotFoundException("Category", id);
+            if (dto == null)
+                throw new BadRequestException("Category data is required.");
 
-            if (await _categoryRepo.NameExistsAsync(dto.Name, id))
-                throw new ConflictException($"Category name '{dto.Name}' is already taken.");
+            var category = await _categoryRepo.GetByIdAsync(id);
 
-            category.Name = dto.Name;
+            if (category == null)
+                throw new NotFoundException("Category not found.");
 
-            var updated = await _categoryRepo.UpdateAsync(category);
-            return MapToResponse(updated);
+            _mapper.Map(dto, category);
+
+            category.LastUpdate = DateTime.Now;
+
+            _categoryRepo.Update(category);
+            await _categoryRepo.SaveChangesAsync();
+
+            var updatedCategory = await _categoryRepo.GetByIdAsync(id);
+
+            if (updatedCategory == null)
+                throw new NotFoundException("Updated category record not found.");
+
+            return _mapper.Map<CategoryResponseDto>(updatedCategory);
         }
-
-        public async Task DeleteAsync(byte id)
-        {
-            var category = await _categoryRepo.GetByIdAsync(id)
-                ?? throw new NotFoundException("Category", id);
-
-            if (await _categoryRepo.HasFilmsAsync(id))
-                throw new ConflictException(
-                    $"Cannot delete category '{category.Name}': it has films assigned. Reassign them first.");
-
-            await _categoryRepo.DeleteAsync(category);
-        }
-
-        private static CategoryResponseDto MapToResponse(Category c) => new()
-        {
-            CategoryId = c.CategoryId,
-            Name = c.Name,
-            LastUpdate = c.LastUpdate
-        };
     }
 }

@@ -4,17 +4,20 @@ namespace FilmRentalStore.API.Services.Interfaces
 {
     public interface IFilmService
     {
-        Task<IEnumerable<FilmResponseDto>> GetAllAsync();
-        Task<FilmDetailResponseDto> GetByIdAsync(int id);
-        Task<IEnumerable<FilmResponseDto>> SearchByTitleAsync(string title);
-        Task<IEnumerable<FilmResponseDto>> GetByRatingAsync(string rating);
-        Task<IEnumerable<FilmResponseDto>> GetByCategoryAsync(byte categoryId);
-        Task<IEnumerable<FilmResponseDto>> GetByActorAsync(int actorId);
-        Task<IEnumerable<FilmResponseDto>> GetByLanguageAsync(byte languageId);
-        Task<IEnumerable<FilmResponseDto>> GetByReleaseYearAsync(string year);
-        Task<FilmResponseDto> CreateAsync(CreateFilmDto dto);
-        Task<FilmResponseDto> UpdateAsync(int id, UpdateFilmDto dto);
-        Task DeleteAsync(int id);
-        Task UpdateRentalRateAsync(int id, UpdateFilmRateDto dto);
+        Task<IEnumerable<FilmResponseDto>> GetAllFilmsAsync();
+
+        Task<FilmResponseDto> GetFilmByIdAsync(int filmId);
+
+        Task<FilmResponseDto> CreateFilmAsync(FilmDto filmDto);
+
+        Task<FilmResponseDto> UpdateFilmAsync(int filmId, FilmDto filmDto);
+
+        Task AssignActorToFilmAsync(int filmId, FilmActorAssignDto dto);
+
+        Task RemoveActorFromFilmAsync(int filmId, short actorId);
+
+        Task AssignCategoryToFilmAsync(int filmId, FilmCategoryAssignDto dto);
+
+        Task RemoveCategoryFromFilmAsync(int filmId, byte categoryId);
     }
 }

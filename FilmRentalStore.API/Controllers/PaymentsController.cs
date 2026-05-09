@@ -1,12 +1,46 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FilmRentalStore.API.DTOs.Payment;
+using FilmRentalStore.API.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace FilmRentalStore.API.Controllers
 {
-    public class PaymentsController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class PaymentsController : ControllerBase
     {
-        public IActionResult Index()
+        private readonly IPaymentService _paymentService;
+
+        public PaymentsController(IPaymentService paymentService)
         {
-            return View();
+            _paymentService = paymentService;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAllPayments()
+        {
+            var payments = await _paymentService.GetAllPaymentsAsync();
+
+            return Ok(payments);
+        }
+
+        [HttpGet("{paymentId}")]
+        public async Task<IActionResult> GetPaymentById(int paymentId)
+        {
+            var payment = await _paymentService.GetPaymentByIdAsync(paymentId);
+
+            return Ok(payment);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreatePayment([FromBody] PaymentCreateDto paymentDto)
+        {
+            var createdPayment = await _paymentService.CreatePaymentAsync(paymentDto);
+
+            return CreatedAtAction(
+                nameof(GetPaymentById),
+                new { paymentId = createdPayment.PaymentId },
+                createdPayment
+            );
         }
     }
 }

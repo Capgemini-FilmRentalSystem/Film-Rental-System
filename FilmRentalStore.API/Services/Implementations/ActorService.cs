@@ -1,4 +1,6 @@
-﻿using FilmRentalStore.API.DTOs.Actor;
+﻿using AutoMapper;
+using FilmRentalStore.API.DTOs.Actor;
+using FilmRentalStore.API.Exceptions;
 using FilmRentalStore.API.Models;
 using FilmRentalStore.API.Repositories.Interfaces;
 using FilmRentalStore.API.Services.Interfaces;
@@ -7,71 +9,75 @@ namespace FilmRentalStore.API.Services.Implementations
 {
     public class ActorService : IActorService
     {
-        private readonly IActorRepository _repository;
+        private readonly IActorRepository _actorRepository;
+        private readonly IMapper _mapper;
 
-        public ActorService(IActorRepository repository)
+        public ActorService(IActorRepository actorRepository, IMapper mapper)
         {
-            _repository = repository;
+            _actorRepository = actorRepository;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<ActorDTO>> GetAllActorsAsync()
+        public async Task<IEnumerable<ActorResponseDto>> GetAllActorsAsync()
         {
-            var actors = await _repository.GetAllActorsAsync();
+            var actors = await _actorRepository.GetAllActorsAsync();
 
-            return actors.Select(a => new ActorDTO
-            {
-                ActorId = (short)a.ActorId,
-                FirstName = a.FirstName,
-                LastName = a.LastName
-            });
+            return _mapper.Map<IEnumerable<ActorResponseDto>>(actors);
         }
 
-        public async Task<ActorDTO?> GetActorByIdAsync(short id)
+        public async Task<ActorResponseDto> GetActorByIdAsync(short id)
         {
-            var actor = await _repository.GetActorByIdAsync(id);
+            var actor = await _actorRepository.GetActorByIdAsync(id);
 
             if (actor == null)
-                return null;
+                throw new NotFoundException("Actor not found.");
 
-            return new ActorDTO
-            {
-                ActorId = (short)actor.ActorId,
-                FirstName = actor.FirstName,
-                LastName = actor.LastName
-            };
+            return _mapper.Map<ActorResponseDto>(actor);
         }
 
-        public async Task<ActorDTO> CreateActorAsync(ActorDTO actorDto)
+        public async Task<ActorResponseDto> CreateActorAsync(ActorDTO actorDto)
         {
-            var actor = new Actor
-            {
-                FirstName = actorDto.FirstName,
-                LastName = actorDto.LastName
-            };
+            if (actorDto == null)
+                throw new BadRequestException("Actor data is required.");
 
-            var createdActor = await _repository.CreateActorAsync(actor);
+            var actor = _mapper.Map<Actor>(actorDto);
 
-            actorDto.ActorId = (short)createdActor.ActorId;
+            actor.LastUpdate = DateTime.Now;
 
-            return actorDto;
+            await _actorRepository.CreateActorAsync(actor);
+            await _actorRepository.SaveChangesAsync();
+
+            var createdActor = await _actorRepository.GetActorByIdAsync((short)actor.ActorId);
+
+            if (createdActor == null)
+                throw new NotFoundException("Created actor record not found.");
+
+            return _mapper.Map<ActorResponseDto>(createdActor);
         }
 
-        public async Task<bool> UpdateActorAsync(short id, ActorDTO actorDto)
+        public async Task<ActorResponseDto> UpdateActorAsync(short id, ActorDTO actorDto)
         {
-            var existingActor = await _repository.GetActorByIdAsync(id);
+            if (actorDto == null)
+                throw new BadRequestException("Actor data is required.");
 
-            if (existingActor == null)
-                return false;
+            var actor = await _actorRepository.GetActorByIdAsync(id);
 
-            existingActor.FirstName = actorDto.FirstName;
-            existingActor.LastName = actorDto.LastName;
+            if (actor == null)
+                throw new NotFoundException("Actor not found.");
 
-            return await _repository.UpdateActorAsync(existingActor);
-        }
+            _mapper.Map(actorDto, actor);
 
-        public async Task<bool> DeleteActorAsync(short id)
-        {
-            return await _repository.DeleteActorAsync(id);
+            actor.LastUpdate = DateTime.Now;
+
+            _actorRepository.Update(actor);
+            await _actorRepository.SaveChangesAsync();
+
+            var updatedActor = await _actorRepository.GetActorByIdAsync(id);
+
+            if (updatedActor == null)
+                throw new NotFoundException("Updated actor record not found.");
+
+            return _mapper.Map<ActorResponseDto>(updatedActor);
         }
     }
 }

@@ -1,6 +1,6 @@
-﻿namespace FilmRentalStore.API.DTOs.InventoryDTOs
+﻿namespace FilmRentalStore.API.DTOs.Inventory
 {
-    public class CreateInventoryDto
+    public class InventoryDto
     {
         public int FilmId { get; set; }
         public int StoreId { get; set; }

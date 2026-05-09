@@ -1,11 +1,11 @@
 using FilmRentalStore.API.Data;
 using FilmRentalStore.API.Mappings;
+using FilmRentalStore.API.Middleware;
 using FilmRentalStore.API.Repositories.Implementations;
 using FilmRentalStore.API.Repositories.Interfaces;
 using FilmRentalStore.API.Services.Implementations;
 using FilmRentalStore.API.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using FilmRentalStore.API.Middleware;
 
 internal class Program
 {
@@ -13,20 +13,43 @@ internal class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        // DbContext
         builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-        // Dependency Injection
+        // Repository Dependency Injection
         builder.Services.AddScoped<IStaffRepository, StaffRepository>();
-        builder.Services.AddScoped<IStaffService, StaffService>();
         builder.Services.AddScoped<IStoreRepository, StoreRepository>();
+        builder.Services.AddScoped<IActorRepository, ActorRepository>();
+        builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+        builder.Services.AddScoped<ILanguageRepository, LanguageRepository>();
+        builder.Services.AddScoped<IFilmRepository, FilmRepository>();
+        builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
+        builder.Services.AddScoped<IRentalRepository, RentalRepository>();
+        builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+
+        // Service Dependency Injection
+        builder.Services.AddScoped<IStaffService, StaffService>();
         builder.Services.AddScoped<IStoreService, StoreService>();
+        builder.Services.AddScoped<IActorService, ActorService>();
+        builder.Services.AddScoped<ICategoryService, CategoryService>();
+        builder.Services.AddScoped<ILanguageService, LanguageService>();
+        builder.Services.AddScoped<IFilmService, FilmService>();
+        builder.Services.AddScoped<IInventoryService, InventoryService>();
+        builder.Services.AddScoped<IRentalService, RentalService>();
+        builder.Services.AddScoped<IPaymentService, PaymentService>();
 
         // AutoMapper
         builder.Services.AddAutoMapper(cfg =>
         {
             cfg.AddProfile<StaffMappingProfile>();
             cfg.AddProfile<StoreMappingProfile>();
+            cfg.AddProfile<ActorMappingProfile>();
+            cfg.AddProfile<CategoryMappingProfile>();
+            cfg.AddProfile<LanguageMappingProfile>();
+            cfg.AddProfile<FilmMappingProfile>();
+            cfg.AddProfile<InventoryMappingProfile>();
+            cfg.AddProfile<RentalMappingProfile>();
         });
 
         builder.Services.AddControllers();

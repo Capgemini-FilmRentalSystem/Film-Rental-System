@@ -25,19 +25,7 @@ namespace FilmRentalStore.API.Repositories.Implementations
                 .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.CategoryId == id);
 
-        public async Task<Category?> GetByNameAsync(string name)
-            => await _context.Categories
-                .AsNoTracking()
-                .FirstOrDefaultAsync(c => c.Name == name);
-
-        public async Task<IEnumerable<Category>> GetCategoriesWithFilmCountAsync()
-            => await _context.Categories
-                .Include(c => c.FilmCategories)
-                .AsNoTracking()
-                .OrderBy(c => c.Name)
-                .ToListAsync();
-
-        public async Task<Category> CreateAsync(Category category)
+        public async Task<Category> AddAsync(Category category)
         {
             category.LastUpdate = DateTime.UtcNow;
             _context.Categories.Add(category);
@@ -45,28 +33,19 @@ namespace FilmRentalStore.API.Repositories.Implementations
             return category;
         }
 
-        public async Task<Category> UpdateAsync(Category category)
+        public void Update(Category category)
         {
             category.LastUpdate = DateTime.UtcNow;
             _context.Categories.Update(category);
-            await _context.SaveChangesAsync();
-            return category;
-        }
-
-        public async Task DeleteAsync(Category category)
-        {
-            _context.Categories.Remove(category);
-            await _context.SaveChangesAsync();
         }
 
         public async Task<bool> ExistsAsync(byte id)
             => await _context.Categories.AnyAsync(c => c.CategoryId == id);
 
-        public async Task<bool> NameExistsAsync(string name, byte? excludeId = null)
-            => await _context.Categories.AnyAsync(c =>
-                c.Name == name && (excludeId == null || c.CategoryId != excludeId));
+        public async Task<bool> NameExistsAsync(string name)
+            => await _context.Categories.AnyAsync(c => c.Name == name);
 
-        public async Task<bool> HasFilmsAsync(byte id)
-            => await _context.FilmCategories.AnyAsync(fc => fc.CategoryId == id);
+        public async Task<bool> SaveChangesAsync()
+            => await _context.SaveChangesAsync() > 0;
     }
 }

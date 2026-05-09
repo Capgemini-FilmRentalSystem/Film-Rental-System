@@ -25,32 +25,24 @@ namespace FilmRentalStore.API.Repositories.Implementations
             return await _context.Actors.FindAsync(id);
         }
 
-        public async Task<Actor> CreateActorAsync(Actor actor)
+        public async Task CreateActorAsync(Actor actor)
         {
-            _context.Actors.Add(actor);
-
-            await _context.SaveChangesAsync();
-
-            return actor;
+            await _context.Actors.AddAsync(actor);
         }
 
-        public async Task<bool> UpdateActorAsync(Actor actor)
+        public async Task<bool> ActorExistsAsync(int actorId)
+        {
+            return await _context.Actors.AnyAsync(a => a.ActorId == actorId);
+        }
+
+        public async Task<bool> SaveChangesAsync()
+        {
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public void Update(Actor actor)
         {
             _context.Actors.Update(actor);
-
-            return await _context.SaveChangesAsync() > 0;
-        }
-
-        public async Task<bool> DeleteActorAsync(short id)
-        {
-            var actor = await _context.Actors.FindAsync(id);
-
-            if (actor == null)
-                return false;
-
-            _context.Actors.Remove(actor);
-
-            return await _context.SaveChangesAsync() > 0;
         }
     }
 }

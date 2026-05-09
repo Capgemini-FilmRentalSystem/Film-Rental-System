@@ -6,10 +6,7 @@ namespace FilmRentalStore.API.Services.Interfaces
     {
         Task<IEnumerable<CategoryResponseDto>> GetAllAsync();
         Task<CategoryResponseDto> GetByIdAsync(byte id);
-        Task<CategoryResponseDto> GetByNameAsync(string name);
-        Task<IEnumerable<CategoryWithFilmCountDto>> GetCategoriesWithFilmCountAsync();
-        Task<CategoryResponseDto> CreateAsync(CreateCategoryDto dto);
-        Task<CategoryResponseDto> UpdateAsync(byte id, UpdateCategoryDto dto);
-        Task DeleteAsync(byte id);
+        Task<CategoryResponseDto> CreateAsync(CategoryDto dto);
+        Task<CategoryResponseDto> UpdateAsync(byte id, CategoryDto dto);
     }
 }

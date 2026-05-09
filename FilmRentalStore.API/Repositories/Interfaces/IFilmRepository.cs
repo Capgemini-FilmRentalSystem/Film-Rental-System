@@ -5,19 +5,27 @@ namespace FilmRentalStore.API.Repositories.Interfaces
     public interface IFilmRepository
     {
         Task<IEnumerable<Film>> GetAllAsync();
-        Task<Film?> GetByIdAsync(int id);
-        Task<Film?> GetByIdWithDetailsAsync(int id);
-        Task<IEnumerable<Film>> SearchByTitleAsync(string title);
-        Task<IEnumerable<Film>> GetByRatingAsync(string rating);
-        Task<IEnumerable<Film>> GetByCategoryAsync(byte categoryId);
-        Task<IEnumerable<Film>> GetByActorAsync(int actorId);
-        Task<IEnumerable<Film>> GetByLanguageAsync(byte languageId);
-        Task<IEnumerable<Film>> GetByReleaseYearAsync(string year);
-        Task<Film> CreateAsync(Film film);
-        Task<Film> UpdateAsync(Film film);
-        Task DeleteAsync(Film film);
-        Task<bool> ExistsAsync(int id);
-        Task UpdateRentalRateAsync(int id, decimal rate);
-        Task<int> GetInventoryCountAsync(int id);
+
+        Task<Film?> GetByIdAsync(int filmId);
+
+        Task<bool> FilmExistsAsync(int filmId);
+
+        Task AddAsync(Film film);
+
+        void Update(Film film);
+
+        Task<bool> IsActorAssignedAsync(int filmId, short actorId);
+
+        Task<bool> IsCategoryAssignedAsync(int filmId, byte categoryId);
+
+        Task AssignActorAsync(int filmId, short actorId);
+
+        Task RemoveActorAsync(int filmId, short actorId);
+
+        Task AssignCategoryAsync(int filmId, byte categoryId);
+
+        Task RemoveCategoryAsync(int filmId, byte categoryId);
+
+        Task<bool> SaveChangesAsync();
     }
 }
