@@ -34,7 +34,6 @@
     <Folder Include="DTOs\Category\" />
     <Folder Include="DTOs\Address\" />
     <Folder Include="DTOs\Language\" />
-    <Folder Include="DTOs\Store\" />
     <Folder Include="DTOs\Payment\" />
     <Folder Include="DTOs\Rental\" />
     <Folder Include="DTOs\Staff\" />
