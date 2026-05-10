@@ -2,6 +2,6 @@
 {
     public class FilmActorAssignDto
     {
-        public short ActorId { get; set; }
+        public int ActorId { get; set; }
     }
 }

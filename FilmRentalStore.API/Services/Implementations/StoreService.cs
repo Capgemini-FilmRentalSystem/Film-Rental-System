@@ -27,6 +27,11 @@ namespace FilmRentalStore.API.Services.Implementations
             if (!managerExists)
                 throw new BadRequestException("Invalid manager staff id.");
 
+            var managerAlreadyAssigned = await _storeRepository.ManagerAlreadyAssignedAsync(dto.ManagerStaffId);
+
+            if (managerAlreadyAssigned)
+                throw new ConflictException("Manager is already assigned to another store.");
+
             var addressExists = await _storeRepository.AddressExistsAsync(dto.AddressId);
 
             if (!addressExists)
@@ -70,6 +75,13 @@ namespace FilmRentalStore.API.Services.Implementations
 
             if (!managerExists)
                 throw new BadRequestException("Invalid manager staff id.");
+
+            var managerAlreadyAssigned = await _storeRepository.ManagerAlreadyAssignedAsync(
+                dto.ManagerStaffId,
+                storeId);
+
+            if (managerAlreadyAssigned)
+                throw new ConflictException("Manager is already assigned to another store.");
 
             var addressExists = await _storeRepository.AddressExistsAsync(dto.AddressId);
 

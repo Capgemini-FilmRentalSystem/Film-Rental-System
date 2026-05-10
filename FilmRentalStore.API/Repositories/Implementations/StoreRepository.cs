@@ -38,6 +38,14 @@ namespace FilmRentalStore.API.Repositories.Implementations
                 .AnyAsync(s => s.StaffId == managerStaffId && s.Active);
         }
 
+        public async Task<bool> ManagerAlreadyAssignedAsync(byte managerStaffId, int? excludingStoreId = null)
+        {
+            return await _context.Stores
+                .AnyAsync(s =>
+                    s.ManagerStaffId == managerStaffId &&
+                    (!excludingStoreId.HasValue || s.StoreId != excludingStoreId.Value));
+        }
+
         public async Task<bool> SaveChangesAsync()
         {
             return await _context.SaveChangesAsync() > 0;

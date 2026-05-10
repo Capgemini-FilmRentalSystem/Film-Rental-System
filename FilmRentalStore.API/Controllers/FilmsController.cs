@@ -62,7 +62,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpDelete("{filmId}/actors/{actorId}")]
-        public async Task<IActionResult> RemoveActorFromFilm(int filmId, short actorId)
+        public async Task<IActionResult> RemoveActorFromFilm(int filmId, int actorId)
         {
             await _filmService.RemoveActorFromFilmAsync(filmId, actorId);
 

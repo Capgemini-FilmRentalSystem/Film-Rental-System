@@ -20,7 +20,7 @@ namespace FilmRentalStore.API.Repositories.Implementations
             return await _context.Actors.ToListAsync();
         }
 
-        public async Task<Actor?> GetActorByIdAsync(short id)
+        public async Task<Actor?> GetActorByIdAsync(int id)
         {
             return await _context.Actors.FindAsync(id);
         }

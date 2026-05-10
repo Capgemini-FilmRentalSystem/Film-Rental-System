@@ -49,13 +49,13 @@ namespace FilmRentalStore.API.Repositories.Implementations
         }
         public async Task<bool> IsActiveAsync(byte staffId)
         {
-            return await _context.Staff.AnyAsync(s=>s.StaffId == staffId && s.Active);
+            return await _context.Staff.AnyAsync(s => s.StaffId == staffId && s.Active);
         }
 
         public async Task<bool> IsAssignedToStore(byte staffid, int storeId)
         {
             return await _context.Staff
-                .AnyAsync(s => s.StaffId == staffid && s.Active);
+                .AnyAsync(s => s.StaffId == staffid && s.StoreId == storeId && s.Active);
         }
 
         public async Task<bool> SaveChangesAsync()

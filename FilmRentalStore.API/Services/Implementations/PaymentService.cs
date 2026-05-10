@@ -72,6 +72,12 @@ namespace FilmRentalStore.API.Services.Implementations
             if (rental.CustomerId != paymentDto.CustomerId)
                 throw new BadRequestException("Rental does not belong to the selected customer.");
 
+            var staffAssignedToRentalStore =
+                await _staffRepository.IsAssignedToStore(paymentDto.StaffId, rental.Inventory.StoreId);
+
+            if (!staffAssignedToRentalStore)
+                throw new BadRequestException("Staff is not assigned to the rental's store.");
+
             var payment = _mapper.Map<Payment>(paymentDto);
 
             payment.PaymentDate = DateTime.Now;

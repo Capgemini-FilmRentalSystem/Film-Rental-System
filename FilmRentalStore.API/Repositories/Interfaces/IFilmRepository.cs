@@ -14,13 +14,13 @@ namespace FilmRentalStore.API.Repositories.Interfaces
 
         void Update(Film film);
 
-        Task<bool> IsActorAssignedAsync(int filmId, short actorId);
+        Task<bool> IsActorAssignedAsync(int filmId, int actorId);
 
         Task<bool> IsCategoryAssignedAsync(int filmId, byte categoryId);
 
-        Task AssignActorAsync(int filmId, short actorId);
+        Task AssignActorAsync(int filmId, int actorId);
 
-        Task RemoveActorAsync(int filmId, short actorId);
+        Task RemoveActorAsync(int filmId, int actorId);
 
         Task AssignCategoryAsync(int filmId, byte categoryId);
 

@@ -13,19 +13,22 @@ namespace FilmRentalStore.API.Services.Implementations
         private readonly IAddressRepository _addressRepository;
         private readonly ICountryRepository _countryRepository;
         private readonly ICityRepository _cityRepository;
+        private readonly IStoreRepository _storeRepository;
         private readonly IMapper _mapper;
 
         public CustomerService(
-            ICustomerRepository repository, 
+            ICustomerRepository repository,
             IAddressRepository addressRepository,
             ICountryRepository countryRepository,
             ICityRepository cityRepository,
+            IStoreRepository storeRepository,
             IMapper mapper)
         {
             _repository = repository;
             _addressRepository = addressRepository;
             _countryRepository = countryRepository;
             _cityRepository = cityRepository;
+            _storeRepository = storeRepository;
             _mapper = mapper;
         }
 
@@ -63,22 +66,45 @@ namespace FilmRentalStore.API.Services.Implementations
 
         public async Task<CustomerResponseDto> CreateAsync(CustomerCreateDto dto)
         {
-            // Handle address creation if address details are provided
-            int addressId = dto.AddressId ?? 0;
-            if (addressId == 0 && HasAddressDetails(dto))
-            {
-                if (string.IsNullOrWhiteSpace(dto.CityName) || string.IsNullOrWhiteSpace(dto.CountryName))
-                    throw new ArgumentException("CityName and CountryName are required when creating a new address.");
+            if (dto == null)
+                throw new BadRequestException("Customer data is required.");
 
-                // Get or create country
+            if (string.IsNullOrWhiteSpace(dto.FirstName) || string.IsNullOrWhiteSpace(dto.LastName))
+                throw new BadRequestException("FirstName and LastName are required.");
+
+            var storeExists = await _storeRepository.StoreExists(dto.StoreId);
+
+            if (!storeExists)
+                throw new BadRequestException("Invalid store id.");
+
+            int addressId;
+
+            if (dto.AddressId.HasValue && dto.AddressId.Value > 0)
+            {
+                var existingAddress = await _addressRepository.GetByIdAsync(dto.AddressId.Value);
+
+                if (existingAddress == null)
+                    throw new BadRequestException("Invalid address id.");
+
+                addressId = dto.AddressId.Value;
+            }
+            else
+            {
+                if (!HasAddressDetails(dto))
+                    throw new BadRequestException("AddressId or full address details are required.");
+
+                if (string.IsNullOrWhiteSpace(dto.CityName) || string.IsNullOrWhiteSpace(dto.CountryName))
+                    throw new BadRequestException("CityName and CountryName are required when creating a new address.");
+
                 var country = await _countryRepository.GetByNameAsync(dto.CountryName);
+
                 if (country == null)
                 {
                     country = await _countryRepository.CreateAsync(new Country { Country1 = dto.CountryName });
                 }
 
-                // Get or create city
                 var city = await _cityRepository.GetByNameAndCountryAsync(dto.CityName, country.CountryId);
+
                 if (city == null)
                 {
                     city = await _cityRepository.CreateAsync(new City { City1 = dto.CityName, CountryId = country.CountryId });
@@ -110,94 +136,72 @@ namespace FilmRentalStore.API.Services.Implementations
 
         public async Task<CustomerResponseDto> UpdateAsync(int id, CustomerUpdateDto dto)
         {
+            if (dto == null)
+                throw new BadRequestException("Customer data is required.");
+
+            if (string.IsNullOrWhiteSpace(dto.FirstName) || string.IsNullOrWhiteSpace(dto.LastName))
+                throw new BadRequestException("FirstName and LastName are required.");
+
+            var storeExists = await _storeRepository.StoreExists(dto.StoreId);
+
+            if (!storeExists)
+                throw new BadRequestException("Invalid store id.");
+
             var customer = await _repository.GetByIdAsync(id)
                 ?? throw new NotFoundException($"Customer with ID {id} was not found.");
 
-            // Handle address update if address details are provided
+            int targetAddressId = customer.AddressId;
+
+            if (dto.AddressId.HasValue)
+            {
+                if (dto.AddressId.Value <= 0)
+                    throw new BadRequestException("Invalid address id.");
+
+                var selectedAddress = await _addressRepository.GetByIdAsync(dto.AddressId.Value)
+                    ?? throw new BadRequestException("Invalid address id.");
+
+                targetAddressId = selectedAddress.AddressId;
+            }
+
             if (HasAddressDetails(dto))
             {
-                int addressId = dto.AddressId ?? customer.AddressId;
-                
-                if (dto.AddressId.HasValue && dto.AddressId > 0)
+                var address = await _addressRepository.GetByIdAsync(targetAddressId)
+                    ?? throw new NotFoundException($"Address with ID {targetAddressId} was not found.");
+
+                if (!string.IsNullOrEmpty(dto.Address1)) address.Address1 = dto.Address1;
+                if (dto.Address2 != null) address.Address2 = dto.Address2;
+                if (!string.IsNullOrEmpty(dto.District)) address.District = dto.District;
+                if (dto.PostalCode != null) address.PostalCode = dto.PostalCode;
+                if (!string.IsNullOrEmpty(dto.Phone)) address.Phone = dto.Phone;
+
+                if (!string.IsNullOrWhiteSpace(dto.CityName) || !string.IsNullOrWhiteSpace(dto.CountryName))
                 {
-                    // Update existing address
-                    var address = await _addressRepository.GetByIdAsync(dto.AddressId.Value)
-                        ?? throw new NotFoundException($"Address with ID {dto.AddressId} was not found.");
+                    if (string.IsNullOrWhiteSpace(dto.CityName) || string.IsNullOrWhiteSpace(dto.CountryName))
+                        throw new BadRequestException("Both CityName and CountryName are required when changing a customer's city.");
 
-                    if (!string.IsNullOrEmpty(dto.Address1)) address.Address1 = dto.Address1;
-                    if (dto.Address2 != null) address.Address2 = dto.Address2;
-                    if (!string.IsNullOrEmpty(dto.District)) address.District = dto.District;
-                    if (dto.PostalCode != null) address.PostalCode = dto.PostalCode;
-                    if (!string.IsNullOrEmpty(dto.Phone)) address.Phone = dto.Phone;
-                    
-                    // Handle city update with auto-creation
-                    if (!string.IsNullOrWhiteSpace(dto.CityName) || !string.IsNullOrWhiteSpace(dto.CountryName))
-                    {
-                        var city = address.City;
-                        if (!string.IsNullOrWhiteSpace(dto.CountryName) && !string.IsNullOrWhiteSpace(dto.CityName))
+                    var country = await _countryRepository.GetByNameAsync(dto.CountryName)
+                        ?? await _countryRepository.CreateAsync(new Country { Country1 = dto.CountryName });
+
+                    var city = await _cityRepository.GetByNameAndCountryAsync(dto.CityName, country.CountryId)
+                        ?? await _cityRepository.CreateAsync(new City
                         {
-                            // Get or create country
-                            var country = await _countryRepository.GetByNameAsync(dto.CountryName);
-                            if (country == null)
-                            {
-                                country = await _countryRepository.CreateAsync(new Country { Country1 = dto.CountryName });
-                            }
+                            City1 = dto.CityName,
+                            CountryId = country.CountryId
+                        });
 
-                            // Get or create city
-                            city = await _cityRepository.GetByNameAndCountryAsync(dto.CityName, country.CountryId);
-                            if (city == null)
-                            {
-                                city = await _cityRepository.CreateAsync(new City { City1 = dto.CityName, CountryId = country.CountryId });
-                            }
-                        }
-                        address.CityId = city.CityId;
-                    }
-
-                    await _addressRepository.UpdateAsync(address);
+                    address.CityId = city.CityId;
                 }
-                else if (addressId > 0)
-                {
-                    // Update existing customer address
-                    var address = await _addressRepository.GetByIdAsync(addressId)
-                        ?? throw new NotFoundException($"Address with ID {addressId} was not found.");
 
-                    if (!string.IsNullOrEmpty(dto.Address1)) address.Address1 = dto.Address1;
-                    if (dto.Address2 != null) address.Address2 = dto.Address2;
-                    if (!string.IsNullOrEmpty(dto.District)) address.District = dto.District;
-                    if (dto.PostalCode != null) address.PostalCode = dto.PostalCode;
-                    if (!string.IsNullOrEmpty(dto.Phone)) address.Phone = dto.Phone;
-                    
-                    // Handle city update with auto-creation
-                    if (!string.IsNullOrWhiteSpace(dto.CityName) || !string.IsNullOrWhiteSpace(dto.CountryName))
-                    {
-                        var city = address.City;
-                        if (!string.IsNullOrWhiteSpace(dto.CountryName) && !string.IsNullOrWhiteSpace(dto.CityName))
-                        {
-                            // Get or create country
-                            var country = await _countryRepository.GetByNameAsync(dto.CountryName);
-                            if (country == null)
-                            {
-                                country = await _countryRepository.CreateAsync(new Country { Country1 = dto.CountryName });
-                            }
-
-                            // Get or create city
-                            city = await _cityRepository.GetByNameAndCountryAsync(dto.CityName, country.CountryId);
-                            if (city == null)
-                            {
-                                city = await _cityRepository.CreateAsync(new City { City1 = dto.CityName, CountryId = country.CountryId });
-                            }
-                        }
-                        address.CityId = city.CityId;
-                    }
-
-                    await _addressRepository.UpdateAsync(address);
-                }
+                await _addressRepository.UpdateAsync(address);
             }
 
             _mapper.Map(dto, customer);
+            customer.AddressId = targetAddressId;
+
             var updated = await _repository.UpdateAsync(customer);
             return _mapper.Map<CustomerResponseDto>(updated);
         }
+
 
         public async Task DeleteAsync(int id)
         {

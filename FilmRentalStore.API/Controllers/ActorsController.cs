@@ -26,7 +26,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetActorById(short id)
+        public async Task<IActionResult> GetActorById(int id)
         {
             var actor = await _actorService.GetActorByIdAsync(id);
 
@@ -49,7 +49,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateActor(short id, ActorDTO actorDto)
+        public async Task<IActionResult> UpdateActor(int id, ActorDTO actorDto)
         {
             var updatedActor = await _actorService.UpdateActorAsync(id, actorDto);
 

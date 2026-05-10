@@ -27,6 +27,10 @@ internal class Program
         builder.Services.AddScoped<IInventoryRepository, InventoryRepository>();
         builder.Services.AddScoped<IRentalRepository, RentalRepository>();
         builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+        builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
+        builder.Services.AddScoped<IAddressRepository, AddressRepository>();
+        builder.Services.AddScoped<ICountryRepository, CountryRepository>();
+        builder.Services.AddScoped<ICityRepository, CityRepository>();
 
         // Service Dependency Injection
         builder.Services.AddScoped<IStaffService, StaffService>();
@@ -38,6 +42,7 @@ internal class Program
         builder.Services.AddScoped<IInventoryService, InventoryService>();
         builder.Services.AddScoped<IRentalService, RentalService>();
         builder.Services.AddScoped<IPaymentService, PaymentService>();
+        builder.Services.AddScoped<ICustomerService, CustomerService>();
 
         // AutoMapper
         builder.Services.AddAutoMapper(cfg =>
@@ -50,6 +55,8 @@ internal class Program
             cfg.AddProfile<FilmMappingProfile>();
             cfg.AddProfile<InventoryMappingProfile>();
             cfg.AddProfile<RentalMappingProfile>();
+            cfg.AddProfile<PaymentMappingProfile>();
+            cfg.AddProfile<CustomerMappingProfile>();
         });
 
         builder.Services.AddControllers();

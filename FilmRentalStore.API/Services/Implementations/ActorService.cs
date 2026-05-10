@@ -25,7 +25,7 @@ namespace FilmRentalStore.API.Services.Implementations
             return _mapper.Map<IEnumerable<ActorResponseDto>>(actors);
         }
 
-        public async Task<ActorResponseDto> GetActorByIdAsync(short id)
+        public async Task<ActorResponseDto> GetActorByIdAsync(int id)
         {
             var actor = await _actorRepository.GetActorByIdAsync(id);
 
@@ -47,7 +47,7 @@ namespace FilmRentalStore.API.Services.Implementations
             await _actorRepository.CreateActorAsync(actor);
             await _actorRepository.SaveChangesAsync();
 
-            var createdActor = await _actorRepository.GetActorByIdAsync((short)actor.ActorId);
+            var createdActor = await _actorRepository.GetActorByIdAsync((int)actor.ActorId);
 
             if (createdActor == null)
                 throw new NotFoundException("Created actor record not found.");
@@ -55,7 +55,7 @@ namespace FilmRentalStore.API.Services.Implementations
             return _mapper.Map<ActorResponseDto>(createdActor);
         }
 
-        public async Task<ActorResponseDto> UpdateActorAsync(short id, ActorDTO actorDto)
+        public async Task<ActorResponseDto> UpdateActorAsync(int id, ActorDTO actorDto)
         {
             if (actorDto == null)
                 throw new BadRequestException("Actor data is required.");

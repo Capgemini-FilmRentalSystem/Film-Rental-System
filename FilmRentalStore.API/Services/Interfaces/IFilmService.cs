@@ -14,7 +14,7 @@ namespace FilmRentalStore.API.Services.Interfaces
 
         Task AssignActorToFilmAsync(int filmId, FilmActorAssignDto dto);
 
-        Task RemoveActorFromFilmAsync(int filmId, short actorId);
+        Task RemoveActorFromFilmAsync(int filmId, int actorId);
 
         Task AssignCategoryToFilmAsync(int filmId, FilmCategoryAssignDto dto);
 

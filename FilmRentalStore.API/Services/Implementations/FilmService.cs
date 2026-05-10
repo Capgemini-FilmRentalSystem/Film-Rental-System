@@ -143,7 +143,7 @@ namespace FilmRentalStore.API.Services.Implementations
             await _filmRepository.SaveChangesAsync();
         }
 
-        public async Task RemoveActorFromFilmAsync(int filmId, short actorId)
+        public async Task RemoveActorFromFilmAsync(int filmId, int actorId)
         {
             var filmExists = await _filmRepository.FilmExistsAsync(filmId);
 

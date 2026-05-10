@@ -15,7 +15,7 @@ public partial class FilmList
 
     public decimal? Price { get; set; }
 
-    public short? Length { get; set; }
+    public int? Length { get; set; }
 
     public string? Rating { get; set; }
 

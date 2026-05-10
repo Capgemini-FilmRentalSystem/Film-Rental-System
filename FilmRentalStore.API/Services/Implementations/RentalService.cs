@@ -98,7 +98,15 @@ namespace FilmRentalStore.API.Services.Implementations
             if (rental.ReturnDate != null)
                 throw new ConflictException("Rental is already returned.");
 
-            rental.ReturnDate = rentalReturnDto?.ReturnDate ?? DateTime.Now;
+            var returnDate = rentalReturnDto?.ReturnDate ?? DateTime.Now;
+
+            if (returnDate < rental.RentalDate)
+                throw new BadRequestException("Return date cannot be before rental date.");
+
+            if (returnDate > DateTime.Now.AddMinutes(5))
+                throw new BadRequestException("Return date cannot be in the future.");
+
+            rental.ReturnDate = returnDate;
             rental.LastUpdate = DateTime.Now;
 
             _rentalRepository.Update(rental);

@@ -6,10 +6,10 @@ namespace FilmRentalStore.API.Services.Interfaces
     {
         Task<IEnumerable<ActorResponseDto>> GetAllActorsAsync();
 
-        Task<ActorResponseDto> GetActorByIdAsync(short id);
+        Task<ActorResponseDto> GetActorByIdAsync(int id);
 
         Task<ActorResponseDto> CreateActorAsync(ActorDTO actorDto);
 
-        Task<ActorResponseDto> UpdateActorAsync(short id, ActorDTO actorDto);
+        Task<ActorResponseDto> UpdateActorAsync(int id, ActorDTO actorDto);
     }
 }

@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using FilmRentalStore.API.DTOs.Category;
+using FilmRentalStore.API.Exceptions;
 using FilmRentalStore.API.Models;
 using FilmRentalStore.API.Repositories.Interfaces;
 using FilmRentalStore.API.Services.Interfaces;
-using static FilmRentalStore.API.Exceptions.Exceptions;
 
 namespace FilmRentalStore.API.Services.Implementations
 {

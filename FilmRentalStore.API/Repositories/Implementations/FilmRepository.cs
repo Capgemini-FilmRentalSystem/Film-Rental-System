@@ -50,7 +50,7 @@ namespace FilmRentalStore.API.Repositories.Implementations
             _context.Films.Update(film);
         }
 
-        public async Task<bool> IsActorAssignedAsync(int filmId, short actorId)
+        public async Task<bool> IsActorAssignedAsync(int filmId, int actorId)
         {
             return await _context.FilmActors
                 .AnyAsync(fa => fa.FilmId == filmId && fa.ActorId == actorId);
@@ -62,7 +62,7 @@ namespace FilmRentalStore.API.Repositories.Implementations
                 .AnyAsync(fc => fc.FilmId == filmId && fc.CategoryId == categoryId);
         }
 
-        public async Task AssignActorAsync(int filmId, short actorId)
+        public async Task AssignActorAsync(int filmId, int actorId)
         {
             var filmActor = new FilmActor
             {
@@ -74,7 +74,7 @@ namespace FilmRentalStore.API.Repositories.Implementations
             await _context.FilmActors.AddAsync(filmActor);
         }
 
-        public async Task RemoveActorAsync(int filmId, short actorId)
+        public async Task RemoveActorAsync(int filmId, int actorId)
         {
             var filmActor = await _context.FilmActors
                 .FirstOrDefaultAsync(fa => fa.FilmId == filmId && fa.ActorId == actorId);
