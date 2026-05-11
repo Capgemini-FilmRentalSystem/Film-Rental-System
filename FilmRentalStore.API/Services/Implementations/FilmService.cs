@@ -34,7 +34,7 @@ namespace FilmRentalStore.API.Services.Implementations
             var films = await _filmRepository.GetAllAsync();
 
             if (films is null || !films.Any())
-                throw new NotFoundException("No films found.");
+                throw new NotFoundException("No films found");
 
             return _mapper.Map<IEnumerable<FilmResponseDto>>(films);
         }
@@ -44,7 +44,7 @@ namespace FilmRentalStore.API.Services.Implementations
             var film = await _filmRepository.GetByIdAsync(filmId);
 
             if (film == null)
-                throw new NotFoundException("Film not found.");
+                throw new NotFoundException("Film not found");
 
             return _mapper.Map<FilmResponseDto>(film);
         }
@@ -52,12 +52,12 @@ namespace FilmRentalStore.API.Services.Implementations
         public async Task<FilmResponseDto> CreateFilmAsync(FilmDto filmDto)
         {
             if (filmDto == null)
-                throw new BadRequestException("Film data is required.");
+                throw new BadRequestException("Film data is required");
 
             var languageExists = await _languageRepository.LanguageExistsAsync(filmDto.LanguageId);
 
             if (!languageExists)
-                throw new BadRequestException("Invalid language id.");
+                throw new BadRequestException("Invalid language id");
 
             if (filmDto.OriginalLanguageId.HasValue)
             {
@@ -65,7 +65,7 @@ namespace FilmRentalStore.API.Services.Implementations
                     await _languageRepository.LanguageExistsAsync(filmDto.OriginalLanguageId.Value);
 
                 if (!originalLanguageExists)
-                    throw new BadRequestException("Invalid original language id.");
+                    throw new BadRequestException("Invalid original language id");
             }
 
             var film = _mapper.Map<Film>(filmDto);
@@ -78,7 +78,7 @@ namespace FilmRentalStore.API.Services.Implementations
             var createdFilm = await _filmRepository.GetByIdAsync(film.FilmId);
 
             if (createdFilm == null)
-                throw new NotFoundException("Created film record not found.");
+                throw new NotFoundException("Created film record not found");
 
             return _mapper.Map<FilmResponseDto>(createdFilm);
         }
@@ -86,17 +86,17 @@ namespace FilmRentalStore.API.Services.Implementations
         public async Task<FilmResponseDto> UpdateFilmAsync(int filmId, FilmDto filmDto)
         {
             if (filmDto == null)
-                throw new BadRequestException("Film data is required.");
+                throw new BadRequestException("Film data is required");
 
             var film = await _filmRepository.GetByIdAsync(filmId);
 
             if (film == null)
-                throw new NotFoundException("Film not found.");
+                throw new NotFoundException("Film not found");
 
             var languageExists = await _languageRepository.LanguageExistsAsync(filmDto.LanguageId);
 
             if (!languageExists)
-                throw new BadRequestException("Invalid language id.");
+                throw new BadRequestException("Invalid language id");
 
             if (filmDto.OriginalLanguageId.HasValue)
             {
@@ -104,7 +104,7 @@ namespace FilmRentalStore.API.Services.Implementations
                     await _languageRepository.LanguageExistsAsync(filmDto.OriginalLanguageId.Value);
 
                 if (!originalLanguageExists)
-                    throw new BadRequestException("Invalid original language id.");
+                    throw new BadRequestException("Invalid original language id");
             }
 
             _mapper.Map(filmDto, film);
@@ -117,7 +117,7 @@ namespace FilmRentalStore.API.Services.Implementations
             var updatedFilm = await _filmRepository.GetByIdAsync(filmId);
 
             if (updatedFilm == null)
-                throw new NotFoundException("Updated film record not found.");
+                throw new NotFoundException("Updated film record not found");
 
             return _mapper.Map<FilmResponseDto>(updatedFilm);
         }
@@ -125,22 +125,22 @@ namespace FilmRentalStore.API.Services.Implementations
         public async Task AssignActorToFilmAsync(int filmId, FilmActorAssignDto dto)
         {
             if (dto == null)
-                throw new BadRequestException("Actor assignment data is required.");
+                throw new BadRequestException("Actor assignment data is required");
 
             var filmExists = await _filmRepository.FilmExistsAsync(filmId);
 
             if (!filmExists)
-                throw new NotFoundException("Film not found.");
+                throw new NotFoundException("Film not found");
 
             var actorExists = await _actorRepository.ActorExistsAsync(dto.ActorId);
 
             if (!actorExists)
-                throw new NotFoundException("Actor not found.");
+                throw new NotFoundException("Actor not found");
 
             var alreadyAssigned = await _filmRepository.IsActorAssignedAsync(filmId, dto.ActorId);
 
             if (alreadyAssigned)
-                throw new ConflictException("Actor is already assigned to this film.");
+                throw new ConflictException("Actor is already assigned to this film");
 
             await _filmRepository.AssignActorAsync(filmId, dto.ActorId);
             await _filmRepository.SaveChangesAsync();
@@ -151,17 +151,17 @@ namespace FilmRentalStore.API.Services.Implementations
             var filmExists = await _filmRepository.FilmExistsAsync(filmId);
 
             if (!filmExists)
-                throw new NotFoundException("Film not found.");
+                throw new NotFoundException("Film not found");
 
             var actorExists = await _actorRepository.ActorExistsAsync(actorId);
 
             if (!actorExists)
-                throw new NotFoundException("Actor not found.");
+                throw new NotFoundException("Actor not found");
 
             var assigned = await _filmRepository.IsActorAssignedAsync(filmId, actorId);
 
             if (!assigned)
-                throw new NotFoundException("Actor is not assigned to this film.");
+                throw new NotFoundException("Actor is not assigned to this film");
 
             await _filmRepository.RemoveActorAsync(filmId, actorId);
             await _filmRepository.SaveChangesAsync();
@@ -170,22 +170,22 @@ namespace FilmRentalStore.API.Services.Implementations
         public async Task AssignCategoryToFilmAsync(int filmId, FilmCategoryAssignDto dto)
         {
             if (dto == null)
-                throw new BadRequestException("Category assignment data is required.");
+                throw new BadRequestException("Category assignment data is required");
 
             var filmExists = await _filmRepository.FilmExistsAsync(filmId);
 
             if (!filmExists)
-                throw new NotFoundException("Film not found.");
+                throw new NotFoundException("Film not found");
 
             var categoryExists = await _categoryRepository.ExistsAsync(dto.CategoryId);
 
             if (!categoryExists)
-                throw new NotFoundException("Category not found.");
+                throw new NotFoundException("Category not found");
 
             var alreadyAssigned = await _filmRepository.IsCategoryAssignedAsync(filmId, dto.CategoryId);
 
             if (alreadyAssigned)
-                throw new ConflictException("Category is already assigned to this film.");
+                throw new ConflictException("Category is already assigned to this film");
 
             await _filmRepository.AssignCategoryAsync(filmId, dto.CategoryId);
             await _filmRepository.SaveChangesAsync();
@@ -196,17 +196,17 @@ namespace FilmRentalStore.API.Services.Implementations
             var filmExists = await _filmRepository.FilmExistsAsync(filmId);
 
             if (!filmExists)
-                throw new NotFoundException("Film not found.");
+                throw new NotFoundException("Film not found");
 
             var categoryExists = await _categoryRepository.ExistsAsync(categoryId);
 
             if (!categoryExists)
-                throw new NotFoundException("Category not found.");
+                throw new NotFoundException("Category not found");
 
             var assigned = await _filmRepository.IsCategoryAssignedAsync(filmId, categoryId);
 
             if (!assigned)
-                throw new NotFoundException("Category is not assigned to this film.");
+                throw new NotFoundException("Category is not assigned to this film");
 
             await _filmRepository.RemoveCategoryAsync(filmId, categoryId);
             await _filmRepository.SaveChangesAsync();

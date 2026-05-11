@@ -18,7 +18,6 @@ namespace FilmRentalStore.API.Repositories.Implementations
         {
             return await _context.Films
                 .Include(f => f.Language)
-                .Include(f => f.OriginalLanguage)
                 .ToListAsync();
         }
 
@@ -26,7 +25,6 @@ namespace FilmRentalStore.API.Repositories.Implementations
         {
             return await _context.Films
                 .Include(f => f.Language)
-                .Include(f => f.OriginalLanguage)
                 .FirstOrDefaultAsync(f => f.FilmId == filmId);
         }
 
@@ -39,14 +37,12 @@ namespace FilmRentalStore.API.Repositories.Implementations
         public async Task AddAsync(Film film)
         {
             film.LastUpdate = DateTime.Now;
-
             await _context.Films.AddAsync(film);
         }
 
         public void Update(Film film)
         {
             film.LastUpdate = DateTime.Now;
-
             _context.Films.Update(film);
         }
 

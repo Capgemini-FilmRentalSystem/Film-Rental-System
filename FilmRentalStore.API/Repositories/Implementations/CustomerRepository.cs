@@ -36,8 +36,8 @@ namespace FilmRentalStore.API.Repositories.Implementations
         {
             return await _context.Customers
                 .Include(c => c.Address)
-                    .ThenInclude(a => a.City)
-                        .ThenInclude(ci => ci.Country)
+                .ThenInclude(a => a.City)
+                .ThenInclude(ci => ci.Country)
                 .FirstOrDefaultAsync(c => c.CustomerId == id);
         }
 
