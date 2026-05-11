@@ -9,6 +9,7 @@ namespace FilmRentalStore.API.Services.Implementations
 {
     public class RentalService : IRentalService
     {
+        private const int MaxPageSize = 100;
         private readonly IRentalRepository _rentalRepository;
         private readonly IInventoryRepository _inventoryRepository;
         private readonly ICustomerRepository _customerRepository;
@@ -29,9 +30,10 @@ namespace FilmRentalStore.API.Services.Implementations
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<RentalResponseDto>> GetAllRentalsAsync()
+        public async Task<IEnumerable<RentalResponseDto>> GetAllRentalsAsync(int page, int pageSize)
         {
-            var rentals = await _rentalRepository.GetAllAsync();
+
+            var rentals = await _rentalRepository.GetAllAsync(page, pageSize);
 
             return _mapper.Map<IEnumerable<RentalResponseDto>>(rentals);
         }

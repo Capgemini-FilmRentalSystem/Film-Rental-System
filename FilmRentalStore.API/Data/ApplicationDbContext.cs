@@ -60,9 +60,6 @@ public partial class ApplicationDbContext : DbContext
 
     public virtual DbSet<Store> Stores { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Data Source=VIII-III-MMV;Initial Catalog=Sakila;Integrated Security=True;TrustServerCertificate=True;");
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Actor>(entity =>

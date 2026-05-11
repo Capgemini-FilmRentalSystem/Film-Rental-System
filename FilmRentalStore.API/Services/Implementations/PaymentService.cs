@@ -29,9 +29,9 @@ namespace FilmRentalStore.API.Services.Implementations
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<PaymentResponseDto>> GetAllPaymentsAsync()
+        public async Task<IEnumerable<PaymentResponseDto>> GetAllPaymentsAsync(int page, int pageSize)
         {
-            var payments = await _paymentRepository.GetAllAsync();
+            var (payments, totalCount) = await _paymentRepository.GetAllAsync(page, pageSize);
 
             return _mapper.Map<IEnumerable<PaymentResponseDto>>(payments);
         }

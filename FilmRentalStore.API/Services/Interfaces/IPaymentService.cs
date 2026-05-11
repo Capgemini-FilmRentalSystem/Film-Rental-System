@@ -4,7 +4,7 @@ namespace FilmRentalStore.API.Services.Interfaces
 {
     public interface IPaymentService
     {
-        Task<IEnumerable<PaymentResponseDto>> GetAllPaymentsAsync();
+        Task<IEnumerable<PaymentResponseDto>> GetAllPaymentsAsync(int page, int pageSize);
 
         Task<PaymentResponseDto> GetPaymentByIdAsync(int paymentId);
 

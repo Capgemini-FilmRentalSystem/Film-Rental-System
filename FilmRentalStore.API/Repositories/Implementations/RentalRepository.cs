@@ -14,13 +14,17 @@ namespace FilmRentalStore.API.Repositories.Implementations
             _context = context;
         }
 
-        public async Task<IEnumerable<Rental>> GetAllAsync()
+        public async Task<IEnumerable<Rental>> GetAllAsync(int page, int pageSize)
         {
             return await _context.Rentals
+                .AsNoTracking()
                 .Include(r => r.Inventory)
                     .ThenInclude(i => i.Film)
                 .Include(r => r.Customer)
                 .Include(r => r.Staff)
+                .OrderBy(r => r.RentalId)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
         }
 
