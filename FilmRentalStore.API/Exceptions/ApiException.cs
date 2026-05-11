@@ -1,12 +1,15 @@
-﻿namespace FilmRentalStore.API.Exceptions
+﻿using System.Net;
+
+namespace FilmRentalStore.API.Exceptions
 {
-    public class ApiException : Exception
+    public abstract class ApiException : Exception
     {
         public int StatusCode { get; }
 
-        public ApiException(string message, int statusCode) : base(message)
+        protected ApiException(string message, HttpStatusCode statusCode)
+            : base(message)
         {
-            StatusCode = statusCode;
+            StatusCode = (int)statusCode;
         }
     }
 }
