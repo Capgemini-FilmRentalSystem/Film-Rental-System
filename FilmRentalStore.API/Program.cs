@@ -1,10 +1,13 @@
 using FilmRentalStore.API.Data;
+using FilmRentalStore.API.Filters;
 using FilmRentalStore.API.Mappings;
 using FilmRentalStore.API.Middleware;
 using FilmRentalStore.API.Repositories.Implementations;
 using FilmRentalStore.API.Repositories.Interfaces;
 using FilmRentalStore.API.Services.Implementations;
 using FilmRentalStore.API.Services.Interfaces;
+using FilmRentalStore.API.Validators;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 internal class Program
@@ -63,7 +66,15 @@ internal class Program
             cfg.AddProfile<CustomerMappingProfile>();
         });
 
-        builder.Services.AddControllers();
+        // FluentValidation
+        builder.Services.AddValidatorsFromAssemblyContaining<StaffCreateDtoValidator>();
+        builder.Services.AddScoped<ValidationFilter>();
+
+        builder.Services.AddControllers(options =>
+        {
+            options.Filters.AddService<ValidationFilter>();
+        });
+
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
