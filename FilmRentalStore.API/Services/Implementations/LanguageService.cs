@@ -22,6 +22,9 @@ namespace FilmRentalStore.API.Services.Implementations
         {
             var languages = await _languageRepository.GetAllAsync();
 
+            if (languages is null || !languages.Any())
+                throw new NotFoundException("No languages found.");
+
             return _mapper.Map<IEnumerable<LanguageResponseDto>>(languages);
         }
 

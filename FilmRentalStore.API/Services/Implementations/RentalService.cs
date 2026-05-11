@@ -9,7 +9,6 @@ namespace FilmRentalStore.API.Services.Implementations
 {
     public class RentalService : IRentalService
     {
-        private const int MaxPageSize = 100;
         private readonly IRentalRepository _rentalRepository;
         private readonly IInventoryRepository _inventoryRepository;
         private readonly ICustomerRepository _customerRepository;
@@ -32,8 +31,12 @@ namespace FilmRentalStore.API.Services.Implementations
 
         public async Task<IEnumerable<RentalResponseDto>> GetAllRentalsAsync(int page, int pageSize)
         {
+            ValidatePagination(page, pageSize);
 
             var rentals = await _rentalRepository.GetAllAsync(page, pageSize);
+
+            if (rentals is null || !rentals.Any())
+                throw new NotFoundException("No rentals found.");
 
             return _mapper.Map<IEnumerable<RentalResponseDto>>(rentals);
         }
@@ -120,6 +123,18 @@ namespace FilmRentalStore.API.Services.Implementations
                 throw new NotFoundException("Updated rental record not found.");
 
             return _mapper.Map<RentalResponseDto>(updatedRental);
+        }
+
+        private static void ValidatePagination(int page, int pageSize)
+        {
+            if (page <= 0)
+                throw new BadRequestException("Page must be greater than zero.");
+
+            if (pageSize <= 0)
+                throw new BadRequestException("Page size must be greater than zero.");
+
+            if (pageSize > IRentalService.MaxPageSize)
+                throw new BadRequestException($"Page size cannot be greater than {IRentalService.MaxPageSize}.");
         }
     }
 }

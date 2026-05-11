@@ -31,7 +31,12 @@ namespace FilmRentalStore.API.Services.Implementations
 
         public async Task<IEnumerable<PaymentResponseDto>> GetAllPaymentsAsync(int page, int pageSize)
         {
-            var (payments, totalCount) = await _paymentRepository.GetAllAsync(page, pageSize);
+            ValidatePagination(page, pageSize);
+
+            var (payments, _) = await _paymentRepository.GetAllAsync(page, pageSize);
+
+            if (payments is null || !payments.Any())
+                throw new NotFoundException("No payments found.");
 
             return _mapper.Map<IEnumerable<PaymentResponseDto>>(payments);
         }
@@ -92,6 +97,18 @@ namespace FilmRentalStore.API.Services.Implementations
                 throw new NotFoundException("Created payment record not found.");
 
             return _mapper.Map<PaymentResponseDto>(createdPayment);
+        }
+
+        private static void ValidatePagination(int page, int pageSize)
+        {
+            if (page <= 0)
+                throw new BadRequestException("Page must be greater than zero.");
+
+            if (pageSize <= 0)
+                throw new BadRequestException("Page size must be greater than zero.");
+
+            if (pageSize > IPaymentService.MaxPageSize)
+                throw new BadRequestException($"Page size cannot be greater than {IPaymentService.MaxPageSize}.");
         }
     }
 }

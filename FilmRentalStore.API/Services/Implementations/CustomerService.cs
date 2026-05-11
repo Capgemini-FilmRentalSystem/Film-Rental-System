@@ -34,7 +34,20 @@ namespace FilmRentalStore.API.Services.Implementations
 
         public async Task<IEnumerable<CustomerResponseDto>> GetAllAsync(int page, int pageSize)
         {
-            var (customers, totalCount) = await _repository.GetAllAsync(page, pageSize);
+            if (page <= 0)
+                throw new BadRequestException("Page must be greater than zero.");
+
+            if (pageSize <= 0)
+                throw new BadRequestException("Page size must be greater than zero.");
+
+            if (pageSize > ICustomerService.MaxPageSize)
+                throw new BadRequestException($"Page size cannot be greater than {ICustomerService.MaxPageSize}.");
+
+            var (customers, _) = await _repository.GetAllAsync(page, pageSize);
+
+            if (customers is null || !customers.Any())
+                throw new NotFoundException("No customers found.");
+
             return _mapper.Map<IEnumerable<CustomerResponseDto>>(customers);
         }
 
@@ -49,18 +62,35 @@ namespace FilmRentalStore.API.Services.Implementations
         public async Task<IEnumerable<CustomerResponseDto>> SearchAsync(string? name, string? email)
         {
             var customers = await _repository.SearchAsync(name, email);
+
+            if (customers is null || !customers.Any())
+                throw new NotFoundException("No customers matched the search criteria.");
+
             return _mapper.Map<IEnumerable<CustomerResponseDto>>(customers);
         }
 
         public async Task<IEnumerable<CustomerResponseDto>> GetByStoreIdAsync(int storeId)
         {
+            var storeExists = await _storeRepository.StoreExists(storeId);
+
+            if (!storeExists)
+                throw new NotFoundException($"Store with ID {storeId} was not found.");
+
             var customers = await _repository.GetByStoreIdAsync(storeId);
+
+            if (customers is null || !customers.Any())
+                throw new NotFoundException($"No customers found for store ID {storeId}.");
+
             return _mapper.Map<IEnumerable<CustomerResponseDto>>(customers);
         }
 
         public async Task<IEnumerable<CustomerResponseDto>> GetActiveCustomersAsync()
         {
             var customers = await _repository.GetActiveCustomersAsync();
+
+            if (customers is null || !customers.Any())
+                throw new NotFoundException("No active customers found.");
+
             return _mapper.Map<IEnumerable<CustomerResponseDto>>(customers);
         }
 

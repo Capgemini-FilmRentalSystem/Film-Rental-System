@@ -22,6 +22,9 @@ namespace FilmRentalStore.API.Services.Implementations
         {
             var categories = await _categoryRepo.GetAllAsync();
 
+            if (categories is null || !categories.Any())
+                throw new NotFoundException("No categories found.");
+
             return _mapper.Map<IEnumerable<CategoryResponseDto>>(categories);
         }
 

@@ -22,6 +22,9 @@ namespace FilmRentalStore.API.Services.Implementations
         {
             var actors = await _actorRepository.GetAllActorsAsync();
 
+            if (actors is null || !actors.Any())
+                throw new NotFoundException("No actors found.");
+
             return _mapper.Map<IEnumerable<ActorResponseDto>>(actors);
         }
 

@@ -17,8 +17,8 @@ namespace FilmRentalStore.API.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetAllRentals(
-            [FromQuery] int page = 1,
-            [FromQuery] int pageSize = 10)
+            [FromQuery] int page = IRentalService.DefaultPage,
+            [FromQuery] int pageSize = IRentalService.DefaultPageSize)
         {
             var rentals = await _rentalService.GetAllRentalsAsync(page, pageSize);
 
