@@ -33,7 +33,6 @@
 		<Folder Include="DTOs\Staff\" />
 		<Folder Include="DTOs\Store\" />
 		<Folder Include="Middleware\" />
-		<Folder Include="Validators\" />
 	</ItemGroup>
 
 </Project>
