@@ -15,8 +15,6 @@ namespace FilmRentalStore.API.Controllers
             _service = service;
         }
 
-        // ── 1. GET /api/customers?page=1&pageSize=10 ──────────────────────────
-        /// <summary>Get all customers with pagination.</summary>
         [HttpGet]
         public async Task<IActionResult> GetAll(
             [FromQuery] int page = ICustomerService.DefaultPage,
@@ -26,8 +24,6 @@ namespace FilmRentalStore.API.Controllers
             return Ok(result);
         }
 
-        // ── 2. GET /api/customers/{id} ────────────────────────────────────────
-        /// <summary>Get a single customer by ID.</summary>
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -35,8 +31,6 @@ namespace FilmRentalStore.API.Controllers
             return Ok(result);
         }
 
-        // ── 3. GET /api/customers/search?name=&email= ─────────────────────────
-        /// <summary>Search customers by name and/or email (partial match).</summary>
         [HttpGet("search")]
         public async Task<IActionResult> Search(
             [FromQuery] string? name,
@@ -46,8 +40,6 @@ namespace FilmRentalStore.API.Controllers
             return Ok(result);
         }
 
-        // ── 4. GET /api/customers/active ──────────────────────────────────────
-        /// <summary>Get all active customers.</summary>
         [HttpGet("active")]
         public async Task<IActionResult> GetActive()
         {
@@ -55,8 +47,6 @@ namespace FilmRentalStore.API.Controllers
             return Ok(result);
         }
 
-        // ── 5. GET /api/customers/store/{storeId} ─────────────────────────────
-        /// <summary>Get all customers belonging to a specific store.</summary>
         [HttpGet("store/{storeId:int}")]
         public async Task<IActionResult> GetByStore(int storeId)
         {
@@ -64,8 +54,6 @@ namespace FilmRentalStore.API.Controllers
             return Ok(result);
         }
 
-        // ── 6. GET /api/customers/{id}/address ───────────────────────────────
-        /// <summary>Get the full address details for a customer (address → city → country).</summary>
         [HttpGet("{id:int}/address")]
         public async Task<IActionResult> GetAddress(int id)
         {
@@ -73,8 +61,6 @@ namespace FilmRentalStore.API.Controllers
             return Ok(result);
         }
 
-        // ── 7. POST /api/customers ────────────────────────────────────────────
-        /// <summary>Create a new customer.</summary>
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CustomerCreateDto dto)
         {
@@ -82,8 +68,6 @@ namespace FilmRentalStore.API.Controllers
             return CreatedAtAction(nameof(GetById), new { id = result.CustomerId }, result);
         }
 
-        // ── 8. PUT /api/customers/{id} ────────────────────────────────────────
-        /// <summary>Update an existing customer's details.</summary>
         [HttpPut("{id:int}")]
         public async Task<IActionResult> Update(int id, [FromBody] CustomerUpdateDto dto)
         {
@@ -91,9 +75,6 @@ namespace FilmRentalStore.API.Controllers
             return Ok(result);
         }
 
-
-        // ── 9. PATCH /api/customers/{id}/activate ────────────────────────────
-        /// <summary>Set a customer's status to active.</summary>
         [HttpPatch("{id:int}/activate")]
         public async Task<IActionResult> Activate(int id)
         {
@@ -101,8 +82,6 @@ namespace FilmRentalStore.API.Controllers
             return NoContent();
         }
 
-        // ── 10. PATCH /api/customers/{id}/deactivate ──────────────────────────
-        /// <summary>Set a customer's status to inactive.</summary>
         [HttpPatch("{id:int}/deactivate")]
         public async Task<IActionResult> Deactivate(int id)
         {
