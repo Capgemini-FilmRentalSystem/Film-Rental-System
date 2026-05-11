@@ -16,7 +16,9 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllPayments([FromQuery]int page = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetAllPayments(
+            [FromQuery] int page = IPaymentService.DefaultPage,
+            [FromQuery] int pageSize = IPaymentService.DefaultPageSize)
         {
             var payments = await _paymentService.GetAllPaymentsAsync(page, pageSize);
 

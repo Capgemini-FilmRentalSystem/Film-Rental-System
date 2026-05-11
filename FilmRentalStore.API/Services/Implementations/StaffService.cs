@@ -59,7 +59,7 @@ namespace FilmRentalStore.API.Services.Implementations
             await _staffRepository.SaveChangesAsync();
         }
 
-        public async Task<StaffResponseDto?> GetStaffByIdAsync(byte staffId)
+        public async Task<StaffResponseDto> GetStaffByIdAsync(byte staffId)
         {
             var staff = await _staffRepository.GetByIdAsync(staffId);
 
@@ -69,7 +69,7 @@ namespace FilmRentalStore.API.Services.Implementations
             return _mapper.Map<StaffResponseDto>(staff);
         }
 
-        public async Task<StaffResponseDto?> UpdateStaffAsync(byte staffId, StaffUpdateDto dto)
+        public async Task<StaffResponseDto> UpdateStaffAsync(byte staffId, StaffUpdateDto dto)
         {
             if (dto == null)
                 throw new BadRequestException("Staff data is required.");

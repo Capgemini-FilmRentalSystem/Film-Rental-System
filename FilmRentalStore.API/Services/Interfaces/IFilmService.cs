@@ -4,6 +4,7 @@ namespace FilmRentalStore.API.Services.Interfaces
 {
     public interface IFilmService
     {
+        /// <summary>Returns all films; throws NotFoundException when no films exist.</summary>
         Task<IEnumerable<FilmResponseDto>> GetAllFilmsAsync();
 
         Task<FilmResponseDto> GetFilmByIdAsync(int filmId);

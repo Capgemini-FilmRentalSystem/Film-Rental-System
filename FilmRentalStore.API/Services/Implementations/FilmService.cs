@@ -33,6 +33,9 @@ namespace FilmRentalStore.API.Services.Implementations
         {
             var films = await _filmRepository.GetAllAsync();
 
+            if (films is null || !films.Any())
+                throw new NotFoundException("No films found.");
+
             return _mapper.Map<IEnumerable<FilmResponseDto>>(films);
         }
 

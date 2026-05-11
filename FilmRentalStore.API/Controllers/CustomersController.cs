@@ -19,8 +19,8 @@ namespace FilmRentalStore.API.Controllers
         /// <summary>Get all customers with pagination.</summary>
         [HttpGet]
         public async Task<IActionResult> GetAll(
-            [FromQuery] int page = 1,
-            [FromQuery] int pageSize = 10)
+            [FromQuery] int page = ICustomerService.DefaultPage,
+            [FromQuery] int pageSize = ICustomerService.DefaultPageSize)
         {
             var result = await _service.GetAllAsync(page, pageSize);
             return Ok(result);

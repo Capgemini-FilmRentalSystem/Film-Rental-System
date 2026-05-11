@@ -30,6 +30,9 @@ namespace FilmRentalStore.API.Services.Implementations
         {
             var inventory = await _inventoryRepository.GetAllAsync();
 
+            if (inventory is null || !inventory.Any())
+                throw new NotFoundException("No inventory items found.");
+
             return _mapper.Map<IEnumerable<InventoryResponseDto>>(inventory);
         }
 

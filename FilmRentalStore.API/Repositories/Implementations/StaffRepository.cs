@@ -30,13 +30,13 @@ namespace FilmRentalStore.API.Repositories.Implementations
             _context.Staff.Update(staff);
         }
 
-        public async Task<Staff> GetByIdAsync(byte staffId)
+        public async Task<Staff?> GetByIdAsync(byte staffId)
         {
             return await _context.Staff
                 .Include(s => s.Role)
                 .FirstOrDefaultAsync(s => s.StaffId == staffId);
         }
-        public async Task<Staff> GetByUsernameAsync(string username)
+        public async Task<Staff?> GetByUsernameAsync(string username)
         {
             return await _context.Staff
                 .Include(s => s.Role)

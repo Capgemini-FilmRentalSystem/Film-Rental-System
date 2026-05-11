@@ -4,6 +4,7 @@ namespace FilmRentalStore.API.Services.Interfaces
 {
     public interface IActorService
     {
+        /// <summary>Returns all actors; throws NotFoundException when no actors exist.</summary>
         Task<IEnumerable<ActorResponseDto>> GetAllActorsAsync();
 
         Task<ActorResponseDto> GetActorByIdAsync(int id);
