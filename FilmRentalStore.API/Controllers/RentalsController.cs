@@ -16,9 +16,11 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllRentals()
+        public async Task<IActionResult> GetAllRentals(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
         {
-            var rentals = await _rentalService.GetAllRentalsAsync();
+            var rentals = await _rentalService.GetAllRentalsAsync(page, pageSize);
 
             return Ok(rentals);
         }

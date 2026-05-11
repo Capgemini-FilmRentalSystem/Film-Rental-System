@@ -14,13 +14,19 @@ namespace FilmRentalStore.API.Repositories.Implementations
             _context = context;
         }
 
-        public async Task<IEnumerable<Payment>> GetAllAsync()
+        public async Task<(IEnumerable<Payment> Payments, int TotalCount)> GetAllAsync(int page, int pageSize)
         {
-            return await _context.Payments
+            var totalCount = await _context.Payments.CountAsync();
+
+            var payments = await _context.Payments
                 .Include(p => p.Customer)
                 .Include(p => p.Staff)
                 .Include(p => p.Rental)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
+
+            return (payments, totalCount);
         }
 
         public async Task<Payment?> GetByIdAsync(int paymentId)

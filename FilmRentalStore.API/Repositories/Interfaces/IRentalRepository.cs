@@ -4,7 +4,7 @@ namespace FilmRentalStore.API.Repositories.Interfaces
 {
     public interface IRentalRepository
     {
-        Task<IEnumerable<Rental>> GetAllAsync();
+        Task<IEnumerable<Rental>> GetAllAsync(int page, int pageSize);
 
         Task<Rental?> GetByIdAsync(int rentalId);
 

@@ -4,7 +4,7 @@ namespace FilmRentalStore.API.Repositories.Interfaces
 {
     public interface IPaymentRepository
     {
-        Task<IEnumerable<Payment>> GetAllAsync();
+        Task<(IEnumerable<Payment> Payments, int TotalCount)> GetAllAsync(int page, int pageSize);
 
         Task<Payment?> GetByIdAsync(int paymentId);
 
