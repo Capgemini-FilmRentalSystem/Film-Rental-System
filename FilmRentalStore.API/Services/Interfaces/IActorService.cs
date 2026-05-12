@@ -1,4 +1,4 @@
-﻿using FilmRentalStore.API.DTOs.Actor;
+using FilmRentalStore.API.DTOs.Actor;
 
 namespace FilmRentalStore.API.Services.Interfaces
 {
@@ -9,8 +9,8 @@ namespace FilmRentalStore.API.Services.Interfaces
 
         Task<ActorResponseDto> GetActorByIdAsync(int id);
 
-        Task<ActorResponseDto> CreateActorAsync(ActorDTO actorDto);
+        Task<ActorResponseDto> CreateActorAsync(ActorRequestDto actorDto);
 
-        Task<ActorResponseDto> UpdateActorAsync(int id, ActorDTO actorDto);
+        Task<ActorResponseDto> UpdateActorAsync(int id, ActorRequestDto actorDto);
     }
 }

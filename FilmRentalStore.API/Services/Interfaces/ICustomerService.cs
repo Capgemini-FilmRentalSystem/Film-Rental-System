@@ -1,3 +1,4 @@
+using FilmRentalStore.API.DTOs.Address;
 using FilmRentalStore.API.DTOs.Customers;
 
 namespace FilmRentalStore.API.Services.Interfaces
@@ -17,11 +18,11 @@ namespace FilmRentalStore.API.Services.Interfaces
         Task<IEnumerable<CustomerResponseDto>> GetByStoreIdAsync(int storeId);
         /// <summary>Returns active customers; throws NotFoundException when no active customers exist.</summary>
         Task<IEnumerable<CustomerResponseDto>> GetActiveCustomersAsync();
-        Task<CustomerResponseDto> CreateAsync(CustomerCreateDto dto);
-        Task<CustomerResponseDto> UpdateAsync(int id, CustomerUpdateDto dto);
+        Task<CustomerResponseDto> CreateAsync(CustomerRequestDto dto);
+        Task<CustomerResponseDto> UpdateAsync(int id, CustomerRequestDto dto);
         Task DeleteAsync(int id);
         Task ActivateAsync(int id);
         Task DeactivateAsync(int id);
-        Task<CustomerAddressDto> GetCustomerAddressAsync(int id);
+        Task<AddressResponseDto> GetCustomerAddressAsync(int id);
     }
 }

@@ -1,12 +1,12 @@
-﻿using FilmRentalStore.API.DTOs.Staff;
+using FilmRentalStore.API.DTOs.Staff;
 
 namespace FilmRentalStore.API.Services.Interfaces
 {
     public interface IStaffService
     {
         Task<StaffResponseDto> GetStaffByIdAsync(byte staffId);
-        Task<StaffResponseDto> CreateStaffAsync(StaffCreateDto dto);
-        Task<StaffResponseDto> UpdateStaffAsync(byte staffId, StaffUpdateDto dto);
+        Task<StaffResponseDto> CreateStaffAsync(StaffCreateRequestDto dto);
+        Task<StaffResponseDto> UpdateStaffAsync(byte staffId, StaffUpdateRequestDto dto);
         Task DeactivateStaffAsync(byte staffId);
     }
 }

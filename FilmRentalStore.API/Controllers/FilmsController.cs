@@ -1,4 +1,4 @@
-﻿using FilmRentalStore.API.DTOs.Film;
+using FilmRentalStore.API.DTOs.Film;
 using FilmRentalStore.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,7 +32,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateFilm([FromBody] FilmDto filmDto)
+        public async Task<IActionResult> CreateFilm([FromBody] FilmRequestDto filmDto)
         {
             var createdFilm = await _filmService.CreateFilmAsync(filmDto);
 
@@ -44,7 +44,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPut("{filmId}")]
-        public async Task<IActionResult> UpdateFilm(int filmId, [FromBody] FilmDto filmDto)
+        public async Task<IActionResult> UpdateFilm(int filmId, [FromBody] FilmRequestDto filmDto)
         {
             var updatedFilm = await _filmService.UpdateFilmAsync(filmId, filmDto);
 
@@ -54,7 +54,7 @@ namespace FilmRentalStore.API.Controllers
         [HttpPost("{filmId}/actors")]
         public async Task<IActionResult> AssignActorToFilm(
             int filmId,
-            [FromBody] FilmActorAssignDto dto)
+            [FromBody] FilmActorAssignRequestDto dto)
         {
             await _filmService.AssignActorToFilmAsync(filmId, dto);
 
@@ -72,7 +72,7 @@ namespace FilmRentalStore.API.Controllers
         [HttpPost("{filmId}/categories")]
         public async Task<IActionResult> AssignCategoryToFilm(
             int filmId,
-            [FromBody] FilmCategoryAssignDto dto)
+            [FromBody] FilmCategoryAssignRequestDto dto)
         {
             await _filmService.AssignCategoryToFilmAsync(filmId, dto);
 

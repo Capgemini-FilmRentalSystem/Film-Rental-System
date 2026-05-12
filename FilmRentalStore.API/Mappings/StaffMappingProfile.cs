@@ -8,7 +8,7 @@ namespace FilmRentalStore.API.Mappings
     {
         public StaffMappingProfile()
         {
-            CreateMap<StaffCreateDto, Staff>()
+            CreateMap<StaffCreateRequestDto, Staff>()
                 .ForMember(dest => dest.StaffId, opt => opt.Ignore())
                 .ForMember(dest => dest.Password, opt => opt.Ignore())
                 .ForMember(dest => dest.Picture, opt => opt.Ignore())
@@ -20,7 +20,7 @@ namespace FilmRentalStore.API.Mappings
                 .ForMember(dest => dest.Payments, opt => opt.Ignore())
                 .ForMember(dest => dest.Rentals, opt => opt.Ignore());
 
-            CreateMap<StaffUpdateDto, Staff>()
+            CreateMap<StaffUpdateRequestDto, Staff>()
                 .ForMember(dest => dest.StaffId, opt => opt.Ignore())
                 .ForMember(dest => dest.Username, opt => opt.Ignore())
                 .ForMember(dest => dest.Password, opt => opt.Ignore())
@@ -33,9 +33,7 @@ namespace FilmRentalStore.API.Mappings
                 .ForMember(dest => dest.Payments, opt => opt.Ignore())
                 .ForMember(dest => dest.Rentals, opt => opt.Ignore());
 
-            CreateMap<Staff, StaffResponseDto>()
-                .ForMember(dest => dest.RoleTitle,
-                    opt => opt.MapFrom(src => src.Role.RoleTitle));
+            CreateMap<Staff, StaffResponseDto>();
         }
     }
 }

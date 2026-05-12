@@ -19,9 +19,13 @@ namespace FilmRentalStore.API.Repositories.Implementations
             var totalCount = await _context.Payments.CountAsync();
 
             var payments = await _context.Payments
+                .AsNoTracking()
                 .Include(p => p.Customer)
                 .Include(p => p.Staff)
+                    .ThenInclude(s => s.Role)
                 .Include(p => p.Rental)
+                    .ThenInclude(r => r!.Inventory)
+                        .ThenInclude(i => i.Film)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -32,9 +36,13 @@ namespace FilmRentalStore.API.Repositories.Implementations
         public async Task<Payment?> GetByIdAsync(int paymentId)
         {
             return await _context.Payments
+                .AsNoTracking()
                 .Include(p => p.Customer)
                 .Include(p => p.Staff)
+                    .ThenInclude(s => s.Role)
                 .Include(p => p.Rental)
+                    .ThenInclude(r => r!.Inventory)
+                        .ThenInclude(i => i.Film)
                 .FirstOrDefaultAsync(p => p.PaymentId == paymentId);
         }
 

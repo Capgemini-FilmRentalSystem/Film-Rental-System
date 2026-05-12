@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using FilmRentalStore.API.DTOs.Actor;
 using FilmRentalStore.API.Exceptions;
 using FilmRentalStore.API.Models;
@@ -38,7 +38,7 @@ namespace FilmRentalStore.API.Services.Implementations
             return _mapper.Map<ActorResponseDto>(actor);
         }
 
-        public async Task<ActorResponseDto> CreateActorAsync(ActorDTO actorDto)
+        public async Task<ActorResponseDto> CreateActorAsync(ActorRequestDto actorDto)
         {
             if (actorDto == null)
                 throw new BadRequestException("Actor data is required.");
@@ -58,7 +58,7 @@ namespace FilmRentalStore.API.Services.Implementations
             return _mapper.Map<ActorResponseDto>(createdActor);
         }
 
-        public async Task<ActorResponseDto> UpdateActorAsync(int id, ActorDTO actorDto)
+        public async Task<ActorResponseDto> UpdateActorAsync(int id, ActorRequestDto actorDto)
         {
             if (actorDto == null)
                 throw new BadRequestException("Actor data is required.");

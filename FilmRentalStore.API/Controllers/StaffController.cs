@@ -1,4 +1,4 @@
-﻿using FilmRentalStore.API.DTOs.Staff;
+using FilmRentalStore.API.DTOs.Staff;
 using FilmRentalStore.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,7 +24,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateStaff([FromBody] StaffCreateDto dto)
+        public async Task<IActionResult> CreateStaff([FromBody] StaffCreateRequestDto dto)
         {
             var createdStaff = await _staffService.CreateStaffAsync(dto);
 
@@ -36,7 +36,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPut("{staffId}")]
-        public async Task<IActionResult> UpdateStaff(byte staffId, [FromBody] StaffUpdateDto dto)
+        public async Task<IActionResult> UpdateStaff(byte staffId, [FromBody] StaffUpdateRequestDto dto)
         {
             var updatedStaff = await _staffService.UpdateStaffAsync(staffId, dto);
 

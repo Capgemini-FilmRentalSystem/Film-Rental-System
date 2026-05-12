@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using FilmRentalStore.API.DTOs.Inventory;
 using FilmRentalStore.API.Exceptions;
 using FilmRentalStore.API.Models;
@@ -46,7 +46,7 @@ namespace FilmRentalStore.API.Services.Implementations
             return _mapper.Map<InventoryResponseDto>(inventory);
         }
 
-        public async Task<InventoryResponseDto> CreateInventoryAsync(InventoryDto inventoryDto)
+        public async Task<InventoryResponseDto> CreateInventoryAsync(InventoryRequestDto inventoryDto)
         {
             if (inventoryDto == null)
                 throw new BadRequestException("Inventory data is required.");
@@ -76,12 +76,12 @@ namespace FilmRentalStore.API.Services.Implementations
             return _mapper.Map<InventoryResponseDto>(createdInventory);
         }
 
-        public async Task<InventoryResponseDto> UpdateInventoryAsync(int inventoryId, InventoryDto inventoryDto)
+        public async Task<InventoryResponseDto> UpdateInventoryAsync(int inventoryId, InventoryRequestDto inventoryDto)
         {
             if (inventoryDto == null)
                 throw new BadRequestException("Inventory data is required.");
 
-            var inventory = await _inventoryRepository.GetByIdAsync(inventoryId);
+            var inventory = await _inventoryRepository.GetEntityByIdAsync(inventoryId);
 
             if (inventory == null)
                 throw new NotFoundException("Inventory item not found.");

@@ -1,4 +1,4 @@
-﻿using FilmRentalStore.API.DTOs.Rental;
+using FilmRentalStore.API.DTOs.Rental;
 using FilmRentalStore.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,7 +34,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateRental([FromBody] CreateRentalDto rentalDto)
+        public async Task<IActionResult> CreateRental([FromBody] RentalRequestDto rentalDto)
         {
             var createdRental = await _rentalService.CreateRentalAsync(rentalDto);
 
@@ -48,7 +48,7 @@ namespace FilmRentalStore.API.Controllers
         [HttpPut("{rentalId}/return")]
         public async Task<IActionResult> ReturnRental(
             int rentalId,
-            [FromBody] ReturnRentalDto rentalReturnDto)
+            [FromBody] RentalReturnRequestDto rentalReturnDto)
         {
             var returnedRental = await _rentalService.ReturnRentalAsync(rentalId, rentalReturnDto);
 

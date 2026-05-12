@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using FilmRentalStore.API.DTOs.Payment;
 using FilmRentalStore.API.Exceptions;
 using FilmRentalStore.API.Models;
@@ -51,7 +51,7 @@ namespace FilmRentalStore.API.Services.Implementations
             return _mapper.Map<PaymentResponseDto>(payment);
         }
 
-        public async Task<PaymentResponseDto> CreatePaymentAsync(PaymentCreateDto paymentDto)
+        public async Task<PaymentResponseDto> CreatePaymentAsync(PaymentRequestDto paymentDto)
         {
             if (paymentDto == null)
                 throw new BadRequestException("Payment data is required.");
@@ -69,7 +69,7 @@ namespace FilmRentalStore.API.Services.Implementations
             if (!activeStaff)
                 throw new BadRequestException("Invalid or inactive staff id.");
 
-            var rental = await _rentalRepository.GetByIdAsync(paymentDto.RentalId);
+            var rental = await _rentalRepository.GetWithInventoryAsync(paymentDto.RentalId);
 
             if (rental == null)
                 throw new BadRequestException("Invalid rental id.");

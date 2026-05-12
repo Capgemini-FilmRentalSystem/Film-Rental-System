@@ -1,11 +1,11 @@
-﻿using FilmRentalStore.API.DTOs.Payment;
+using FilmRentalStore.API.DTOs.Payment;
 using FluentValidation;
 
 namespace FilmRentalStore.API.Validators
 {
-    public class PaymentValidator : AbstractValidator<PaymentCreateDto>
+    public class PaymentRequestDtoValidator : AbstractValidator<PaymentRequestDto>
     {
-        public PaymentValidator()
+        public PaymentRequestDtoValidator()
         {
             RuleFor(p => p.CustomerId)
                 .GreaterThan(0)

@@ -5,6 +5,7 @@ namespace FilmRentalStore.API.Repositories.Interfaces
     public interface IStoreRepository
     {
         Task<Store?> GetByIdAsync(int storeId);
+        Task<Store?> GetEntityByIdAsync(int storeId);
         Task<bool> StoreExists(int storeId);
         Task<bool> ManagerStaffExistsAsync(int managerStaffId);
         Task<bool> ManagerAlreadyAssignedAsync(byte managerStaffId, int? excludingStoreId = null);

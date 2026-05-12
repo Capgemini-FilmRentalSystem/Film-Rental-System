@@ -54,6 +54,7 @@ internal class Program
         // AutoMapper
         builder.Services.AddAutoMapper(cfg =>
         {
+            cfg.AddProfile<CommonMappingProfile>();
             cfg.AddProfile<StaffMappingProfile>();
             cfg.AddProfile<StoreMappingProfile>();
             cfg.AddProfile<ActorMappingProfile>();
@@ -67,7 +68,7 @@ internal class Program
         });
 
         // FluentValidation
-        builder.Services.AddValidatorsFromAssemblyContaining<StaffCreateDtoValidator>();
+        builder.Services.AddValidatorsFromAssemblyContaining<StaffCreateRequestDtoValidator>();
         builder.Services.AddScoped<ValidationFilter>();
 
         builder.Services.AddControllers(options =>

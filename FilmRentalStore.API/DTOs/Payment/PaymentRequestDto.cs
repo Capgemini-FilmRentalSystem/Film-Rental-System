@@ -1,6 +1,6 @@
-﻿namespace FilmRentalStore.API.DTOs.Payment
+namespace FilmRentalStore.API.DTOs.Payment
 {
-    public class PaymentCreateDto
+    public class PaymentRequestDto
     {
         public int CustomerId { get; set; }
 

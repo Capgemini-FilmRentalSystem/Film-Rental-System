@@ -1,4 +1,4 @@
-﻿using FilmRentalStore.API.DTOs.Actor;
+using FilmRentalStore.API.DTOs.Actor;
 using FilmRentalStore.API.Services.Implementations;
 using FilmRentalStore.API.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
@@ -37,7 +37,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateActor([FromBody] ActorDTO actorDto)
+        public async Task<IActionResult> CreateActor([FromBody] ActorRequestDto actorDto)
         {
             var createdActor = await _actorService.CreateActorAsync(actorDto);
 
@@ -49,7 +49,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateActor(int id, ActorDTO actorDto)
+        public async Task<IActionResult> UpdateActor(int id, ActorRequestDto actorDto)
         {
             var updatedActor = await _actorService.UpdateActorAsync(id, actorDto);
 

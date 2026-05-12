@@ -1,18 +1,16 @@
-﻿namespace FilmRentalStore.API.DTOs.Payment
+using FilmRentalStore.API.DTOs;
+
+namespace FilmRentalStore.API.DTOs.Payment
 {
     public class PaymentResponseDto
     {
         public int PaymentId { get; set; }
 
-        public int CustomerId { get; set; }
+        public CustomerSummaryDto Customer { get; set; } = null!;
 
-        public string CustomerName { get; set; } = null!;
+        public StaffSummaryDto Staff { get; set; } = null!;
 
-        public byte StaffId { get; set; }
-
-        public string StaffName { get; set; } = null!;
-
-        public int RentalId { get; set; }
+        public RentalSummaryDto? Rental { get; set; }
 
         public decimal Amount { get; set; }
 

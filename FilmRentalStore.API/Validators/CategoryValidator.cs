@@ -1,11 +1,11 @@
-﻿using FilmRentalStore.API.DTOs.Category;
+using FilmRentalStore.API.DTOs.Category;
 using FluentValidation;
 
 namespace FilmRentalStore.API.Validators
 {
-    public class CategoryDtoValidator : AbstractValidator<CategoryDto>
+    public class CategoryRequestDtoValidator : AbstractValidator<CategoryRequestDto>
     {
-        public CategoryDtoValidator()
+        public CategoryRequestDtoValidator()
         {
             RuleFor(x => x.Name)
                 .NotEmpty().WithMessage("Category name is required.")

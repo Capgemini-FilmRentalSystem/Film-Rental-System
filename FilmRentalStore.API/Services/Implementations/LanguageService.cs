@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using FilmRentalStore.API.DTOs.Language;
 using FilmRentalStore.API.Exceptions;
 using FilmRentalStore.API.Models;
@@ -38,7 +38,7 @@ namespace FilmRentalStore.API.Services.Implementations
             return _mapper.Map<LanguageResponseDto>(language);
         }
 
-        public async Task<LanguageResponseDto> CreateLanguageAsync(LanguageDto languageDto)
+        public async Task<LanguageResponseDto> CreateLanguageAsync(LanguageRequestDto languageDto)
         {
             if (languageDto == null)
                 throw new BadRequestException("Language data is required.");
@@ -66,7 +66,7 @@ namespace FilmRentalStore.API.Services.Implementations
             return _mapper.Map<LanguageResponseDto>(createdLanguage);
         }
 
-        public async Task<LanguageResponseDto> UpdateLanguageAsync(byte languageId, LanguageDto languageDto)
+        public async Task<LanguageResponseDto> UpdateLanguageAsync(byte languageId, LanguageRequestDto languageDto)
         {
             if (languageDto == null)
                 throw new BadRequestException("Language data is required.");

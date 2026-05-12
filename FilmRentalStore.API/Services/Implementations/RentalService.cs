@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using FilmRentalStore.API.DTOs.Rental;
 using FilmRentalStore.API.Exceptions;
 using FilmRentalStore.API.Models;
@@ -51,7 +51,7 @@ namespace FilmRentalStore.API.Services.Implementations
             return _mapper.Map<RentalResponseDto>(rental);
         }
 
-        public async Task<RentalResponseDto> CreateRentalAsync(CreateRentalDto rentalDto)
+        public async Task<RentalResponseDto> CreateRentalAsync(RentalRequestDto rentalDto)
         {
             if (rentalDto == null)
                 throw new BadRequestException("Rental data is required.");
@@ -93,9 +93,9 @@ namespace FilmRentalStore.API.Services.Implementations
             return _mapper.Map<RentalResponseDto>(createdRental);
         }
 
-        public async Task<RentalResponseDto> ReturnRentalAsync(int rentalId, ReturnRentalDto rentalReturnDto)
+        public async Task<RentalResponseDto> ReturnRentalAsync(int rentalId, RentalReturnRequestDto rentalReturnDto)
         {
-            var rental = await _rentalRepository.GetByIdAsync(rentalId);
+            var rental = await _rentalRepository.GetEntityByIdAsync(rentalId);
 
             if (rental == null)
                 throw new NotFoundException("Rental not found.");

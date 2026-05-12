@@ -16,9 +16,12 @@ namespace FilmRentalStore.API.Repositories.Implementations
 
         public async Task<(IEnumerable<Customer> Customers, int TotalCount)> GetAllAsync(int page, int pageSize)
         {
-            var query = _context.Customers.AsQueryable();
+            var query = _context.Customers.AsNoTracking();
             var totalCount = await query.CountAsync();
             var customers = await query
+                .Include(c => c.Address)
+                    .ThenInclude(a => a.City)
+                        .ThenInclude(ci => ci.Country)
                 .OrderBy(c => c.CustomerId)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
@@ -29,21 +32,33 @@ namespace FilmRentalStore.API.Repositories.Implementations
 
         public async Task<Customer?> GetByIdAsync(int id)
         {
-            return await _context.Customers.FindAsync(id);
+            return await _context.Customers
+                .AsNoTracking()
+                .Include(c => c.Address)
+                    .ThenInclude(a => a.City)
+                        .ThenInclude(ci => ci.Country)
+                .FirstOrDefaultAsync(c => c.CustomerId == id);
+        }
+
+        public async Task<Customer?> GetEntityByIdAsync(int id)
+        {
+            return await _context.Customers
+                .FirstOrDefaultAsync(c => c.CustomerId == id);
         }
 
         public async Task<Customer?> GetWithAddressAsync(int id)
         {
             return await _context.Customers
+                .AsNoTracking()
                 .Include(c => c.Address)
-                .ThenInclude(a => a.City)
-                .ThenInclude(ci => ci.Country)
+                    .ThenInclude(a => a.City)
+                        .ThenInclude(ci => ci.Country)
                 .FirstOrDefaultAsync(c => c.CustomerId == id);
         }
 
         public async Task<IEnumerable<Customer>> SearchAsync(string? name, string? email)
         {
-            var query = _context.Customers.AsQueryable();
+            var query = _context.Customers.AsNoTracking();
 
             if (!string.IsNullOrWhiteSpace(name))
             {
@@ -59,6 +74,9 @@ namespace FilmRentalStore.API.Repositories.Implementations
             }
 
             return await query
+                .Include(c => c.Address)
+                    .ThenInclude(a => a.City)
+                        .ThenInclude(ci => ci.Country)
                 .OrderBy(c => c.LastName)
                 .ToListAsync();
         }
@@ -66,6 +84,10 @@ namespace FilmRentalStore.API.Repositories.Implementations
         public async Task<IEnumerable<Customer>> GetByStoreIdAsync(int storeId)
         {
             return await _context.Customers
+                .AsNoTracking()
+                .Include(c => c.Address)
+                    .ThenInclude(a => a.City)
+                        .ThenInclude(ci => ci.Country)
                 .Where(c => c.StoreId == storeId)
                 .OrderBy(c => c.LastName)
                 .ToListAsync();
@@ -74,6 +96,10 @@ namespace FilmRentalStore.API.Repositories.Implementations
         public async Task<IEnumerable<Customer>> GetActiveCustomersAsync()
         {
             return await _context.Customers
+                .AsNoTracking()
+                .Include(c => c.Address)
+                    .ThenInclude(a => a.City)
+                        .ThenInclude(ci => ci.Country)
                 .Where(c => c.Active == "Y")
                 .OrderBy(c => c.LastName)
                 .ToListAsync();
@@ -89,7 +115,7 @@ namespace FilmRentalStore.API.Repositories.Implementations
         public async Task<Customer> UpdateAsync(Customer customer)
         {
             customer.LastUpdate = DateTime.Now;
-            _context.Customers.Update(customer);
+            _context.Entry(customer).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return customer;
         }
@@ -102,7 +128,8 @@ namespace FilmRentalStore.API.Repositories.Implementations
 
         public async Task<bool> ExistsAsync(int id)
         {
-            return await _context.Customers.AnyAsync(c => c.CustomerId == id);
+            return await _context.Customers
+                .AnyAsync(c => c.CustomerId == id);
         }
     }
 }

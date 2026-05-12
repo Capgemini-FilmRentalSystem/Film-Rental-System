@@ -17,14 +17,24 @@ namespace FilmRentalStore.API.Repositories.Implementations
         public async Task<IEnumerable<Film>> GetAllAsync()
         {
             return await _context.Films
+                .AsNoTracking()
                 .Include(f => f.Language)
+                .Include(f => f.OriginalLanguage)
                 .ToListAsync();
         }
 
         public async Task<Film?> GetByIdAsync(int filmId)
         {
             return await _context.Films
+                .AsNoTracking()
                 .Include(f => f.Language)
+                .Include(f => f.OriginalLanguage)
+                .FirstOrDefaultAsync(f => f.FilmId == filmId);
+        }
+
+        public async Task<Film?> GetEntityByIdAsync(int filmId)
+        {
+            return await _context.Films
                 .FirstOrDefaultAsync(f => f.FilmId == filmId);
         }
 
@@ -43,7 +53,7 @@ namespace FilmRentalStore.API.Repositories.Implementations
         public void Update(Film film)
         {
             film.LastUpdate = DateTime.Now;
-            _context.Films.Update(film);
+            _context.Entry(film).State = EntityState.Modified;
         }
 
         public async Task<bool> IsActorAssignedAsync(int filmId, int actorId)

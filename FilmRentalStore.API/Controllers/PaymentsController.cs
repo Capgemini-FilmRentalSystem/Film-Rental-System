@@ -1,4 +1,4 @@
-﻿using FilmRentalStore.API.DTOs.Payment;
+using FilmRentalStore.API.DTOs.Payment;
 using FilmRentalStore.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -34,7 +34,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreatePayment([FromBody] PaymentCreateDto paymentDto)
+        public async Task<IActionResult> CreatePayment([FromBody] PaymentRequestDto paymentDto)
         {
             var createdPayment = await _paymentService.CreatePaymentAsync(paymentDto);
 

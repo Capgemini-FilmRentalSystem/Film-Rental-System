@@ -1,11 +1,11 @@
-﻿using FilmRentalStore.API.DTOs.Film;
+using FilmRentalStore.API.DTOs.Film;
 using FluentValidation;
 
 namespace FilmRentalStore.API.Validators
 {
-    public class FilmDtoValidator : AbstractValidator<FilmDto>
+    public class FilmRequestDtoValidator : AbstractValidator<FilmRequestDto>
     {
-        public FilmDtoValidator()
+        public FilmRequestDtoValidator()
         {
             RuleFor(x => x.Title)
                 .NotEmpty().WithMessage("Title is required.")
@@ -40,18 +40,18 @@ namespace FilmRentalStore.API.Validators
         }
     }
 
-    public class FilmActorAssignDtoValidator : AbstractValidator<FilmActorAssignDto>
+    public class FilmActorAssignRequestDtoValidator : AbstractValidator<FilmActorAssignRequestDto>
     {
-        public FilmActorAssignDtoValidator()
+        public FilmActorAssignRequestDtoValidator()
         {
             RuleFor(x => x.ActorId)
                 .GreaterThan(0).WithMessage("Actor ID must be greater than 0.");
         }
     }
 
-    public class FilmCategoryAssignDtoValidator : AbstractValidator<FilmCategoryAssignDto>
+    public class FilmCategoryAssignRequestDtoValidator : AbstractValidator<FilmCategoryAssignRequestDto>
     {
-        public FilmCategoryAssignDtoValidator()
+        public FilmCategoryAssignRequestDtoValidator()
         {
             RuleFor(x => x.CategoryId)
                 .GreaterThan((byte)0).WithMessage("Category ID must be greater than 0.");

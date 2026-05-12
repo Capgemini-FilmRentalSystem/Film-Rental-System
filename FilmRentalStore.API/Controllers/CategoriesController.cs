@@ -1,4 +1,4 @@
-﻿using FilmRentalStore.API.DTOs.Category;
+using FilmRentalStore.API.DTOs.Category;
 using FilmRentalStore.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,7 +32,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCategory([FromBody] CategoryDto categoryDto)
+        public async Task<IActionResult> CreateCategory([FromBody] CategoryRequestDto categoryDto)
         {
             var createdCategory = await _categoryService.CreateAsync(categoryDto);
 
@@ -44,7 +44,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPut("{categoryId}")]
-        public async Task<IActionResult> UpdateCategory(byte categoryId, [FromBody] CategoryDto categoryDto)
+        public async Task<IActionResult> UpdateCategory(byte categoryId, [FromBody] CategoryRequestDto categoryDto)
         {
             var updatedCategory = await _categoryService.UpdateAsync(categoryId, categoryDto);
 

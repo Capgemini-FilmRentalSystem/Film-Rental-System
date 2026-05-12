@@ -17,7 +17,6 @@ namespace FilmRentalStore.API.Repositories.Implementations
         public async Task<Address?> GetByIdAsync(int id)
         {
             return await _context.Addresses
-                .Include(a => a.City)
                 .FirstOrDefaultAsync(a => a.AddressId == id);
         }
 

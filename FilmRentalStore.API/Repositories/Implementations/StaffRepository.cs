@@ -23,19 +23,33 @@ namespace FilmRentalStore.API.Repositories.Implementations
             staff.Active = false;
             staff.LastUpdate = DateTime.Now;
 
-            _context.Staff.Update(staff);
+            _context.Entry(staff).State = EntityState.Modified;
         }
         public void Update(Staff staff)
         {
-            _context.Staff.Update(staff);
+            _context.Entry(staff).State = EntityState.Modified;
         }
 
         public async Task<Staff?> GetByIdAsync(byte staffId)
         {
             return await _context.Staff
+                .AsNoTracking()
                 .Include(s => s.Role)
+                .Include(s => s.Address)
+                    .ThenInclude(a => a.City)
+                        .ThenInclude(c => c.Country)
+                .Include(s => s.Store)
+                    .ThenInclude(st => st.ManagerStaff)
+                        .ThenInclude(ms => ms.Role)
                 .FirstOrDefaultAsync(s => s.StaffId == staffId);
         }
+
+        public async Task<Staff?> GetEntityByIdAsync(byte staffId)
+        {
+            return await _context.Staff
+                .FirstOrDefaultAsync(s => s.StaffId == staffId);
+        }
+
         public async Task<Staff?> GetByUsernameAsync(string username)
         {
             return await _context.Staff

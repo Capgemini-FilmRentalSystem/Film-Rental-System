@@ -8,7 +8,7 @@ namespace FilmRentalStore.API.Mappings
     {
         public FilmMappingProfile()
         {
-            CreateMap<FilmDto, Film>()
+            CreateMap<FilmRequestDto, Film>()
                 .ForMember(dest => dest.FilmId, opt => opt.Ignore())
                 .ForMember(dest => dest.LastUpdate, opt => opt.MapFrom(src => DateTime.Now))
                 .ForMember(dest => dest.Language, opt => opt.Ignore())
@@ -17,14 +17,7 @@ namespace FilmRentalStore.API.Mappings
                 .ForMember(dest => dest.FilmCategories, opt => opt.Ignore())
                 .ForMember(dest => dest.Inventories, opt => opt.Ignore());
 
-            CreateMap<Film, FilmResponseDto>()
-                .ForMember(dest => dest.LanguageName,
-                    opt => opt.MapFrom(src => src.Language.Name))
-                .ForMember(dest => dest.OriginalLanguageName,
-                    opt => opt.MapFrom(src =>
-                        src.OriginalLanguage != null
-                            ? src.OriginalLanguage.Name
-                            : null));
+            CreateMap<Film, FilmResponseDto>();
         }
     }
 }

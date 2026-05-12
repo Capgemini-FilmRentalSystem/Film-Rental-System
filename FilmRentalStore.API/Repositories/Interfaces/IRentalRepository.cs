@@ -8,6 +8,10 @@ namespace FilmRentalStore.API.Repositories.Interfaces
 
         Task<Rental?> GetByIdAsync(int rentalId);
 
+        Task<Rental?> GetEntityByIdAsync(int rentalId);
+
+        Task<Rental?> GetWithInventoryAsync(int rentalId);
+
         Task<bool> RentalExistsAsync(int rentalId);
 
         Task<bool> IsInventoryCurrentlyRentedAsync(int inventoryId);

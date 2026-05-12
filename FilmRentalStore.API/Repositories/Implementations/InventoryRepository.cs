@@ -17,18 +17,30 @@ namespace FilmRentalStore.API.Repositories.Implementations
         public async Task<IEnumerable<Inventory>> GetAllAsync()
         {
             return await _context.Inventories
+                .AsNoTracking()
                 .Include(i => i.Film)
                 .Include(i => i.Store)
-                .Include(i => i.Rentals)
+                    .ThenInclude(s => s.ManagerStaff)
+                        .ThenInclude(ms => ms.Role)
+                .Include(i => i.Rentals.Where(r => r.ReturnDate == null))
                 .ToListAsync();
         }
 
         public async Task<Inventory?> GetByIdAsync(int inventoryId)
         {
             return await _context.Inventories
+                .AsNoTracking()
                 .Include(i => i.Film)
                 .Include(i => i.Store)
-                .Include(i => i.Rentals)
+                    .ThenInclude(s => s.ManagerStaff)
+                        .ThenInclude(ms => ms.Role)
+                .Include(i => i.Rentals.Where(r => r.ReturnDate == null))
+                .FirstOrDefaultAsync(i => i.InventoryId == inventoryId);
+        }
+
+        public async Task<Inventory?> GetEntityByIdAsync(int inventoryId)
+        {
+            return await _context.Inventories
                 .FirstOrDefaultAsync(i => i.InventoryId == inventoryId);
         }
 
@@ -49,7 +61,7 @@ namespace FilmRentalStore.API.Repositories.Implementations
         {
             inventory.LastUpdate = DateTime.Now;
 
-            _context.Inventories.Update(inventory);
+            _context.Entry(inventory).State = EntityState.Modified;
         }
 
         public async Task<bool> SaveChangesAsync()

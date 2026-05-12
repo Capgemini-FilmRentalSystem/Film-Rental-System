@@ -28,7 +28,18 @@ namespace FilmRentalStore.API.Repositories.Implementations
         public async Task<Store?> GetByIdAsync(int storeId)
         {
             return await _context.Stores
+                .AsNoTracking()
                 .Include(s => s.ManagerStaff)
+                    .ThenInclude(ms => ms.Role)
+                .Include(s => s.Address)
+                    .ThenInclude(a => a.City)
+                        .ThenInclude(c => c.Country)
+                .FirstOrDefaultAsync(s => s.StoreId == storeId);
+        }
+
+        public async Task<Store?> GetEntityByIdAsync(int storeId)
+        {
+            return await _context.Stores
                 .FirstOrDefaultAsync(s => s.StoreId == storeId);
         }
 
@@ -59,7 +70,7 @@ namespace FilmRentalStore.API.Repositories.Implementations
 
         public void Update(Store store)
         {
-            _context.Stores.Update(store);
+            _context.Entry(store).State = EntityState.Modified;
         }
     }
 }

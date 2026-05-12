@@ -1,4 +1,4 @@
-﻿using FilmRentalStore.API.DTOs.Payment;
+using FilmRentalStore.API.DTOs.Payment;
 
 namespace FilmRentalStore.API.Services.Interfaces
 {
@@ -13,6 +13,6 @@ namespace FilmRentalStore.API.Services.Interfaces
 
         Task<PaymentResponseDto> GetPaymentByIdAsync(int paymentId);
 
-        Task<PaymentResponseDto> CreatePaymentAsync(PaymentCreateDto paymentDto);
+        Task<PaymentResponseDto> CreatePaymentAsync(PaymentRequestDto paymentDto);
     }
 }

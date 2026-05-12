@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using FilmRentalStore.API.DTOs.Store;
 using FilmRentalStore.API.Repositories.Interfaces;
 using FilmRentalStore.API.Services.Interfaces;
@@ -17,7 +17,7 @@ namespace FilmRentalStore.API.Services.Implementations
             _storeRepository = storeRepository;
             _mapper = mapper;
         }
-        public async Task<StoreResponseDto> CreateStoreAsync(StoreCreateDto dto)
+        public async Task<StoreResponseDto> CreateStoreAsync(StoreRequestDto dto)
         {
             if (dto == null)
                 throw new BadRequestException("Store Data is required");
@@ -61,12 +61,12 @@ namespace FilmRentalStore.API.Services.Implementations
             return _mapper.Map<StoreResponseDto>(store);
         }
 
-        public async Task<StoreResponseDto> UpdateStoreAsync(int storeId, StoreUpdateDto dto)
+        public async Task<StoreResponseDto> UpdateStoreAsync(int storeId, StoreRequestDto dto)
         {
             if (dto == null)
                 throw new BadRequestException("Store data is required.");
 
-            var store = await _storeRepository.GetByIdAsync(storeId);
+            var store = await _storeRepository.GetEntityByIdAsync(storeId);
 
             if (store == null)
                 throw new NotFoundException("Store not found.");

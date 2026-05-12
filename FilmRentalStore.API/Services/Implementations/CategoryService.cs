@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using FilmRentalStore.API.DTOs.Category;
 using FilmRentalStore.API.Exceptions;
 using FilmRentalStore.API.Models;
@@ -37,7 +37,7 @@ namespace FilmRentalStore.API.Services.Implementations
             return _mapper.Map<CategoryResponseDto>(category);
         }
 
-        public async Task<CategoryResponseDto> CreateAsync(CategoryDto dto)
+        public async Task<CategoryResponseDto> CreateAsync(CategoryRequestDto dto)
         {
             if (dto == null)
                 throw new BadRequestException("Category data is required.");
@@ -62,7 +62,7 @@ namespace FilmRentalStore.API.Services.Implementations
             return _mapper.Map<CategoryResponseDto>(createdCategory);
         }
 
-        public async Task<CategoryResponseDto> UpdateAsync(byte id, CategoryDto dto)
+        public async Task<CategoryResponseDto> UpdateAsync(byte id, CategoryRequestDto dto)
         {
             if (dto == null)
                 throw new BadRequestException("Category data is required.");

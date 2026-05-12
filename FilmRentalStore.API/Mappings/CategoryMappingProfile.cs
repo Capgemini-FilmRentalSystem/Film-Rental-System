@@ -8,7 +8,7 @@ namespace FilmRentalStore.API.Mappings
     {
         public CategoryMappingProfile()
         {
-            CreateMap<CategoryDto, Category>()
+            CreateMap<CategoryRequestDto, Category>()
                 .ForMember(dest => dest.CategoryId, opt => opt.Ignore())
                 .ForMember(dest => dest.LastUpdate, opt => opt.MapFrom(src => DateTime.Now))
                 .ForMember(dest => dest.FilmCategories, opt => opt.Ignore());

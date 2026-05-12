@@ -1,4 +1,4 @@
-﻿using FilmRentalStore.API.DTOs.Film;
+using FilmRentalStore.API.DTOs.Film;
 
 namespace FilmRentalStore.API.Services.Interfaces
 {
@@ -9,15 +9,15 @@ namespace FilmRentalStore.API.Services.Interfaces
 
         Task<FilmResponseDto> GetFilmByIdAsync(int filmId);
 
-        Task<FilmResponseDto> CreateFilmAsync(FilmDto filmDto);
+        Task<FilmResponseDto> CreateFilmAsync(FilmRequestDto filmDto);
 
-        Task<FilmResponseDto> UpdateFilmAsync(int filmId, FilmDto filmDto);
+        Task<FilmResponseDto> UpdateFilmAsync(int filmId, FilmRequestDto filmDto);
 
-        Task AssignActorToFilmAsync(int filmId, FilmActorAssignDto dto);
+        Task AssignActorToFilmAsync(int filmId, FilmActorAssignRequestDto dto);
 
         Task RemoveActorFromFilmAsync(int filmId, int actorId);
 
-        Task AssignCategoryToFilmAsync(int filmId, FilmCategoryAssignDto dto);
+        Task AssignCategoryToFilmAsync(int filmId, FilmCategoryAssignRequestDto dto);
 
         Task RemoveCategoryFromFilmAsync(int filmId, byte categoryId);
     }

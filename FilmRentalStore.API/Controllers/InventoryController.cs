@@ -1,4 +1,4 @@
-﻿using FilmRentalStore.API.DTOs.Inventory;
+using FilmRentalStore.API.DTOs.Inventory;
 using FilmRentalStore.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,7 +32,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateInventory([FromBody] InventoryDto inventoryDto)
+        public async Task<IActionResult> CreateInventory([FromBody] InventoryRequestDto inventoryDto)
         {
             var createdInventory = await _inventoryService.CreateInventoryAsync(inventoryDto);
 
@@ -44,7 +44,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPut("{inventoryId}")]
-        public async Task<IActionResult> UpdateInventory(int inventoryId, [FromBody] InventoryDto inventoryDto)
+        public async Task<IActionResult> UpdateInventory(int inventoryId, [FromBody] InventoryRequestDto inventoryDto)
         {
             var updatedInventory = await _inventoryService.UpdateInventoryAsync(inventoryId, inventoryDto);
 

@@ -1,11 +1,11 @@
-﻿namespace FilmRentalStore.API.Validators
+namespace FilmRentalStore.API.Validators
 {
     using FluentValidation;
     using FilmRentalStore.API.DTOs.Actor;
 
-    public class ActorValidator : AbstractValidator<ActorDTO>
+    public class ActorRequestDtoValidator : AbstractValidator<ActorRequestDto>
     {
-        public ActorValidator()
+        public ActorRequestDtoValidator()
         {
             RuleFor(x => x.FirstName)
                 .NotEmpty().WithMessage("First name is required.")

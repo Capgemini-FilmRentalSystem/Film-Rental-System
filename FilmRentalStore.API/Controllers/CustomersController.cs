@@ -1,4 +1,4 @@
-﻿using FilmRentalStore.API.DTOs.Customers;
+using FilmRentalStore.API.DTOs.Customers;
 using FilmRentalStore.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -62,14 +62,14 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CustomerCreateDto dto)
+        public async Task<IActionResult> Create([FromBody] CustomerRequestDto dto)
         {
             var result = await _service.CreateAsync(dto);
             return CreatedAtAction(nameof(GetById), new { id = result.CustomerId }, result);
         }
 
         [HttpPut("{id:int}")]
-        public async Task<IActionResult> Update(int id, [FromBody] CustomerUpdateDto dto)
+        public async Task<IActionResult> Update(int id, [FromBody] CustomerRequestDto dto)
         {
             var result = await _service.UpdateAsync(id, dto);
             return Ok(result);

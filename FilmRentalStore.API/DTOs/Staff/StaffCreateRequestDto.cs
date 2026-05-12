@@ -1,12 +1,15 @@
-﻿namespace FilmRentalStore.API.DTOs.Staff
+namespace FilmRentalStore.API.DTOs.Staff
 {
-    public class StaffUpdateDto
+    public class StaffCreateRequestDto
     {
         public string FirstName { get; set; } = null!;
         public string LastName { get; set; } = null!;
         public int AddressId { get; set; }
         public string? Email { get; set; }
+        public int StoreId { get; set; }
         public bool Active { get; set; } = true;
+        public string Username { get; set; } = null!;
+        public string? Password { get; set; }
         public int RoleId { get; set; }
     }
 }

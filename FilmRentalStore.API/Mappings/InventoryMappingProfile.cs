@@ -8,7 +8,7 @@ namespace FilmRentalStore.API.Mappings
     {
         public InventoryMappingProfile()
         {
-            CreateMap<InventoryDto, Inventory>()
+            CreateMap<InventoryRequestDto, Inventory>()
                 .ForMember(dest => dest.InventoryId, opt => opt.Ignore())
                 .ForMember(dest => dest.LastUpdate, opt => opt.MapFrom(src => DateTime.Now))
                 .ForMember(dest => dest.Film, opt => opt.Ignore())
@@ -16,8 +16,6 @@ namespace FilmRentalStore.API.Mappings
                 .ForMember(dest => dest.Rentals, opt => opt.Ignore());
 
             CreateMap<Inventory, InventoryResponseDto>()
-                .ForMember(dest => dest.FilmTitle,
-                    opt => opt.MapFrom(src => src.Film.Title))
                 .ForMember(dest => dest.IsAvailable,
                     opt => opt.MapFrom(src => !src.Rentals.Any(r => r.ReturnDate == null)));
         }

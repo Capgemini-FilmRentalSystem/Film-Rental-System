@@ -1,6 +1,6 @@
-﻿namespace FilmRentalStore.API.DTOs.Rental
+namespace FilmRentalStore.API.DTOs.Rental
 {
-    public class CreateRentalDto
+    public class RentalRequestDto
     {
         public int InventoryId { get; set; }
         public int CustomerId { get; set; }

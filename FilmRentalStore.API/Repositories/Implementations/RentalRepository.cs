@@ -21,7 +21,6 @@ namespace FilmRentalStore.API.Repositories.Implementations
                 .Include(r => r.Inventory)
                     .ThenInclude(i => i.Film)
                 .Include(r => r.Customer)
-                .Include(r => r.Staff)
                 .OrderBy(r => r.RentalId)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
@@ -31,10 +30,24 @@ namespace FilmRentalStore.API.Repositories.Implementations
         public async Task<Rental?> GetByIdAsync(int rentalId)
         {
             return await _context.Rentals
+                .AsNoTracking()
                 .Include(r => r.Inventory)
                     .ThenInclude(i => i.Film)
                 .Include(r => r.Customer)
-                .Include(r => r.Staff)
+                .FirstOrDefaultAsync(r => r.RentalId == rentalId);
+        }
+
+        public async Task<Rental?> GetEntityByIdAsync(int rentalId)
+        {
+            return await _context.Rentals
+                .FirstOrDefaultAsync(r => r.RentalId == rentalId);
+        }
+
+        public async Task<Rental?> GetWithInventoryAsync(int rentalId)
+        {
+            return await _context.Rentals
+                .AsNoTracking()
+                .Include(r => r.Inventory)
                 .FirstOrDefaultAsync(r => r.RentalId == rentalId);
         }
 
@@ -62,7 +75,7 @@ namespace FilmRentalStore.API.Repositories.Implementations
         {
             rental.LastUpdate = DateTime.Now;
 
-            _context.Rentals.Update(rental);
+            _context.Entry(rental).State = EntityState.Modified;
         }
 
         public async Task<bool> SaveChangesAsync()

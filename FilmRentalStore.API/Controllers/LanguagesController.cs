@@ -1,4 +1,4 @@
-﻿using FilmRentalStore.API.DTOs.Language;
+using FilmRentalStore.API.DTOs.Language;
 using FilmRentalStore.API.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,7 +32,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateLanguage([FromBody] LanguageDto languageDto)
+        public async Task<IActionResult> CreateLanguage([FromBody] LanguageRequestDto languageDto)
         {
             var createdLanguage = await _languageService.CreateLanguageAsync(languageDto);
 
@@ -44,7 +44,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPut("{languageId}")]
-        public async Task<IActionResult> UpdateLanguage(byte languageId, [FromBody] LanguageDto languageDto)
+        public async Task<IActionResult> UpdateLanguage(byte languageId, [FromBody] LanguageRequestDto languageDto)
         {
             var updatedLanguage = await _languageService.UpdateLanguageAsync(languageId, languageDto);
 

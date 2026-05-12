@@ -1,4 +1,4 @@
-﻿using FilmRentalStore.API.DTOs.Rental;
+using FilmRentalStore.API.DTOs.Rental;
 
 namespace FilmRentalStore.API.Services.Interfaces
 {
@@ -13,8 +13,8 @@ namespace FilmRentalStore.API.Services.Interfaces
 
         Task<RentalResponseDto> GetRentalByIdAsync(int rentalId);
 
-        Task<RentalResponseDto> CreateRentalAsync(CreateRentalDto rentalDto);
+        Task<RentalResponseDto> CreateRentalAsync(RentalRequestDto rentalDto);
 
-        Task<RentalResponseDto> ReturnRentalAsync(int rentalId, ReturnRentalDto rentalReturnDto);
+        Task<RentalResponseDto> ReturnRentalAsync(int rentalId, RentalReturnRequestDto rentalReturnDto);
     }
 }

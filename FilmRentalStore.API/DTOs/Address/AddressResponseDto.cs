@@ -1,9 +1,7 @@
-namespace FilmRentalStore.API.DTOs.Customers
+namespace FilmRentalStore.API.DTOs.Address
 {
-    public class CustomerAddressDto
+    public class AddressResponseDto
     {
-        public int CustomerId { get; set; }
-        public string CustomerName { get; set; } = string.Empty;
         public string AddressLine { get; set; } = string.Empty;
         public string? Address2 { get; set; }
         public string District { get; set; } = string.Empty;
@@ -11,5 +9,6 @@ namespace FilmRentalStore.API.DTOs.Customers
         public string Phone { get; set; } = string.Empty;
         public string City { get; set; } = string.Empty;
         public string Country { get; set; } = string.Empty;
+        public DateTime LastUpdate { get; set; }
     }
 }

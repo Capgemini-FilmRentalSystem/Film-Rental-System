@@ -1,4 +1,4 @@
-﻿using FilmRentalStore.API.DTOs.Inventory;
+using FilmRentalStore.API.DTOs.Inventory;
 
 namespace FilmRentalStore.API.Services.Interfaces
 {
@@ -9,8 +9,8 @@ namespace FilmRentalStore.API.Services.Interfaces
 
         Task<InventoryResponseDto> GetInventoryByIdAsync(int inventoryId);
 
-        Task<InventoryResponseDto> CreateInventoryAsync(InventoryDto inventoryDto);
+        Task<InventoryResponseDto> CreateInventoryAsync(InventoryRequestDto inventoryDto);
 
-        Task<InventoryResponseDto> UpdateInventoryAsync(int inventoryId, InventoryDto inventoryDto);
+        Task<InventoryResponseDto> UpdateInventoryAsync(int inventoryId, InventoryRequestDto inventoryDto);
     }
 }

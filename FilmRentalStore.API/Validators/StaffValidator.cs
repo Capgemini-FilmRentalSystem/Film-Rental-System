@@ -1,11 +1,11 @@
-﻿using FilmRentalStore.API.DTOs.Staff;
+using FilmRentalStore.API.DTOs.Staff;
 using FluentValidation;
 
 namespace FilmRentalStore.API.Validators
 {
-    public class StaffCreateDtoValidator : AbstractValidator<StaffCreateDto>
+    public class StaffCreateRequestDtoValidator : AbstractValidator<StaffCreateRequestDto>
     {
-        public StaffCreateDtoValidator()
+        public StaffCreateRequestDtoValidator()
         {
             RuleFor(x => x.FirstName)
                 .NotEmpty()
@@ -46,9 +46,9 @@ namespace FilmRentalStore.API.Validators
         }
     }
 
-    public class StaffUpdateDtoValidator : AbstractValidator<StaffUpdateDto>
+    public class StaffUpdateRequestDtoValidator : AbstractValidator<StaffUpdateRequestDto>
     {
-        public StaffUpdateDtoValidator()
+        public StaffUpdateRequestDtoValidator()
         {
             RuleFor(x => x.FirstName)
                 .NotEmpty()

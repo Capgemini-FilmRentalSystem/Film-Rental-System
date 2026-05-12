@@ -6,6 +6,7 @@ namespace FilmRentalStore.API.Repositories.Interfaces
     {
         Task<(IEnumerable<Customer> Customers, int TotalCount)> GetAllAsync(int page, int pageSize);
         Task<Customer?> GetByIdAsync(int id);
+        Task<Customer?> GetEntityByIdAsync(int id);
         Task<Customer?> GetWithAddressAsync(int id);
         Task<IEnumerable<Customer>> SearchAsync(string? name, string? email);
         Task<IEnumerable<Customer>> GetByStoreIdAsync(int storeId);

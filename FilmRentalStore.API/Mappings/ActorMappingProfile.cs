@@ -8,7 +8,7 @@ namespace FilmRentalStore.API.Mappings
     {
         public ActorMappingProfile()
         {
-            CreateMap<ActorDTO, Actor>()
+            CreateMap<ActorRequestDto, Actor>()
                 .ForMember(dest => dest.ActorId, opt => opt.Ignore())
                 .ForMember(dest => dest.LastUpdate, opt => opt.MapFrom(src => DateTime.Now))
                 .ForMember(dest => dest.FilmActors, opt => opt.Ignore());

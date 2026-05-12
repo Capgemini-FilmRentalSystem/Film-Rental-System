@@ -1,6 +1,6 @@
-﻿namespace FilmRentalStore.API.DTOs.Actor
+namespace FilmRentalStore.API.DTOs.Actor
 {
-    public class ActorDTO
+    public class ActorRequestDto
     {
         public string FirstName { get; set; } = null!;
 

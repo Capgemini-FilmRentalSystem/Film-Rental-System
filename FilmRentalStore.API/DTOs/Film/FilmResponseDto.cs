@@ -1,4 +1,6 @@
-﻿namespace FilmRentalStore.API.DTOs.Film
+using FilmRentalStore.API.DTOs;
+
+namespace FilmRentalStore.API.DTOs.Film
 {
     public class FilmResponseDto
     {
@@ -10,13 +12,9 @@
 
         public string? ReleaseYear { get; set; }
 
-        public byte LanguageId { get; set; }
+        public LanguageSummaryDto Language { get; set; } = null!;
 
-        public string LanguageName { get; set; } = null!;
-
-        public byte? OriginalLanguageId { get; set; }
-
-        public string? OriginalLanguageName { get; set; }
+        public LanguageSummaryDto? OriginalLanguage { get; set; }
 
         public byte RentalDuration { get; set; }
 

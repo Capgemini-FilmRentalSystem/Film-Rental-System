@@ -1,4 +1,4 @@
-﻿using FilmRentalStore.API.DTOs.Language;
+using FilmRentalStore.API.DTOs.Language;
 
 namespace FilmRentalStore.API.Services.Interfaces
 {
@@ -9,8 +9,8 @@ namespace FilmRentalStore.API.Services.Interfaces
 
         Task<LanguageResponseDto> GetLanguageByIdAsync(byte languageId);
 
-        Task<LanguageResponseDto> CreateLanguageAsync(LanguageDto languageDto);
+        Task<LanguageResponseDto> CreateLanguageAsync(LanguageRequestDto languageDto);
 
-        Task<LanguageResponseDto> UpdateLanguageAsync(byte languageId, LanguageDto languageDto);
+        Task<LanguageResponseDto> UpdateLanguageAsync(byte languageId, LanguageRequestDto languageDto);
     }
 }

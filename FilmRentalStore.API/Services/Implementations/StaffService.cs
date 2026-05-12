@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using FilmRentalStore.API.DTOs.Staff;
 using FilmRentalStore.API.Exceptions;
 using FilmRentalStore.API.Models;
@@ -18,7 +18,7 @@ namespace FilmRentalStore.API.Services.Implementations
             _mapper = mapper;
         }
 
-        public async Task<StaffResponseDto> CreateStaffAsync(StaffCreateDto dto)
+        public async Task<StaffResponseDto> CreateStaffAsync(StaffCreateRequestDto dto)
         {
             if (dto == null)
                 throw new BadRequestException("Staff data is required.");
@@ -49,7 +49,7 @@ namespace FilmRentalStore.API.Services.Implementations
 
         public async Task DeactivateStaffAsync(byte staffId)
         {
-            var staff = await _staffRepository.GetByIdAsync(staffId);
+            var staff = await _staffRepository.GetEntityByIdAsync(staffId);
 
             if (staff == null)
                 throw new NotFoundException("Staff not found.");
@@ -69,12 +69,12 @@ namespace FilmRentalStore.API.Services.Implementations
             return _mapper.Map<StaffResponseDto>(staff);
         }
 
-        public async Task<StaffResponseDto> UpdateStaffAsync(byte staffId, StaffUpdateDto dto)
+        public async Task<StaffResponseDto> UpdateStaffAsync(byte staffId, StaffUpdateRequestDto dto)
         {
             if (dto == null)
                 throw new BadRequestException("Staff data is required.");
 
-            var staff = await _staffRepository.GetByIdAsync(staffId);
+            var staff = await _staffRepository.GetEntityByIdAsync(staffId);
 
             if (staff == null)
                 throw new NotFoundException("Staff not found.");

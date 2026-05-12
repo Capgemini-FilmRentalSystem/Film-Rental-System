@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using FilmRentalStore.API.DTOs.Film;
 using FilmRentalStore.API.Exceptions;
 using FilmRentalStore.API.Models;
@@ -49,7 +49,7 @@ namespace FilmRentalStore.API.Services.Implementations
             return _mapper.Map<FilmResponseDto>(film);
         }
 
-        public async Task<FilmResponseDto> CreateFilmAsync(FilmDto filmDto)
+        public async Task<FilmResponseDto> CreateFilmAsync(FilmRequestDto filmDto)
         {
             if (filmDto == null)
                 throw new BadRequestException("Film data is required");
@@ -83,12 +83,12 @@ namespace FilmRentalStore.API.Services.Implementations
             return _mapper.Map<FilmResponseDto>(createdFilm);
         }
 
-        public async Task<FilmResponseDto> UpdateFilmAsync(int filmId, FilmDto filmDto)
+        public async Task<FilmResponseDto> UpdateFilmAsync(int filmId, FilmRequestDto filmDto)
         {
             if (filmDto == null)
                 throw new BadRequestException("Film data is required");
 
-            var film = await _filmRepository.GetByIdAsync(filmId);
+            var film = await _filmRepository.GetEntityByIdAsync(filmId);
 
             if (film == null)
                 throw new NotFoundException("Film not found");
@@ -122,7 +122,7 @@ namespace FilmRentalStore.API.Services.Implementations
             return _mapper.Map<FilmResponseDto>(updatedFilm);
         }
 
-        public async Task AssignActorToFilmAsync(int filmId, FilmActorAssignDto dto)
+        public async Task AssignActorToFilmAsync(int filmId, FilmActorAssignRequestDto dto)
         {
             if (dto == null)
                 throw new BadRequestException("Actor assignment data is required");
@@ -167,7 +167,7 @@ namespace FilmRentalStore.API.Services.Implementations
             await _filmRepository.SaveChangesAsync();
         }
 
-        public async Task AssignCategoryToFilmAsync(int filmId, FilmCategoryAssignDto dto)
+        public async Task AssignCategoryToFilmAsync(int filmId, FilmCategoryAssignRequestDto dto)
         {
             if (dto == null)
                 throw new BadRequestException("Category assignment data is required");
