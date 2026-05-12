@@ -5,7 +5,7 @@ namespace FilmRentalStore.API.Models;
 
 public partial class FilmText
 {
-    public int FilmId { get; set; }
+    public short FilmId { get; set; }
 
     public string Title { get; set; } = null!;
 

@@ -40,6 +40,8 @@ internal class Program
         builder.Services.AddScoped<ICityRepository, CityRepository>();
 
         // Service Dependency Injection
+        builder.Services.AddScoped<IAuthService, AuthService>();
+        builder.Services.AddScoped<ITokenService, TokenService>();
         builder.Services.AddScoped<IStaffService, StaffService>();
         builder.Services.AddScoped<IStoreService, StoreService>();
         builder.Services.AddScoped<IActorService, ActorService>();
@@ -77,7 +79,32 @@ internal class Program
         });
 
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+        builder.Services.AddSwaggerGen(options =>
+        {
+            options.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT",
+                Description = "JWT Authorization header using the Bearer scheme."
+            });
+
+            options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+            {
+                {
+                    new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+                    {
+                        Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                        {
+                            Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    new string[] { }
+                }
+            });
+        });
 
         var app = builder.Build();
 
@@ -94,7 +121,8 @@ internal class Program
             app.UseHttpsRedirection();
         }
 
-        app.UseAuthorization();
+         app.UseAuthentication();
+         app.UseAuthorization();
 
         app.MapControllers();
 

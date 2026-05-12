@@ -1,11 +1,13 @@
 using FilmRentalStore.API.DTOs.Language;
 using FilmRentalStore.API.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FilmRentalStore.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class LanguagesController : ControllerBase
     {
         private readonly ILanguageService _languageService;

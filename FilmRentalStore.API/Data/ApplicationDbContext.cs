@@ -678,8 +678,7 @@ public partial class ApplicationDbContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("last_update");
             entity.Property(e => e.Password)
-                .HasMaxLength(40)
-                .IsUnicode(false)
+                .HasMaxLength(255)
                 .HasDefaultValueSql("(NULL)")
                 .HasColumnName("password");
             entity.Property(e => e.Picture)

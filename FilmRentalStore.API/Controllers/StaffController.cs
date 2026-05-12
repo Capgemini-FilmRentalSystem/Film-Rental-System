@@ -1,11 +1,13 @@
 using FilmRentalStore.API.DTOs.Staff;
 using FilmRentalStore.API.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FilmRentalStore.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class StaffController : ControllerBase
     {
         private readonly IStaffService _staffService;
@@ -24,6 +26,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Manager")]
         public async Task<IActionResult> CreateStaff([FromBody] StaffCreateRequestDto dto)
         {
             var createdStaff = await _staffService.CreateStaffAsync(dto);
@@ -44,6 +47,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpDelete("{staffId}")]
+        [Authorize(Roles = "Manager")]
         public async Task<IActionResult> DeactivateStaff(byte staffId)
         {
             await _staffService.DeactivateStaffAsync(staffId);

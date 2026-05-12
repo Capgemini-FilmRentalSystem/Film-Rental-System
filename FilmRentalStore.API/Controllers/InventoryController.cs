@@ -1,11 +1,13 @@
 using FilmRentalStore.API.DTOs.Inventory;
 using FilmRentalStore.API.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FilmRentalStore.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class InventoryController : ControllerBase
     {
         private readonly IInventoryService _inventoryService;
@@ -16,9 +18,11 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllInventory()
+        public async Task<IActionResult> GetAllInventory(
+            [FromQuery] int page = IInventoryService.DefaultPage,
+            [FromQuery] int pageSize = IInventoryService.DefaultPageSize)
         {
-            var inventory = await _inventoryService.GetAllInventoryAsync();
+            var inventory = await _inventoryService.GetAllInventoryAsync(page, pageSize);
 
             return Ok(inventory);
         }

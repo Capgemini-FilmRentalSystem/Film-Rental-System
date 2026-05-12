@@ -26,9 +26,11 @@ namespace FilmRentalStore.API.Services.Implementations
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<InventoryResponseDto>> GetAllInventoryAsync()
+        public async Task<IEnumerable<InventoryResponseDto>> GetAllInventoryAsync(int page, int pageSize)
         {
-            var inventory = await _inventoryRepository.GetAllAsync();
+            ValidatePagination(page, pageSize);
+
+            var (inventory, _) = await _inventoryRepository.GetAllAsync(page, pageSize);
 
             if (inventory is null || !inventory.Any())
                 throw new NotFoundException("No inventory items found.");
@@ -109,6 +111,18 @@ namespace FilmRentalStore.API.Services.Implementations
                 throw new NotFoundException("Updated inventory record not found.");
 
             return _mapper.Map<InventoryResponseDto>(updatedInventory);
+        }
+
+        private static void ValidatePagination(int page, int pageSize)
+        {
+            if (page <= 0)
+                throw new BadRequestException("Page must be greater than zero.");
+
+            if (pageSize <= 0)
+                throw new BadRequestException("Page size must be greater than zero.");
+
+            if (pageSize > IInventoryService.MaxPageSize)
+                throw new BadRequestException($"Page size cannot be greater than {IInventoryService.MaxPageSize}.");
         }
     }
 }

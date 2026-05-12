@@ -1,11 +1,13 @@
 using FilmRentalStore.API.DTOs.Rental;
 using FilmRentalStore.API.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FilmRentalStore.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class RentalsController : ControllerBase
     {
         private readonly IRentalService _rentalService;

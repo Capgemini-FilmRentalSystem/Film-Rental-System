@@ -1,4 +1,5 @@
 ﻿using FilmRentalStore.API.Exceptions;
+using Microsoft.IdentityModel.Tokens;
 using System.Net;
 using System.Text.Json;
 
@@ -20,6 +21,21 @@ namespace FilmRentalStore.API.Middleware
             try
             {
                 await _next(context);
+            }
+            catch (SecurityTokenException ex)
+            {
+                _logger.LogWarning("JWT validation failed: {Message}", ex.Message);
+
+                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                context.Response.ContentType = "application/json";
+
+                var response = new
+                {
+                    success = false,
+                    message = "Unauthorized"
+                };
+
+                await context.Response.WriteAsync(JsonSerializer.Serialize(response));
             }
             catch (ApiException ex)
             {

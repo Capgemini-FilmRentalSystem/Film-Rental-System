@@ -14,16 +14,22 @@ namespace FilmRentalStore.API.Repositories.Implementations
             _context = context;
         }
 
-        public async Task<IEnumerable<Inventory>> GetAllAsync()
+        public async Task<(IEnumerable<Inventory> Inventory, int TotalCount)> GetAllAsync(int page, int pageSize)
         {
-            return await _context.Inventories
+            var totalCount = await _context.Inventories.CountAsync();
+
+            var inventories = await _context.Inventories
                 .AsNoTracking()
                 .Include(i => i.Film)
                 .Include(i => i.Store)
                     .ThenInclude(s => s.ManagerStaff)
                         .ThenInclude(ms => ms.Role)
                 .Include(i => i.Rentals.Where(r => r.ReturnDate == null))
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
                 .ToListAsync();
+
+            return (inventories, totalCount);
         }
 
         public async Task<Inventory?> GetByIdAsync(int inventoryId)

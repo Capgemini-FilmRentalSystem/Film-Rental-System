@@ -1,11 +1,13 @@
 using FilmRentalStore.API.DTOs.Store;
 using FilmRentalStore.API.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace FilmRentalStore.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class StoresController : ControllerBase
     {
         private readonly IStoreService _storeService;
@@ -24,6 +26,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Manager")]
         public async Task<IActionResult> CreateStore([FromBody] StoreRequestDto dto)
         {
             var createdStore = await _storeService.CreateStoreAsync(dto);
@@ -36,6 +39,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPut("{storeId}")]
+        [Authorize(Roles = "Manager")]
         public async Task<IActionResult> UpdateStore(int storeId, [FromBody] StoreRequestDto dto)
         {
             var updatedStore = await _storeService.UpdateStoreAsync(storeId, dto);

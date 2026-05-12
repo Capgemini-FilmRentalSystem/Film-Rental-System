@@ -1,6 +1,7 @@
 using FilmRentalStore.API.DTOs.Actor;
 using FilmRentalStore.API.Services.Implementations;
 using FilmRentalStore.API.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,6 +9,7 @@ namespace FilmRentalStore.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class ActorsController : ControllerBase
     {
         private readonly IActorService _actorService;

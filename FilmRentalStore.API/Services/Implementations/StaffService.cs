@@ -1,4 +1,5 @@
 using AutoMapper;
+using BCrypt.Net;
 using FilmRentalStore.API.DTOs.Staff;
 using FilmRentalStore.API.Exceptions;
 using FilmRentalStore.API.Models;
@@ -33,7 +34,7 @@ namespace FilmRentalStore.API.Services.Implementations
 
             var staff = _mapper.Map<Staff>(dto);
 
-            staff.Password = null;
+            staff.Password = BCrypt.Net.BCrypt.HashPassword(dto.Password);
             staff.LastUpdate = DateTime.Now;
 
             await _staffRepository.AddAsync(staff);
