@@ -23,5 +23,13 @@ namespace FilmRentalStore.API.Controllers
             var result = await _authService.LoginAsync(dto);
             return Ok(result);
         }
+
+        [HttpPost("register")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Register([FromBody] RegisterRequestDto dto)
+        {
+            var result = await _authService.RegisterAsync(dto);
+            return Ok(result);
+        }
     }
 }

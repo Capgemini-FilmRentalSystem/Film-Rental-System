@@ -56,9 +56,9 @@ namespace FilmRentalStore.API.Services.Implementations
             if (rentalDto == null)
                 throw new BadRequestException("Rental data is required.");
 
-            var inventoryExists = await _inventoryRepository.InventoryExistsAsync(rentalDto.InventoryId);
+            var inventory = await _inventoryRepository.GetByIdAsync(rentalDto.InventoryId);
 
-            if (!inventoryExists)
+            if (inventory == null)
                 throw new BadRequestException("Invalid inventory id.");
 
             var customerExists = await _customerRepository.ExistsAsync(rentalDto.CustomerId);
@@ -70,6 +70,12 @@ namespace FilmRentalStore.API.Services.Implementations
 
             if (!activeStaff)
                 throw new BadRequestException("Invalid or inactive staff id.");
+
+            var staffAssignedToInventoryStore =
+                await _staffRepository.IsAssignedToStore(rentalDto.StaffId, inventory.StoreId);
+
+            if (!staffAssignedToInventoryStore)
+                throw new BadRequestException("Staff is not assigned to the inventory's store.");
 
             var alreadyRented = await _rentalRepository.IsInventoryCurrentlyRentedAsync(rentalDto.InventoryId);
 

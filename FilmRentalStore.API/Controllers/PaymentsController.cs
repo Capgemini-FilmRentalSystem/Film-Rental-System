@@ -7,7 +7,6 @@ namespace FilmRentalStore.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class PaymentsController : ControllerBase
     {
         private readonly IPaymentService _paymentService;
@@ -18,6 +17,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> GetAllPayments(
             [FromQuery] int page = IPaymentService.DefaultPage,
             [FromQuery] int pageSize = IPaymentService.DefaultPageSize)
@@ -28,6 +28,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpGet("{paymentId}")]
+        [Authorize(Roles = "Admin,Manager,Staff")]
         public async Task<IActionResult> GetPaymentById(int paymentId)
         {
             var payment = await _paymentService.GetPaymentByIdAsync(paymentId);
@@ -36,6 +37,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Manager,Staff")]
         public async Task<IActionResult> CreatePayment([FromBody] PaymentRequestDto paymentDto)
         {
             var createdPayment = await _paymentService.CreatePaymentAsync(paymentDto);

@@ -9,7 +9,6 @@ namespace FilmRentalStore.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class ActorsController : ControllerBase
     {
         private readonly IActorService _actorService;
@@ -20,6 +19,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Manager,Staff")]
         public async Task<IActionResult> GetAllActors()
         {
             var actors = await _actorService.GetAllActorsAsync();
@@ -28,6 +28,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Roles = "Admin,Manager,Staff")]
         public async Task<IActionResult> GetActorById(int id)
         {
             var actor = await _actorService.GetActorByIdAsync(id);
@@ -39,6 +40,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> CreateActor([FromBody] ActorRequestDto actorDto)
         {
             var createdActor = await _actorService.CreateActorAsync(actorDto);
@@ -51,6 +53,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> UpdateActor(int id, ActorRequestDto actorDto)
         {
             var updatedActor = await _actorService.UpdateActorAsync(id, actorDto);

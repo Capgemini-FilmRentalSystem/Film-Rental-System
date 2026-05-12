@@ -8,7 +8,11 @@ using FilmRentalStore.API.Services.Implementations;
 using FilmRentalStore.API.Services.Interfaces;
 using FilmRentalStore.API.Validators;
 using FluentValidation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.Text;
 
 internal class Program
 {
@@ -78,6 +82,25 @@ internal class Program
             options.Filters.AddService<ValidationFilter>();
         });
 
+        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                    ValidAudience = builder.Configuration["Jwt:Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
+                    RoleClaimType = ClaimTypes.Role
+                };
+            });
+
+        builder.Services.AddAuthorization();
+
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(options =>
         {
@@ -90,6 +113,8 @@ internal class Program
                 Description = "JWT Authorization header using the Bearer scheme."
             });
 
+            options.OperationFilter<AllowAnonymousOperationFilter>();
+
             options.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
             {
                 {
@@ -101,7 +126,7 @@ internal class Program
                             Id = "Bearer"
                         }
                     },
-                    new string[] { }
+                    Array.Empty<string>()
                 }
             });
         });
@@ -121,8 +146,8 @@ internal class Program
             app.UseHttpsRedirection();
         }
 
-         app.UseAuthentication();
-         app.UseAuthorization();
+        app.UseAuthentication();
+        app.UseAuthorization();
 
         app.MapControllers();
 

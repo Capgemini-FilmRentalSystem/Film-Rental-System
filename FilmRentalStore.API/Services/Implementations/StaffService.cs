@@ -11,11 +11,19 @@ namespace FilmRentalStore.API.Services.Implementations
     public class StaffService : IStaffService
     {
         private readonly IStaffRepository _staffRepository;
+        private readonly IAddressRepository _addressRepository;
+        private readonly IStoreRepository _storeRepository;
         private readonly IMapper _mapper;
 
-        public StaffService(IStaffRepository staffRepository, IMapper mapper)
+        public StaffService(
+            IStaffRepository staffRepository,
+            IAddressRepository addressRepository,
+            IStoreRepository storeRepository,
+            IMapper mapper)
         {
             _staffRepository = staffRepository;
+            _addressRepository = addressRepository;
+            _storeRepository = storeRepository;
             _mapper = mapper;
         }
 
@@ -31,6 +39,16 @@ namespace FilmRentalStore.API.Services.Implementations
 
             if (usernameExists)
                 throw new ConflictException("Username already exists.");
+
+            var addressExists = await _addressRepository.GetByIdAsync(dto.AddressId);
+
+            if (addressExists == null)
+                throw new BadRequestException("Invalid address id.");
+
+            var storeExists = await _storeRepository.StoreExists(dto.StoreId);
+
+            if (!storeExists)
+                throw new BadRequestException("Invalid store id.");
 
             var staff = _mapper.Map<Staff>(dto);
 
@@ -79,6 +97,11 @@ namespace FilmRentalStore.API.Services.Implementations
 
             if (staff == null)
                 throw new NotFoundException("Staff not found.");
+
+            var addressExists = await _addressRepository.GetByIdAsync(dto.AddressId);
+
+            if (addressExists == null)
+                throw new BadRequestException("Invalid address id.");
 
             _mapper.Map(dto, staff);
 

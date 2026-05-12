@@ -7,7 +7,6 @@ namespace FilmRentalStore.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class RentalsController : ControllerBase
     {
         private readonly IRentalService _rentalService;
@@ -18,6 +17,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> GetAllRentals(
             [FromQuery] int page = IRentalService.DefaultPage,
             [FromQuery] int pageSize = IRentalService.DefaultPageSize)
@@ -28,6 +28,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpGet("{rentalId}")]
+        [Authorize(Roles = "Admin,Manager,Staff")]
         public async Task<IActionResult> GetRentalById(int rentalId)
         {
             var rental = await _rentalService.GetRentalByIdAsync(rentalId);
@@ -36,6 +37,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Manager,Staff")]
         public async Task<IActionResult> CreateRental([FromBody] RentalRequestDto rentalDto)
         {
             var createdRental = await _rentalService.CreateRentalAsync(rentalDto);
@@ -48,6 +50,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPut("{rentalId}/return")]
+        [Authorize(Roles = "Admin,Manager,Staff")]
         public async Task<IActionResult> ReturnRental(
             int rentalId,
             [FromBody] RentalReturnRequestDto rentalReturnDto)

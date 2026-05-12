@@ -7,7 +7,6 @@ namespace FilmRentalStore.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class InventoryController : ControllerBase
     {
         private readonly IInventoryService _inventoryService;
@@ -18,6 +17,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Manager,Staff")]
         public async Task<IActionResult> GetAllInventory(
             [FromQuery] int page = IInventoryService.DefaultPage,
             [FromQuery] int pageSize = IInventoryService.DefaultPageSize)
@@ -28,6 +28,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpGet("{inventoryId}")]
+        [Authorize(Roles = "Admin,Manager,Staff")]
         public async Task<IActionResult> GetInventoryById(int inventoryId)
         {
             var inventory = await _inventoryService.GetInventoryByIdAsync(inventoryId);
@@ -36,6 +37,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> CreateInventory([FromBody] InventoryRequestDto inventoryDto)
         {
             var createdInventory = await _inventoryService.CreateInventoryAsync(inventoryDto);
@@ -48,6 +50,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPut("{inventoryId}")]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> UpdateInventory(int inventoryId, [FromBody] InventoryRequestDto inventoryDto)
         {
             var updatedInventory = await _inventoryService.UpdateInventoryAsync(inventoryId, inventoryDto);

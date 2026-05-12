@@ -7,7 +7,6 @@ namespace FilmRentalStore.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class StoresController : ControllerBase
     {
         private readonly IStoreService _storeService;
@@ -18,6 +17,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpGet("{storeId}")]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> GetStoreById(int storeId)
         {
             var store = await _storeService.GetStoreByIdAsync(storeId);
@@ -26,7 +26,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Manager")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateStore([FromBody] StoreRequestDto dto)
         {
             var createdStore = await _storeService.CreateStoreAsync(dto);
@@ -39,7 +39,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPut("{storeId}")]
-        [Authorize(Roles = "Manager")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateStore(int storeId, [FromBody] StoreRequestDto dto)
         {
             var updatedStore = await _storeService.UpdateStoreAsync(storeId, dto);

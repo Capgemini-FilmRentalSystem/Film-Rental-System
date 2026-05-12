@@ -7,7 +7,7 @@ namespace FilmRentalStore.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]
+    [Authorize(Roles = "Admin,Manager,Staff")]
     public class CustomersController : ControllerBase
     {
         private readonly ICustomerService _service;

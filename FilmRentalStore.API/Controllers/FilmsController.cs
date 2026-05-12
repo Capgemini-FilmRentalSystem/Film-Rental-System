@@ -7,7 +7,6 @@ namespace FilmRentalStore.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class FilmsController : ControllerBase
     {
         private readonly IFilmService _filmService;
@@ -18,6 +17,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Manager,Staff")]
         public async Task<IActionResult> GetAllFilms()
         {
             var films = await _filmService.GetAllFilmsAsync();
@@ -26,6 +26,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpGet("{filmId}")]
+        [Authorize(Roles = "Admin,Manager,Staff")]
         public async Task<IActionResult> GetFilmById(int filmId)
         {
             var film = await _filmService.GetFilmByIdAsync(filmId);
@@ -34,6 +35,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> CreateFilm([FromBody] FilmRequestDto filmDto)
         {
             var createdFilm = await _filmService.CreateFilmAsync(filmDto);
@@ -46,6 +48,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPut("{filmId}")]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> UpdateFilm(int filmId, [FromBody] FilmRequestDto filmDto)
         {
             var updatedFilm = await _filmService.UpdateFilmAsync(filmId, filmDto);
@@ -54,6 +57,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPost("{filmId}/actors")]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> AssignActorToFilm(
             int filmId,
             [FromBody] FilmActorAssignRequestDto dto)
@@ -64,6 +68,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpDelete("{filmId}/actors/{actorId}")]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> RemoveActorFromFilm(int filmId, int actorId)
         {
             await _filmService.RemoveActorFromFilmAsync(filmId, actorId);
@@ -72,6 +77,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPost("{filmId}/categories")]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> AssignCategoryToFilm(
             int filmId,
             [FromBody] FilmCategoryAssignRequestDto dto)
@@ -82,6 +88,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpDelete("{filmId}/categories/{categoryId}")]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> RemoveCategoryFromFilm(int filmId, byte categoryId)
         {
             await _filmService.RemoveCategoryFromFilmAsync(filmId, categoryId);

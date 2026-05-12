@@ -7,7 +7,6 @@ namespace FilmRentalStore.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class CategoriesController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
@@ -18,6 +17,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "Admin,Manager,Staff")]
         public async Task<IActionResult> GetAllCategories()
         {
             var categories = await _categoryService.GetAllAsync();
@@ -26,6 +26,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpGet("{categoryId}")]
+        [Authorize(Roles = "Admin,Manager,Staff")]
         public async Task<IActionResult> GetCategoryById(byte categoryId)
         {
             var category = await _categoryService.GetByIdAsync(categoryId);
@@ -34,6 +35,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> CreateCategory([FromBody] CategoryRequestDto categoryDto)
         {
             var createdCategory = await _categoryService.CreateAsync(categoryDto);
@@ -46,6 +48,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPut("{categoryId}")]
+        [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> UpdateCategory(byte categoryId, [FromBody] CategoryRequestDto categoryDto)
         {
             var updatedCategory = await _categoryService.UpdateAsync(categoryId, categoryDto);
