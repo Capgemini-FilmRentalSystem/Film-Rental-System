@@ -112,7 +112,7 @@ namespace FilmRentalStore.API.Services.Implementations
 
             await _customerService.RegisterAsync(dto);
 
-            var createdCustomer = await _customerRepository.GetByUsernameAsync(dto.Username);
+            var createdCustomer = await _customerRepository.GetByUsernameAsync(dto.Username!);
 
             if (createdCustomer == null)
                 throw new NotFoundException("Created customer record not found.");
