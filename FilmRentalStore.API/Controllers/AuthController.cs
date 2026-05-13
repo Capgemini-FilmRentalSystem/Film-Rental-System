@@ -43,7 +43,7 @@ namespace FilmRentalStore.API.Controllers
 
         [HttpPost("customer/register")]
         [AllowAnonymous]
-        public async Task<IActionResult> CustomerRegister([FromBody] CustomerRegisterRequestDto dto)
+        public async Task<IActionResult> CustomerRegister([FromBody] CustomerRequestDto dto)
         {
             var result = await _authService.RegisterCustomerAsync(dto);
             return Ok(result);

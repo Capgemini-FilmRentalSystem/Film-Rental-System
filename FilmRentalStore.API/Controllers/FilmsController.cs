@@ -18,9 +18,11 @@ namespace FilmRentalStore.API.Controllers
 
         [HttpGet]
         [Authorize(Roles = "Admin,Manager,Staff,Customer")]
-        public async Task<IActionResult> GetAllFilms()
+        public async Task<IActionResult> GetAllFilms(
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
         {
-            var films = await _filmService.GetAllFilmsAsync();
+            var films = await _filmService.GetAllFilmsAsync(page, pageSize);
 
             return Ok(films);
         }

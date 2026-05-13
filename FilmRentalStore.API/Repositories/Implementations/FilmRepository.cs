@@ -23,6 +23,24 @@ namespace FilmRentalStore.API.Repositories.Implementations
                 .ToListAsync();
         }
 
+        public async Task<(IEnumerable<Film> Films, int TotalCount)> GetAllAsync(int page, int pageSize)
+        {
+            var query = _context.Films
+                .AsNoTracking()
+                .Include(f => f.Language)
+                .Include(f => f.OriginalLanguage);
+
+            var totalCount = await query.CountAsync();
+
+            var films = await query
+                .OrderBy(f => f.FilmId)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return (films, totalCount);
+        }
+
         public async Task<Film?> GetByIdAsync(int filmId)
         {
             return await _context.Films

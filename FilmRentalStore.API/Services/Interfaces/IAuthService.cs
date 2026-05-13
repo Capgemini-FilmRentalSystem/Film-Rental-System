@@ -8,6 +8,6 @@ namespace FilmRentalStore.API.Services.Interfaces
         Task<LoginResponseDto> LoginStaffAsync(LoginRequestDto dto);
         Task<LoginResponseDto> LoginCustomerAsync(LoginRequestDto dto);
         Task<LoginResponseDto> RegisterStaffAsync(RegisterRequestDto dto);
-        Task<LoginResponseDto> RegisterCustomerAsync(CustomerRegisterRequestDto dto);
+        Task<LoginResponseDto> RegisterCustomerAsync(CustomerRequestDto dto);
     }
 }

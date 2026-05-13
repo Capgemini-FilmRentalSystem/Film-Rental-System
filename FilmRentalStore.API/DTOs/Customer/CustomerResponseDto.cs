@@ -3,6 +3,9 @@ using FilmRentalStore.API.DTOs;
 
 namespace FilmRentalStore.API.DTOs.Customers
 {
+    /// <summary>
+    /// Unified DTO for all customer response operations
+    /// </summary>
     public class CustomerResponseDto
     {
         public int CustomerId { get; set; }
@@ -11,8 +14,9 @@ namespace FilmRentalStore.API.DTOs.Customers
         public string LastName { get; set; } = string.Empty;
         public string FullName => $"{FirstName} {LastName}";
         public string? Email { get; set; }
-        public RoleSummaryDto Role { get; set; } = null!;
-        public AddressResponseDto Address { get; set; } = null!;
+        public int StoreId { get; set; }
+        public RoleSummaryDto? Role { get; set; }
+        public AddressResponseDto? Address { get; set; }
         public bool IsActive { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime LastUpdate { get; set; }

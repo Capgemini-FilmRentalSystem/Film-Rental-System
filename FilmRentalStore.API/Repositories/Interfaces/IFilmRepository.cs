@@ -6,6 +6,8 @@ namespace FilmRentalStore.API.Repositories.Interfaces
     {
         Task<IEnumerable<Film>> GetAllAsync();
 
+        Task<(IEnumerable<Film> Films, int TotalCount)> GetAllAsync(int page, int pageSize);
+
         Task<Film?> GetByIdAsync(int filmId);
 
         Task<Film?> GetEntityByIdAsync(int filmId);

@@ -29,6 +29,25 @@ namespace FilmRentalStore.API.Services.Implementations
             _mapper = mapper;
         }
 
+        public async Task<IEnumerable<FilmResponseDto>> GetAllFilmsAsync(int page, int pageSize)
+        {
+            if (page <= 0)
+                throw new BadRequestException("Page must be greater than zero.");
+
+            if (pageSize <= 0)
+                throw new BadRequestException("Page size must be greater than zero.");
+
+            if (pageSize > IFilmService.MaxPageSize)
+                throw new BadRequestException($"Page size cannot be greater than {IFilmService.MaxPageSize}.");
+
+            var (films, _) = await _filmRepository.GetAllAsync(page, pageSize);
+
+            if (films is null || !films.Any())
+                throw new NotFoundException("No films found");
+
+            return _mapper.Map<IEnumerable<FilmResponseDto>>(films);
+        }
+
         public async Task<IEnumerable<FilmResponseDto>> GetAllFilmsAsync()
         {
             var films = await _filmRepository.GetAllAsync();

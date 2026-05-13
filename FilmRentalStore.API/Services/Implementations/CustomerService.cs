@@ -124,7 +124,7 @@ namespace FilmRentalStore.API.Services.Implementations
                 dto.Address);
         }
 
-        public async Task<CustomerResponseDto> RegisterAsync(CustomerRegisterRequestDto dto)
+        public async Task<CustomerResponseDto> RegisterAsync(CustomerRequestDto dto)
         {
             if (dto == null)
                 throw new BadRequestException("Customer registration data is required.");

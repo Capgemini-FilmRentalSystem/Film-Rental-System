@@ -105,7 +105,7 @@ namespace FilmRentalStore.API.Services.Implementations
             return _tokenService.GenerateToken(createdStaff);
         }
 
-        public async Task<LoginResponseDto> RegisterCustomerAsync(CustomerRegisterRequestDto dto)
+        public async Task<LoginResponseDto> RegisterCustomerAsync(CustomerRequestDto dto)
         {
             if (dto == null)
                 throw new BadRequestException("Registration data is required.");
