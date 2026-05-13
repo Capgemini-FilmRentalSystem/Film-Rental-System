@@ -105,14 +105,14 @@ namespace FilmRentalStore.API.Services.Implementations
             return _tokenService.GenerateToken(createdStaff);
         }
 
-        public async Task<LoginResponseDto> RegisterCustomerAsync(CustomerRequestDto dto)
+        public async Task<LoginResponseDto> RegisterCustomerAsync(CustomerRegisterRequestDto dto)
         {
             if (dto == null)
                 throw new BadRequestException("Registration data is required.");
 
-            await _customerService.CreateAsync(dto);
+            await _customerService.RegisterAsync(dto);
 
-            var createdCustomer = await _customerRepository.GetByUsernameAsync(dto.Username!);
+            var createdCustomer = await _customerRepository.GetByUsernameAsync(dto.Username);
 
             if (createdCustomer == null)
                 throw new NotFoundException("Created customer record not found.");

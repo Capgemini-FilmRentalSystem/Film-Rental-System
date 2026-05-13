@@ -114,74 +114,106 @@ namespace FilmRentalStore.API.Services.Implementations
             if (dto.Password.Length < 8)
                 throw new BadRequestException("Password must be at least 8 characters long.");
 
-            var usernameExists = await _repository.UsernameExistsAsync(dto.Username);
+            return await CreateCustomerAsync(
+                dto.StoreId,
+                dto.Username,
+                dto.Password,
+                dto.FirstName,
+                dto.LastName,
+                dto.Email,
+                dto.Address);
+        }
+
+        public async Task<CustomerResponseDto> RegisterAsync(CustomerRegisterRequestDto dto)
+        {
+            if (dto == null)
+                throw new BadRequestException("Customer registration data is required.");
+
+            if (string.IsNullOrWhiteSpace(dto.FirstName) || string.IsNullOrWhiteSpace(dto.LastName))
+                throw new BadRequestException("FirstName and LastName are required.");
+
+            if (string.IsNullOrWhiteSpace(dto.Username))
+                throw new BadRequestException("Username is required.");
+
+            if (string.IsNullOrWhiteSpace(dto.Password))
+                throw new BadRequestException("Password is required.");
+
+            if (dto.Password.Length < 8)
+                throw new BadRequestException("Password must be at least 8 characters long.");
+
+            return await CreateCustomerAsync(
+                dto.StoreId,
+                dto.Username,
+                dto.Password,
+                dto.FirstName,
+                dto.LastName,
+                dto.Email,
+                dto.Address);
+        }
+
+        private async Task<CustomerResponseDto> CreateCustomerAsync(
+            int storeId,
+            string username,
+            string password,
+            string firstName,
+            string lastName,
+            string? email,
+            AddressRequestDto? addressDetails)
+        {
+            var usernameExists = await _repository.UsernameExistsAsync(username);
 
             if (usernameExists)
                 throw new ConflictException("Username already exists.");
 
-            var storeExists = await _storeRepository.StoreExists(dto.StoreId);
+            var storeExists = await _storeRepository.StoreExists(storeId);
 
             if (!storeExists)
                 throw new BadRequestException("Invalid store id.");
 
-            int addressId;
+            if (!HasRequiredAddressDetails(addressDetails))
+                throw new BadRequestException("Complete address details are required.");
 
-            if (dto.AddressId.HasValue && dto.AddressId.Value > 0)
+            var country = await _countryRepository.GetByNameAsync(addressDetails!.CountryName!);
+
+            if (country == null)
             {
-                var existingAddress = await _addressRepository.GetByIdAsync(dto.AddressId.Value);
-
-                if (existingAddress == null)
-                    throw new BadRequestException("Invalid address id.");
-
-                addressId = dto.AddressId.Value;
-            }
-            else
-            {
-                var addressDetails = dto.Address;
-
-                if (!HasAddressDetails(addressDetails))
-                    throw new BadRequestException("AddressId or full address details are required.");
-
-                if (string.IsNullOrWhiteSpace(addressDetails!.CityName) ||
-                    string.IsNullOrWhiteSpace(addressDetails.CountryName))
-                    throw new BadRequestException("CityName and CountryName are required when creating a new address.");
-
-                var country = await _countryRepository.GetByNameAsync(addressDetails.CountryName);
-
-                if (country == null)
-                {
-                    country = await _countryRepository.CreateAsync(new Country { Country1 = addressDetails.CountryName });
-                }
-
-                var city = await _cityRepository.GetByNameAndCountryAsync(addressDetails.CityName, country.CountryId);
-
-                if (city == null)
-                {
-                    city = await _cityRepository.CreateAsync(new City
-                    {
-                        City1 = addressDetails.CityName,
-                        CountryId = country.CountryId
-                    });
-                }
-
-                var address = new Address
-                {
-                    Address1 = addressDetails.AddressLine ?? string.Empty,
-                    Address2 = addressDetails.Address2,
-                    District = addressDetails.District ?? string.Empty,
-                    PostalCode = addressDetails.PostalCode,
-                    Phone = addressDetails.Phone ?? string.Empty,
-                    CityId = city.CityId
-                };
-
-                var createdAddress = await _addressRepository.CreateAsync(address);
-                addressId = createdAddress.AddressId;
+                country = await _countryRepository.CreateAsync(new Country { Country1 = addressDetails.CountryName! });
             }
 
-            var customer = _mapper.Map<Customer>(dto);
-            customer.AddressId = addressId;
-            customer.Username = dto.Username;
-            customer.Password = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+            var city = await _cityRepository.GetByNameAndCountryAsync(addressDetails.CityName!, country.CountryId);
+
+            if (city == null)
+            {
+                city = await _cityRepository.CreateAsync(new City
+                {
+                    City1 = addressDetails.CityName!,
+                    CountryId = country.CountryId
+                });
+            }
+
+            var address = new Address
+            {
+                Address1 = addressDetails.AddressLine!,
+                Address2 = addressDetails.Address2,
+                District = addressDetails.District!,
+                PostalCode = addressDetails.PostalCode,
+                Phone = addressDetails.Phone!,
+                CityId = city.CityId
+            };
+
+            var createdAddress = await _addressRepository.CreateAsync(address);
+
+            var customer = new Customer
+            {
+                StoreId = storeId,
+                FirstName = firstName,
+                LastName = lastName,
+                Email = email,
+                AddressId = createdAddress.AddressId,
+                Username = username,
+                Password = BCrypt.Net.BCrypt.HashPassword(password)
+            };
+
             customer.RoleId = DefaultCustomerRoleId;
             customer.Active = "Y";
             customer.CreateDate = DateTime.Now;
@@ -235,25 +267,12 @@ namespace FilmRentalStore.API.Services.Implementations
                     throw new BadRequestException("Password must be at least 8 characters long.");
             }
 
-            int targetAddressId = customer.AddressId;
-
-            if (dto.AddressId.HasValue)
-            {
-                if (dto.AddressId.Value <= 0)
-                    throw new BadRequestException("Invalid address id.");
-
-                var selectedAddress = await _addressRepository.GetByIdAsync(dto.AddressId.Value)
-                    ?? throw new BadRequestException("Invalid address id.");
-
-                targetAddressId = selectedAddress.AddressId;
-            }
-
             var updatedAddressDetails = dto.Address;
 
             if (HasAddressDetails(updatedAddressDetails))
             {
-                var address = await _addressRepository.GetByIdAsync(targetAddressId)
-                    ?? throw new NotFoundException($"Address with ID {targetAddressId} was not found.");
+                var address = await _addressRepository.GetByIdAsync(customer.AddressId)
+                    ?? throw new NotFoundException($"Address with ID {customer.AddressId} was not found.");
 
                 if (!string.IsNullOrEmpty(updatedAddressDetails!.AddressLine))
                     address.Address1 = updatedAddressDetails.AddressLine;
@@ -297,7 +316,6 @@ namespace FilmRentalStore.API.Services.Implementations
             }
 
             _mapper.Map(dto, customer);
-            customer.AddressId = targetAddressId;
 
             if (dto.Username != null)
                 customer.Username = dto.Username;
@@ -359,6 +377,18 @@ namespace FilmRentalStore.API.Services.Implementations
                    !string.IsNullOrEmpty(address.Phone) ||
                    !string.IsNullOrEmpty(address.CityName) ||
                    !string.IsNullOrEmpty(address.CountryName);
+        }
+
+        private static bool HasRequiredAddressDetails(AddressRequestDto? address)
+        {
+            if (address == null)
+                return false;
+
+            return !string.IsNullOrWhiteSpace(address.AddressLine) &&
+                   !string.IsNullOrWhiteSpace(address.District) &&
+                   !string.IsNullOrWhiteSpace(address.Phone) &&
+                   !string.IsNullOrWhiteSpace(address.CityName) &&
+                   !string.IsNullOrWhiteSpace(address.CountryName);
         }
     }
 }

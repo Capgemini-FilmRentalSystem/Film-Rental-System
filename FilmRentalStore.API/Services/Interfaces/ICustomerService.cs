@@ -19,6 +19,7 @@ namespace FilmRentalStore.API.Services.Interfaces
         /// <summary>Returns active customers; throws NotFoundException when no active customers exist.</summary>
         Task<IEnumerable<CustomerResponseDto>> GetActiveCustomersAsync();
         Task<CustomerResponseDto> CreateAsync(CustomerRequestDto dto);
+        Task<CustomerResponseDto> RegisterAsync(CustomerRegisterRequestDto dto);
         Task<CustomerResponseDto> UpdateAsync(int id, CustomerRequestDto dto);
         Task DeleteAsync(int id);
         Task ActivateAsync(int id);
