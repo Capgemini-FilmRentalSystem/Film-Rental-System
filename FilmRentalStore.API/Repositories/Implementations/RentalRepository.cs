@@ -37,6 +37,30 @@ namespace FilmRentalStore.API.Repositories.Implementations
                 .FirstOrDefaultAsync(r => r.RentalId == rentalId);
         }
 
+        public async Task<IEnumerable<Rental>> GetByCustomerIdAsync(int customerId, int page, int pageSize)
+        {
+            return await _context.Rentals
+                .AsNoTracking()
+                .Include(r => r.Inventory)
+                    .ThenInclude(i => i.Film)
+                .Include(r => r.Customer)
+                .Where(r => r.CustomerId == customerId)
+                .OrderByDescending(r => r.RentalDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
+        public async Task<Rental?> GetByIdForCustomerAsync(int rentalId, int customerId)
+        {
+            return await _context.Rentals
+                .AsNoTracking()
+                .Include(r => r.Inventory)
+                    .ThenInclude(i => i.Film)
+                .Include(r => r.Customer)
+                .FirstOrDefaultAsync(r => r.RentalId == rentalId && r.CustomerId == customerId);
+        }
+
         public async Task<Rental?> GetEntityByIdAsync(int rentalId)
         {
             return await _context.Rentals

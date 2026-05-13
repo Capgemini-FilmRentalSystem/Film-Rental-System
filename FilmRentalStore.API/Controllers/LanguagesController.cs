@@ -17,7 +17,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin,Manager,Staff")]
+        [Authorize(Roles = "Admin,Manager,Staff,Customer")]
         public async Task<IActionResult> GetAllLanguages()
         {
             var languages = await _languageService.GetAllLanguagesAsync();
@@ -26,7 +26,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpGet("{languageId}")]
-        [Authorize(Roles = "Admin,Manager,Staff")]
+        [Authorize(Roles = "Admin,Manager,Staff,Customer")]
         public async Task<IActionResult> GetLanguageById(byte languageId)
         {
             var language = await _languageService.GetLanguageByIdAsync(languageId);

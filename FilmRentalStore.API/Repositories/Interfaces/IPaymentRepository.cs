@@ -8,6 +8,10 @@ namespace FilmRentalStore.API.Repositories.Interfaces
 
         Task<Payment?> GetByIdAsync(int paymentId);
 
+        Task<IEnumerable<Payment>> GetByCustomerIdAsync(int customerId, int page, int pageSize);
+
+        Task<Payment?> GetByIdForCustomerAsync(int paymentId, int customerId);
+
         Task AddAsync(Payment payment);
 
         Task<bool> SaveChangesAsync();

@@ -51,6 +51,28 @@ namespace FilmRentalStore.API.Services.Implementations
             return _mapper.Map<PaymentResponseDto>(payment);
         }
 
+        public async Task<IEnumerable<PaymentResponseDto>> GetPaymentsByCustomerIdAsync(int customerId, int page, int pageSize)
+        {
+            ValidatePagination(page, pageSize);
+
+            var payments = await _paymentRepository.GetByCustomerIdAsync(customerId, page, pageSize);
+
+            if (payments is null || !payments.Any())
+                throw new NotFoundException("No payments found.");
+
+            return _mapper.Map<IEnumerable<PaymentResponseDto>>(payments);
+        }
+
+        public async Task<PaymentResponseDto> GetCustomerPaymentByIdAsync(int customerId, int paymentId)
+        {
+            var payment = await _paymentRepository.GetByIdForCustomerAsync(paymentId, customerId);
+
+            if (payment == null)
+                throw new NotFoundException("Payment not found.");
+
+            return _mapper.Map<PaymentResponseDto>(payment);
+        }
+
         public async Task<PaymentResponseDto> CreatePaymentAsync(PaymentRequestDto paymentDto)
         {
             if (paymentDto == null)

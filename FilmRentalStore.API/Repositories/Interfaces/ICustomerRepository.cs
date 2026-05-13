@@ -7,6 +7,7 @@ namespace FilmRentalStore.API.Repositories.Interfaces
         Task<(IEnumerable<Customer> Customers, int TotalCount)> GetAllAsync(int page, int pageSize);
         Task<Customer?> GetByIdAsync(int id);
         Task<Customer?> GetEntityByIdAsync(int id);
+        Task<Customer?> GetByUsernameAsync(string username);
         Task<Customer?> GetWithAddressAsync(int id);
         Task<IEnumerable<Customer>> SearchAsync(string? name, string? email);
         Task<IEnumerable<Customer>> GetByStoreIdAsync(int storeId);
@@ -15,5 +16,6 @@ namespace FilmRentalStore.API.Repositories.Interfaces
         Task<Customer> UpdateAsync(Customer customer);
         Task DeleteAsync(Customer customer);
         Task<bool> ExistsAsync(int id);
+        Task<bool> UsernameExistsAsync(string username, int? excludingCustomerId = null);
     }
 }

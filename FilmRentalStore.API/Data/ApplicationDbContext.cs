@@ -195,6 +195,8 @@ public partial class ApplicationDbContext : DbContext
 
             entity.ToTable("customer");
 
+            entity.HasIndex(e => e.Username, "UQ_customer_username").IsUnique();
+
             entity.HasIndex(e => e.AddressId, "idx_fk_address_id");
 
             entity.HasIndex(e => e.StoreId, "idx_fk_store_id");
@@ -230,12 +232,26 @@ public partial class ApplicationDbContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime")
                 .HasColumnName("last_update");
+            entity.Property(e => e.Password)
+                .HasMaxLength(255)
+                .HasColumnName("password");
+            entity.Property(e => e.RoleId)
+                .HasDefaultValue(4)
+                .HasColumnName("role_id");
             entity.Property(e => e.StoreId).HasColumnName("store_id");
+            entity.Property(e => e.Username)
+                .HasMaxLength(50)
+                .HasColumnName("username");
 
             entity.HasOne(d => d.Address).WithMany(p => p.Customers)
                 .HasForeignKey(d => d.AddressId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_customer_address");
+
+            entity.HasOne(d => d.Role).WithMany(p => p.Customers)
+                .HasForeignKey(d => d.RoleId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_customer_role");
 
             entity.HasOne(d => d.Store).WithMany(p => p.Customers)
                 .HasForeignKey(d => d.StoreId)

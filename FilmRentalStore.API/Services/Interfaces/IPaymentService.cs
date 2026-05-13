@@ -13,6 +13,10 @@ namespace FilmRentalStore.API.Services.Interfaces
 
         Task<PaymentResponseDto> GetPaymentByIdAsync(int paymentId);
 
+        Task<IEnumerable<PaymentResponseDto>> GetPaymentsByCustomerIdAsync(int customerId, int page, int pageSize);
+
+        Task<PaymentResponseDto> GetCustomerPaymentByIdAsync(int customerId, int paymentId);
+
         Task<PaymentResponseDto> CreatePaymentAsync(PaymentRequestDto paymentDto);
     }
 }

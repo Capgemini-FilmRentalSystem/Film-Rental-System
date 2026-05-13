@@ -9,5 +9,6 @@ namespace FilmRentalStore.API.DTOs.Auth
         public int StoreId { get; set; }
         public string Username { get; set; } = null!;
         public string Password { get; set; } = null!;
+        public int RoleId { get; set; } = 3;
     }
 }

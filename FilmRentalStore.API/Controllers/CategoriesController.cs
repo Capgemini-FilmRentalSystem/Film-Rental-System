@@ -17,7 +17,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin,Manager,Staff")]
+        [Authorize(Roles = "Admin,Manager,Staff,Customer")]
         public async Task<IActionResult> GetAllCategories()
         {
             var categories = await _categoryService.GetAllAsync();
@@ -26,7 +26,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpGet("{categoryId}")]
-        [Authorize(Roles = "Admin,Manager,Staff")]
+        [Authorize(Roles = "Admin,Manager,Staff,Customer")]
         public async Task<IActionResult> GetCategoryById(byte categoryId)
         {
             var category = await _categoryService.GetByIdAsync(categoryId);

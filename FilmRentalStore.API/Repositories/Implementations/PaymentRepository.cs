@@ -46,6 +46,36 @@ namespace FilmRentalStore.API.Repositories.Implementations
                 .FirstOrDefaultAsync(p => p.PaymentId == paymentId);
         }
 
+        public async Task<IEnumerable<Payment>> GetByCustomerIdAsync(int customerId, int page, int pageSize)
+        {
+            return await _context.Payments
+                .AsNoTracking()
+                .Include(p => p.Customer)
+                .Include(p => p.Staff)
+                    .ThenInclude(s => s.Role)
+                .Include(p => p.Rental)
+                    .ThenInclude(r => r!.Inventory)
+                        .ThenInclude(i => i.Film)
+                .Where(p => p.CustomerId == customerId)
+                .OrderByDescending(p => p.PaymentDate)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+        }
+
+        public async Task<Payment?> GetByIdForCustomerAsync(int paymentId, int customerId)
+        {
+            return await _context.Payments
+                .AsNoTracking()
+                .Include(p => p.Customer)
+                .Include(p => p.Staff)
+                    .ThenInclude(s => s.Role)
+                .Include(p => p.Rental)
+                    .ThenInclude(r => r!.Inventory)
+                        .ThenInclude(i => i.Film)
+                .FirstOrDefaultAsync(p => p.PaymentId == paymentId && p.CustomerId == customerId);
+        }
+
         public async Task AddAsync(Payment payment)
         {
             payment.PaymentDate = DateTime.Now;

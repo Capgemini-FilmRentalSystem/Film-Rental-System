@@ -19,6 +19,7 @@ namespace FilmRentalStore.API.Repositories.Implementations
             var query = _context.Customers.AsNoTracking();
             var totalCount = await query.CountAsync();
             var customers = await query
+                .Include(c => c.Role)
                 .Include(c => c.Address)
                     .ThenInclude(a => a.City)
                         .ThenInclude(ci => ci.Country)
@@ -34,6 +35,7 @@ namespace FilmRentalStore.API.Repositories.Implementations
         {
             return await _context.Customers
                 .AsNoTracking()
+                .Include(c => c.Role)
                 .Include(c => c.Address)
                     .ThenInclude(a => a.City)
                         .ThenInclude(ci => ci.Country)
@@ -46,10 +48,19 @@ namespace FilmRentalStore.API.Repositories.Implementations
                 .FirstOrDefaultAsync(c => c.CustomerId == id);
         }
 
+        public async Task<Customer?> GetByUsernameAsync(string username)
+        {
+            return await _context.Customers
+                .AsNoTracking()
+                .Include(c => c.Role)
+                .FirstOrDefaultAsync(c => c.Username == username);
+        }
+
         public async Task<Customer?> GetWithAddressAsync(int id)
         {
             return await _context.Customers
                 .AsNoTracking()
+                .Include(c => c.Role)
                 .Include(c => c.Address)
                     .ThenInclude(a => a.City)
                         .ThenInclude(ci => ci.Country)
@@ -74,6 +85,7 @@ namespace FilmRentalStore.API.Repositories.Implementations
             }
 
             return await query
+                .Include(c => c.Role)
                 .Include(c => c.Address)
                     .ThenInclude(a => a.City)
                         .ThenInclude(ci => ci.Country)
@@ -85,6 +97,7 @@ namespace FilmRentalStore.API.Repositories.Implementations
         {
             return await _context.Customers
                 .AsNoTracking()
+                .Include(c => c.Role)
                 .Include(c => c.Address)
                     .ThenInclude(a => a.City)
                         .ThenInclude(ci => ci.Country)
@@ -97,6 +110,7 @@ namespace FilmRentalStore.API.Repositories.Implementations
         {
             return await _context.Customers
                 .AsNoTracking()
+                .Include(c => c.Role)
                 .Include(c => c.Address)
                     .ThenInclude(a => a.City)
                         .ThenInclude(ci => ci.Country)
@@ -130,6 +144,20 @@ namespace FilmRentalStore.API.Repositories.Implementations
         {
             return await _context.Customers
                 .AnyAsync(c => c.CustomerId == id);
+        }
+
+        public async Task<bool> UsernameExistsAsync(string username, int? excludingCustomerId = null)
+        {
+            var query = _context.Customers
+                .AsNoTracking()
+                .Where(c => c.Username == username);
+
+            if (excludingCustomerId.HasValue)
+            {
+                query = query.Where(c => c.CustomerId != excludingCustomerId.Value);
+            }
+
+            return await query.AnyAsync();
         }
     }
 }

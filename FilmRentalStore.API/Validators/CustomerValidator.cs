@@ -11,6 +11,16 @@ namespace FilmRentalStore.API.Validations
                 .GreaterThan(0)
                 .WithMessage("Store id must be greater than 0");
 
+            RuleFor(x => x.Username)
+                .MaximumLength(50)
+                .WithMessage("Username cannot exceed 50 characters")
+                .When(x => !string.IsNullOrWhiteSpace(x.Username));
+
+            RuleFor(x => x.Password)
+                .MinimumLength(8)
+                .WithMessage("Password must be at least 8 characters long")
+                .When(x => !string.IsNullOrWhiteSpace(x.Password));
+
             RuleFor(x => x.FirstName)
                 .NotEmpty()
                 .WithMessage("First name is required")

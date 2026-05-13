@@ -14,7 +14,11 @@ namespace FilmRentalStore.API.Mappings
 
             CreateMap<CustomerRequestDto, Customer>()
                 .ForMember(dest => dest.AddressId, opt => opt.Ignore())
+                .ForMember(dest => dest.Username, opt => opt.Ignore())
+                .ForMember(dest => dest.Password, opt => opt.Ignore())
+                .ForMember(dest => dest.RoleId, opt => opt.Ignore())
                 .ForMember(dest => dest.Address, opt => opt.Ignore())
+                .ForMember(dest => dest.Role, opt => opt.Ignore())
                 .ForAllMembers(opt =>
                     opt.Condition((src, dest, srcMember) => srcMember != null));
 

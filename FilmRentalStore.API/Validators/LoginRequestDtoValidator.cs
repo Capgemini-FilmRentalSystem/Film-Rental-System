@@ -10,8 +10,8 @@ namespace FilmRentalStore.API.Validators
             RuleFor(x => x.Username)
                 .NotEmpty()
                 .WithMessage("Username is required.")
-                .MaximumLength(16)
-                .WithMessage("Username cannot exceed 16 characters.");
+                .MaximumLength(50)
+                .WithMessage("Username cannot exceed 50 characters.");
 
             RuleFor(x => x.Password)
                 .NotEmpty()

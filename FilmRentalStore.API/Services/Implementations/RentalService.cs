@@ -51,6 +51,28 @@ namespace FilmRentalStore.API.Services.Implementations
             return _mapper.Map<RentalResponseDto>(rental);
         }
 
+        public async Task<IEnumerable<RentalResponseDto>> GetRentalsByCustomerIdAsync(int customerId, int page, int pageSize)
+        {
+            ValidatePagination(page, pageSize);
+
+            var rentals = await _rentalRepository.GetByCustomerIdAsync(customerId, page, pageSize);
+
+            if (rentals is null || !rentals.Any())
+                throw new NotFoundException("No rentals found.");
+
+            return _mapper.Map<IEnumerable<RentalResponseDto>>(rentals);
+        }
+
+        public async Task<RentalResponseDto> GetCustomerRentalByIdAsync(int customerId, int rentalId)
+        {
+            var rental = await _rentalRepository.GetByIdForCustomerAsync(rentalId, customerId);
+
+            if (rental == null)
+                throw new NotFoundException("Rental not found.");
+
+            return _mapper.Map<RentalResponseDto>(rental);
+        }
+
         public async Task<RentalResponseDto> CreateRentalAsync(RentalRequestDto rentalDto)
         {
             if (rentalDto == null)

@@ -8,6 +8,10 @@ namespace FilmRentalStore.API.Repositories.Interfaces
 
         Task<Rental?> GetByIdAsync(int rentalId);
 
+        Task<IEnumerable<Rental>> GetByCustomerIdAsync(int customerId, int page, int pageSize);
+
+        Task<Rental?> GetByIdForCustomerAsync(int rentalId, int customerId);
+
         Task<Rental?> GetEntityByIdAsync(int rentalId);
 
         Task<Rental?> GetWithInventoryAsync(int rentalId);

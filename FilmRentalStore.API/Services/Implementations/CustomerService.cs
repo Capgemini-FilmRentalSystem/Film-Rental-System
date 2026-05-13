@@ -10,6 +10,8 @@ namespace FilmRentalStore.API.Services.Implementations
 {
     public class CustomerService : ICustomerService
     {
+        private const int DefaultCustomerRoleId = 4;
+
         private readonly ICustomerRepository _repository;
         private readonly IAddressRepository _addressRepository;
         private readonly ICountryRepository _countryRepository;
@@ -103,6 +105,20 @@ namespace FilmRentalStore.API.Services.Implementations
             if (string.IsNullOrWhiteSpace(dto.FirstName) || string.IsNullOrWhiteSpace(dto.LastName))
                 throw new BadRequestException("FirstName and LastName are required.");
 
+            if (string.IsNullOrWhiteSpace(dto.Username))
+                throw new BadRequestException("Username is required.");
+
+            if (string.IsNullOrWhiteSpace(dto.Password))
+                throw new BadRequestException("Password is required.");
+
+            if (dto.Password.Length < 8)
+                throw new BadRequestException("Password must be at least 8 characters long.");
+
+            var usernameExists = await _repository.UsernameExistsAsync(dto.Username);
+
+            if (usernameExists)
+                throw new ConflictException("Username already exists.");
+
             var storeExists = await _storeRepository.StoreExists(dto.StoreId);
 
             if (!storeExists)
@@ -164,6 +180,9 @@ namespace FilmRentalStore.API.Services.Implementations
 
             var customer = _mapper.Map<Customer>(dto);
             customer.AddressId = addressId;
+            customer.Username = dto.Username;
+            customer.Password = BCrypt.Net.BCrypt.HashPassword(dto.Password);
+            customer.RoleId = DefaultCustomerRoleId;
             customer.Active = "Y";
             customer.CreateDate = DateTime.Now;
             customer.LastUpdate = DateTime.Now;
@@ -190,6 +209,31 @@ namespace FilmRentalStore.API.Services.Implementations
 
             var customer = await _repository.GetEntityByIdAsync(id)
                 ?? throw new NotFoundException($"Customer with ID {id} was not found.");
+
+            if (dto.Username != null)
+            {
+                if (string.IsNullOrWhiteSpace(dto.Username))
+                    throw new BadRequestException("Username is required.");
+
+                var usernameChanged = !string.Equals(customer.Username, dto.Username, StringComparison.OrdinalIgnoreCase);
+
+                if (usernameChanged)
+                {
+                    var usernameExists = await _repository.UsernameExistsAsync(dto.Username, id);
+
+                    if (usernameExists)
+                        throw new ConflictException("Username already exists.");
+                }
+            }
+
+            if (dto.Password != null)
+            {
+                if (string.IsNullOrWhiteSpace(dto.Password))
+                    throw new BadRequestException("Password is required.");
+
+                if (dto.Password.Length < 8)
+                    throw new BadRequestException("Password must be at least 8 characters long.");
+            }
 
             int targetAddressId = customer.AddressId;
 
@@ -254,6 +298,12 @@ namespace FilmRentalStore.API.Services.Implementations
 
             _mapper.Map(dto, customer);
             customer.AddressId = targetAddressId;
+
+            if (dto.Username != null)
+                customer.Username = dto.Username;
+
+            if (dto.Password != null)
+                customer.Password = BCrypt.Net.BCrypt.HashPassword(dto.Password);
 
             var updated = await _repository.UpdateAsync(customer);
             var updatedWithDetails = await _repository.GetByIdAsync(updated.CustomerId)

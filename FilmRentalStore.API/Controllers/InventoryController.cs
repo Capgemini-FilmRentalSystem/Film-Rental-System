@@ -17,7 +17,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin,Manager,Staff")]
+        [Authorize(Roles = "Admin,Manager,Staff,Customer")]
         public async Task<IActionResult> GetAllInventory(
             [FromQuery] int page = IInventoryService.DefaultPage,
             [FromQuery] int pageSize = IInventoryService.DefaultPageSize)
@@ -28,7 +28,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpGet("{inventoryId}")]
-        [Authorize(Roles = "Admin,Manager,Staff")]
+        [Authorize(Roles = "Admin,Manager,Staff,Customer")]
         public async Task<IActionResult> GetInventoryById(int inventoryId)
         {
             var inventory = await _inventoryService.GetInventoryByIdAsync(inventoryId);

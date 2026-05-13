@@ -17,7 +17,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin,Manager,Staff")]
+        [Authorize(Roles = "Admin,Manager,Staff,Customer")]
         public async Task<IActionResult> GetAllFilms()
         {
             var films = await _filmService.GetAllFilmsAsync();
@@ -26,7 +26,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpGet("{filmId}")]
-        [Authorize(Roles = "Admin,Manager,Staff")]
+        [Authorize(Roles = "Admin,Manager,Staff,Customer")]
         public async Task<IActionResult> GetFilmById(int filmId)
         {
             var film = await _filmService.GetFilmByIdAsync(filmId);

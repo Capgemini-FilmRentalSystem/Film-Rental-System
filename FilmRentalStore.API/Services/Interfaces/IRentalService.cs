@@ -13,6 +13,10 @@ namespace FilmRentalStore.API.Services.Interfaces
 
         Task<RentalResponseDto> GetRentalByIdAsync(int rentalId);
 
+        Task<IEnumerable<RentalResponseDto>> GetRentalsByCustomerIdAsync(int customerId, int page, int pageSize);
+
+        Task<RentalResponseDto> GetCustomerRentalByIdAsync(int customerId, int rentalId);
+
         Task<RentalResponseDto> CreateRentalAsync(RentalRequestDto rentalDto);
 
         Task<RentalResponseDto> ReturnRentalAsync(int rentalId, RentalReturnRequestDto rentalReturnDto);

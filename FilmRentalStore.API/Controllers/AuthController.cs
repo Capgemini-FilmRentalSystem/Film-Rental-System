@@ -1,4 +1,5 @@
 using FilmRentalStore.API.DTOs.Auth;
+using FilmRentalStore.API.DTOs.Customers;
 using FilmRentalStore.API.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,19 +17,35 @@ namespace FilmRentalStore.API.Controllers
             _authService = authService;
         }
 
-        [HttpPost("login")]
+        [HttpPost("staff/login")]
         [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] LoginRequestDto dto)
+        public async Task<IActionResult> StaffLogin([FromBody] LoginRequestDto dto)
         {
-            var result = await _authService.LoginAsync(dto);
+            var result = await _authService.LoginStaffAsync(dto);
             return Ok(result);
         }
 
-        [HttpPost("register")]
+        [HttpPost("staff/register")]
         [AllowAnonymous]
-        public async Task<IActionResult> Register([FromBody] RegisterRequestDto dto)
+        public async Task<IActionResult> StaffRegister([FromBody] RegisterRequestDto dto)
         {
-            var result = await _authService.RegisterAsync(dto);
+            var result = await _authService.RegisterStaffAsync(dto);
+            return Ok(result);
+        }
+
+        [HttpPost("customer/login")]
+        [AllowAnonymous]
+        public async Task<IActionResult> CustomerLogin([FromBody] LoginRequestDto dto)
+        {
+            var result = await _authService.LoginCustomerAsync(dto);
+            return Ok(result);
+        }
+
+        [HttpPost("customer/register")]
+        [AllowAnonymous]
+        public async Task<IActionResult> CustomerRegister([FromBody] CustomerRequestDto dto)
+        {
+            var result = await _authService.RegisterCustomerAsync(dto);
             return Ok(result);
         }
     }

@@ -45,6 +45,10 @@ namespace FilmRentalStore.API.Validators
                 .WithMessage("Password cannot be empty")
                 .MinimumLength(8)
                 .WithMessage("Password must be at least 8 characters long");
+
+            RuleFor(x => x.RoleId)
+                .InclusiveBetween(1, 3)
+                .WithMessage("RoleId must be 1, 2 or 3");
         }
     }
 }
