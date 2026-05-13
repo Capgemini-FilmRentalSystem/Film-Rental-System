@@ -9,6 +9,8 @@ using FilmRentalStore.API.Services.Interfaces;
 using Moq;
 using Xunit;
 
+// test
+
 namespace FilmRentalStore.API.Tests.Services
 {
     public class AuthServiceTests
@@ -415,7 +417,7 @@ namespace FilmRentalStore.API.Tests.Services
 
         /// <summary>
         /// NEGATIVE TEST: RegisterCustomerAsync throws BadRequestException when dto is null
-        /// </summary>
+        /// </summary> 
         [Fact]
         public async Task RegisterCustomerAsync_WithNullDto_ThrowsBadRequestException()
         {
