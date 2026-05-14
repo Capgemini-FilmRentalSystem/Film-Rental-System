@@ -1,0 +1,62 @@
+@model FilmRentalStore.MVC.ViewModels.Address.AddressIndexViewModel
+
+@{
+    ViewData["Title"] = "Addresses";
+}
+
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <h1>Addresses</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="@Url.Action("Create")" class="btn btn-primary">+ New Address</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Address</th>
+                            <th>City</th>
+                            <th>District</th>
+                            <th>Phone</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Addresses.Any())
+                        {
+                            @foreach (var address in Model.Addresses)
+                            {
+                                <tr>
+                                    <td>@address.AddressLine</td>
+                                    <td>@address.City</td>
+                                    <td>@address.District</td>
+                                    <td>@address.Phone</td>
+                                    <td>
+                                        <a href="@Url.Action("Details", new { id = address.AddressLine.GetHashCode() })" class="btn btn-sm btn-info">View</a>
+                                        <a href="@Url.Action("Edit", new { id = address.AddressLine.GetHashCode() })" class="btn btn-sm btn-warning">Edit</a>
+                                        <form method="post" action="@Url.Action("Delete", new { id = address.AddressLine.GetHashCode() })" style="display:inline;">
+                                            @Html.AntiForgeryToken()
+                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?');">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center text-muted">No addresses found</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

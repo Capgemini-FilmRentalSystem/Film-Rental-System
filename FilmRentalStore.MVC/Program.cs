@@ -27,6 +27,7 @@ builder.Services.AddScoped<ICustomerApiService, CustomerApiService>();
 builder.Services.AddScoped<IFilmApiService, FilmApiService>();
 builder.Services.AddScoped<IInventoryApiService, InventoryApiService>();
 builder.Services.AddScoped<ILanguageApiService, LanguageApiService>();
+builder.Services.AddScoped<IAddressApiService, AddressApiService>();
 builder.Services.AddScoped<IPaymentApiService, PaymentApiService>();
 builder.Services.AddScoped<IRentalApiService, RentalApiService>();
 builder.Services.AddScoped<IStaffApiService, StaffApiService>();

@@ -1,0 +1,52 @@
+@model FilmRentalStore.MVC.ViewModels.Language.LanguageCreateEditViewModel
+
+@{
+    ViewData["Title"] = Model.IsEditMode ? "Edit Language" : "Create Language";
+}
+
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <h1>@ViewData["Title"]</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="@Url.Action("Index")" class="btn btn-secondary">Cancel</a>
+        </div>
+    </div>
+
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post" novalidate>
+                @Html.HiddenFor(m => m.LanguageId)
+
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label asp-for="Name" class="form-label">Language Name *</label>
+                        <input asp-for="Name" class="form-control" placeholder="Enter language name" required />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        @if (Model.IsEditMode)
+                        {
+                            <span>Update Language</span>
+                        }
+                        else
+                        {
+                            <span>Create Language</span>
+                        }
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
