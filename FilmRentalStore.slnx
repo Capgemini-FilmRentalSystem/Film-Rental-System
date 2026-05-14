@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="FilmRentalStore.API/FilmRentalStore.API.csproj" />
+  <Project Path="FilmRentalStore.MVC/FilmRentalStore.MVC.csproj" Id="75fff53d-056a-45c6-a9ed-ae5d24fba006" />
   <Project Path="FilmRentalStore.Tests/FilmRentalStore.Tests.csproj" Id="9bfe5c5a-d3d9-42a7-bd4e-6844d34b90bc" />
 </Solution>
