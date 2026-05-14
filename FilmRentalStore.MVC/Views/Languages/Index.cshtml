@@ -1,0 +1,56 @@
+@model FilmRentalStore.MVC.ViewModels.Language.LanguageIndexViewModel
+
+@{
+    ViewData["Title"] = "Languages";
+}
+
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <h1>Languages</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="@Url.Action("Create")" class="btn btn-primary">+ New Language</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Language ID</th>
+                            <th>Name</th>
+                            <th>Last Updated</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Languages.Any())
+                        {
+                            @foreach (var language in Model.Languages)
+                            {
+                                <tr>
+                                    <td>@language.LanguageId</td>
+                                    <td>@language.Name</td>
+                                    <td>@language.LastUpdate.ToString("g")</td>
+                                    <td>
+                                        <a href="@Url.Action("Details", new { id = language.LanguageId })" class="btn btn-sm btn-info">View</a>
+                                        <a href="@Url.Action("Edit", new { id = language.LanguageId })" class="btn btn-sm btn-warning">Edit</a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">No languages found</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

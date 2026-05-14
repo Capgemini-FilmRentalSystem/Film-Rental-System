@@ -1,0 +1,83 @@
+@model FilmRentalStore.MVC.ViewModels.Customer.CustomerIndexViewModel
+
+@{
+    ViewData["Title"] = "Customers";
+}
+
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <h1>Customers</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="@Url.Action("Create")" class="btn btn-primary">+ New Customer</a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Username</th>
+                            <th>Full Name</th>
+                            <th>Email</th>
+                            <th>Store ID</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Customers.Any())
+                        {
+                            @foreach (var customer in Model.Customers)
+                            {
+                                <tr>
+                                    <td>@customer.Username</td>
+                                    <td>@customer.FullName</td>
+                                    <td>@customer.Email</td>
+                                    <td>@customer.StoreId</td>
+                                    <td>
+                                        @if (customer.IsActive)
+                                        {
+                                            <span class="badge bg-success">Active</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger">Inactive</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a href="@Url.Action("Details", new { id = customer.CustomerId })" class="btn btn-sm btn-info">View</a>
+                                        <a href="@Url.Action("Edit", new { id = customer.CustomerId })" class="btn btn-sm btn-warning">Edit</a>
+                                        @if (customer.IsActive)
+                                        {
+                                            <form method="post" action="@Url.Action("Deactivate", new { id = customer.CustomerId })" style="display:inline;">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-secondary" onclick="return confirm('Are you sure?');">Deactivate</button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <form method="post" action="@Url.Action("Activate", new { id = customer.CustomerId })" style="display:inline;">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Are you sure?');">Activate</button>
+                                            </form>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="6" class="text-center text-muted">No customers found</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

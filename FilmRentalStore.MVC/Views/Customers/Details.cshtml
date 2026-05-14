@@ -1,0 +1,97 @@
+@model FilmRentalStore.MVC.ViewModels.Customer.CustomerDetailsViewModel
+
+@{
+    ViewData["Title"] = "Customer Details";
+}
+
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <h1>Customer Details</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
+            <a href="@Url.Action("Edit", new { id = Model.Customer?.CustomerId })" class="btn btn-warning">Edit</a>
+        </div>
+    </div>
+
+    @if (Model.Customer != null)
+    {
+        <div class="card">
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label"><strong>Username:</strong></label>
+                        <p>@Model.Customer.Username</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label"><strong>Full Name:</strong></label>
+                        <p>@Model.Customer.FullName</p>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label"><strong>Email:</strong></label>
+                        <p>@(Model.Customer.Email ?? "N/A")</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label"><strong>Store ID:</strong></label>
+                        <p>@Model.Customer.StoreId</p>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label"><strong>Status:</strong></label>
+                        <p>
+                            @if (Model.Customer.IsActive)
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Inactive</span>
+                            }
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label"><strong>Role:</strong></label>
+                        <p>@(Model.Customer.Role != null ? Model.Customer.Role.GetType().GetProperty("Name")?.GetValue(Model.Customer.Role) ?? "N/A" : "N/A")</p>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label class="form-label"><strong>Address:</strong></label>
+                        @if (Model.Customer.Address != null)
+                        {
+                            <p>
+                                @Model.Customer.Address.AddressLine
+                                @if (!string.IsNullOrEmpty(Model.Customer.Address.Address2))
+                                {
+                                    <br />@Model.Customer.Address.Address2
+                                }
+                                <br />@Model.Customer.Address.District, @Model.Customer.Address.City @Model.Customer.Address.Country
+                                @if (!string.IsNullOrEmpty(Model.Customer.Address.PostalCode))
+                                {
+                                    <br />@Model.Customer.Address.PostalCode
+                                }
+                                <br />@Model.Customer.Address.Phone
+                            </p>
+                        }
+                        else
+                        {
+                            <p>N/A</p>
+                        }
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <small class="text-muted">
+                            Created: @Model.Customer.CreateDate.ToString("g")<br />
+                            Last Updated: @Model.Customer.LastUpdate.ToString("g")
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

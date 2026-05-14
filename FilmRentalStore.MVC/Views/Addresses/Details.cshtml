@@ -1,0 +1,73 @@
+@model FilmRentalStore.MVC.ViewModels.Address.AddressDetailsViewModel
+
+@{
+    ViewData["Title"] = "Address Details";
+}
+
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <h1>Address Details</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
+            <a href="@Url.Action("Edit", new { id = Model.Address?.AddressLine.GetHashCode() })" class="btn btn-warning">Edit</a>
+        </div>
+    </div>
+
+    @if (Model.Address != null)
+    {
+        <div class="card">
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <label class="form-label"><strong>Address Line 1:</strong></label>
+                        <p>@Model.Address.AddressLine</p>
+                    </div>
+                </div>
+                @if (!string.IsNullOrEmpty(Model.Address.Address2))
+                {
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <label class="form-label"><strong>Address Line 2:</strong></label>
+                            <p>@Model.Address.Address2</p>
+                        </div>
+                    </div>
+                }
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label"><strong>City:</strong></label>
+                        <p>@Model.Address.City</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label"><strong>Country:</strong></label>
+                        <p>@Model.Address.Country</p>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label"><strong>District:</strong></label>
+                        <p>@Model.Address.District</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label"><strong>Postal Code:</strong></label>
+                        <p>@(Model.Address.PostalCode ?? "N/A")</p>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label"><strong>Phone:</strong></label>
+                        <p>@Model.Address.Phone</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <small class="text-muted">
+                            Last Updated: @Model.Address.LastUpdate.ToString("g")
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

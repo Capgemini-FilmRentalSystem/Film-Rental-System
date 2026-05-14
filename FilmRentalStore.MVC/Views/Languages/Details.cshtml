@@ -1,0 +1,42 @@
+@model FilmRentalStore.MVC.ViewModels.Language.LanguageDetailsViewModel
+
+@{
+    ViewData["Title"] = "Language Details";
+}
+
+<div class="container-fluid">
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <h1>Language Details</h1>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
+            <a href="@Url.Action("Edit", new { id = Model.Language?.LanguageId })" class="btn btn-warning">Edit</a>
+        </div>
+    </div>
+
+    @if (Model.Language != null)
+    {
+        <div class="card">
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label"><strong>Language ID:</strong></label>
+                        <p>@Model.Language.LanguageId</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label"><strong>Name:</strong></label>
+                        <p>@Model.Language.Name</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <small class="text-muted">
+                            Last Updated: @Model.Language.LastUpdate.ToString("g")
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
