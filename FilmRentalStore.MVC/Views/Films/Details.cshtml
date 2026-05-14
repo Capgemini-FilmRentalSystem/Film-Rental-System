@@ -1,0 +1,67 @@
+﻿@model FilmRentalStore.MVC.ViewModels.Film.FilmDetailViewModel
+
+@{
+    ViewData["Title"] = Model.Film.Title;
+    var film = Model.Film;
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<div class="d-flex justify-content-between mb-3">
+    <h2>@film.Title</h2>
+    <div>
+        <a asp-action="Edit" asp-route-id="@film.FilmId" class="btn btn-warning">Edit</a>
+        <a asp-action="Index" class="btn btn-secondary">Back</a>
+    </div>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Description</dt>
+            <dd class="col-sm-9">@(film.Description ?? "—")</dd>
+
+            <dt class="col-sm-3">Release Year</dt>
+            <dd class="col-sm-9">@(film.ReleaseYear ?? "—")</dd>
+
+            <dt class="col-sm-3">Language</dt>
+            <dd class="col-sm-9">@film.Language?.Name</dd>
+
+            <dt class="col-sm-3">Original Language</dt>
+            <dd class="col-sm-9">@(film.OriginalLanguage?.Name ?? "—")</dd>
+
+            <dt class="col-sm-3">Rating</dt>
+            <dd class="col-sm-9">@(film.Rating ?? "—")</dd>
+
+            <dt class="col-sm-3">Rental Rate</dt>
+            <dd class="col-sm-9">$@film.RentalRate</dd>
+
+            <dt class="col-sm-3">Rental Duration</dt>
+            <dd class="col-sm-9">@film.RentalDuration days</dd>
+
+            <dt class="col-sm-3">Length</dt>
+            <dd class="col-sm-9">@(film.Length.HasValue ? $"{film.Length} min" : "—")</dd>
+
+            <dt class="col-sm-3">Replacement Cost</dt>
+            <dd class="col-sm-9">$@film.ReplacementCost</dd>
+
+            <dt class="col-sm-3">Special Features</dt>
+            <dd class="col-sm-9">@(film.SpecialFeatures ?? "—")</dd>
+
+            <dt class="col-sm-3">Last Updated</dt>
+            <dd class="col-sm-9">@film.LastUpdate.ToString("dd MMM yyyy")</dd>
+        </dl>
+    </div>
+</div>
+
+<div class="d-flex gap-2 mb-3">
+    <a asp-action="AssignActor" asp-route-id="@film.FilmId" class="btn btn-outline-primary">
+        Manage Actors
+    </a>
+    <a asp-action="AssignCategory" asp-route-id="@film.FilmId" class="btn btn-outline-primary">
+        Manage Categories
+    </a>
+</div>

@@ -1,0 +1,13 @@
+﻿@model FilmRentalStore.MVC.ViewModels.Film.FilmFormViewModel
+
+@{
+    ViewData["Title"] = "Edit Film";
+}
+
+<h2>Edit Film</h2>
+<a asp-action="Details" asp-route-id="@ViewBag.FilmId" class="btn btn-secondary mb-3">Back</a>
+
+<form asp-action="Edit" asp-route-id="@ViewBag.FilmId" method="post">
+    @await Html.PartialAsync("_FilmForm", Model)
+    <button type="submit" class="btn btn-warning mt-3">Update Film</button>
+</form>

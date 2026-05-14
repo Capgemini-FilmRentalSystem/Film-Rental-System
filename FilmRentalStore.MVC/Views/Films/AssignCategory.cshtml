@@ -1,0 +1,61 @@
+﻿@model FilmRentalStore.MVC.ViewModels.Film.FilmAssignCategoryViewModel
+
+@{
+    ViewData["Title"] = "Manage Categories";
+}
+
+<h2>Manage Categories — <small class="text-muted">@Model.FilmTitle</small></h2>
+<a asp-action="Details" asp-route-id="@Model.FilmId" class="btn btn-secondary mb-3">Back to Film</a>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<div class="card mb-4">
+    <div class="card-header">Assign Category</div>
+    <div class="card-body">
+        <form asp-action="AssignCategory" asp-route-id="@Model.FilmId" method="post">
+            @Html.AntiForgeryToken()
+            <div class="d-flex gap-2">
+                <select asp-for="SelectedCategoryId" asp-items="Model.Categories"
+                        class="form-select">
+                    <option value="">-- Select Category --</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Assign</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (Model.AssignedCategories.Any())
+{
+    <h5>Currently Assigned Categories</h5>
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>Category</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var cat in Model.AssignedCategories)
+            {
+                <tr>
+                    <td>@cat.Name</td>
+                    <td>
+                        <form asp-action="RemoveCategory" method="post" style="display:inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="filmId" value="@Model.FilmId" />
+                            <input type="hidden" name="categoryId" value="@cat.CategoryId" />
+                            <button type="submit" class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Remove this category?')">
+                                Remove
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

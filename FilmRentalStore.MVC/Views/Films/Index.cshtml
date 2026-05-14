@@ -1,0 +1,68 @@
+﻿@model FilmRentalStore.MVC.ViewModels.Film.FilmIndexViewModel
+
+@{
+    ViewData["Title"] = "Films";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Films</h2>
+    <a asp-action="Create" class="btn btn-primary">+ Add Film</a>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<table class="table table-bordered table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>Title</th>
+            <th>Language</th>
+            <th>Rating</th>
+            <th>Rental Rate</th>
+            <th>Duration (days)</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var film in Model.Films)
+        {
+            <tr>
+                <td>@film.Title</td>
+                <td>@film.Language?.Name</td>
+                <td>@film.Rating</td>
+                <td>$@film.RentalRate</td>
+                <td>@film.RentalDuration</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@film.FilmId" class="btn btn-sm btn-info">Details</a>
+                    <a asp-action="Edit" asp-route-id="@film.FilmId" class="btn btn-sm btn-warning">Edit</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<nav>
+    <ul class="pagination">
+        @if (Model.CurrentPage > 1)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-action="Index"
+                   asp-route-page="@(Model.CurrentPage - 1)"
+                   asp-route-pageSize="@Model.PageSize">Previous</a>
+            </li>
+        }
+        <li class="page-item disabled">
+            <span class="page-link">Page @Model.CurrentPage</span>
+        </li>
+        @if (Model.HasNextPage)
+        {
+            <li class="page-item">
+                <a class="page-link" asp-action="Index"
+                   asp-route-page="@(Model.CurrentPage + 1)"
+                   asp-route-pageSize="@Model.PageSize">Next</a>
+            </li>
+        }
+    </ul>
+</nav>
