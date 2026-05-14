@@ -1,0 +1,61 @@
+﻿@model FilmRentalStore.MVC.ViewModels.Film.FilmAssignActorViewModel
+
+@{
+    ViewData["Title"] = "Manage Actors";
+}
+
+<h2>Manage Actors — <small class="text-muted">@Model.FilmTitle</small></h2>
+<a asp-action="Details" asp-route-id="@Model.FilmId" class="btn btn-secondary mb-3">Back to Film</a>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+
+<div class="card mb-4">
+    <div class="card-header">Assign Actor</div>
+    <div class="card-body">
+        <form asp-action="AssignActor" asp-route-id="@Model.FilmId" method="post">
+            @Html.AntiForgeryToken()
+            <div class="d-flex gap-2">
+                <select asp-for="SelectedActorId" asp-items="Model.Actors"
+                        class="form-select">
+                    <option value="">-- Select Actor --</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Assign</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@if (Model.AssignedActors.Any())
+{
+    <h5>Currently Assigned Actors</h5>
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>Name</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var actor in Model.AssignedActors)
+            {
+                <tr>
+                    <td>@actor.FullName</td>
+                    <td>
+                        <form asp-action="RemoveActor" method="post" style="display:inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="filmId" value="@Model.FilmId" />
+                            <input type="hidden" name="actorId" value="@actor.ActorId" />
+                            <button type="submit" class="btn btn-sm btn-danger"
+                                    onclick="return confirm('Remove this actor?')">
+                                Remove
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

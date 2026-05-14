@@ -1,0 +1,93 @@
+﻿@model FilmRentalStore.MVC.ViewModels.Film.FilmFormViewModel
+
+@{
+    var specialFeatureOptions = new List<string>
+    {
+        "Trailers", "Commentaries", "Deleted Scenes", "Behind the Scenes"
+    };
+}
+
+<div class="row g-3">
+    <div class="col-md-8">
+        <label class="form-label">Title *</label>
+        <input asp-for="Film.Title" class="form-control" placeholder="Film title" />
+        <span asp-validation-for="Film.Title" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label class="form-label">Release Year</label>
+        <input asp-for="Film.ReleaseYear" class="form-control" placeholder="e.g. 2005" maxlength="4" />
+    </div>
+
+    <div class="col-12">
+        <label class="form-label">Description</label>
+        <textarea asp-for="Film.Description" class="form-control" rows="3"></textarea>
+    </div>
+
+    <div class="col-md-4">
+        <label class="form-label">Language *</label>
+        <select asp-for="Film.LanguageId" asp-items="Model.Languages" class="form-select">
+            <option value="">-- Select Language --</option>
+        </select>
+        <span asp-validation-for="Film.LanguageId" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-4">
+        <label class="form-label">Original Language</label>
+        <select asp-for="Film.OriginalLanguageId" asp-items="Model.OriginalLanguages" class="form-select">
+            <option value="">-- None --</option>
+        </select>
+    </div>
+
+    <div class="col-md-4">
+        <label class="form-label">Rating</label>
+        <select asp-for="Film.Rating" class="form-select">
+            <option value="">-- Select Rating --</option>
+            @foreach (var r in Model.RatingOptions)
+            {
+                <option value="@r">@r</option>
+            }
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label">Rental Rate ($) *</label>
+        <input asp-for="Film.RentalRate" class="form-control" type="number" step="0.01" />
+        <span asp-validation-for="Film.RentalRate" class="text-danger"></span>
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label">Rental Duration (days) *</label>
+        <input asp-for="Film.RentalDuration" class="form-control" type="number" min="1" />
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label">Length (minutes)</label>
+        <input asp-for="Film.Length" class="form-control" type="number" min="1" />
+    </div>
+
+    <div class="col-md-3">
+        <label class="form-label">Replacement Cost ($) *</label>
+        <input asp-for="Film.ReplacementCost" class="form-control" type="number" step="0.01" />
+    </div>
+
+    <div class="col-12">
+        <label class="form-label">Special Features</label>
+        <div class="d-flex gap-4 flex-wrap">
+            @foreach (var feature in specialFeatureOptions)
+            {
+                <div class="form-check">
+                    <input type="checkbox"
+                           name="SelectedSpecialFeatures"
+                           value="@feature"
+                           class="form-check-input"
+                           id="sf_@feature.Replace(" ", "_")"
+                    @(Model.SelectedSpecialFeatures.Contains(feature) ? "checked" : "") />
+                    <label class="form-check-label" for="sf_@feature.Replace(" ", "_")">
+                        @feature
+                    </label>
+                </div>
+            }
+        </div>
+    </div>
+</div>

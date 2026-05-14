@@ -1,0 +1,24 @@
+﻿@model FilmRentalStore.MVC.DTOs.Category.CategoryResponseDto
+
+@{
+    ViewData["Title"] = Model.Name;
+}
+
+<h2>@Model.Name</h2>
+<a asp-action="Index" class="btn btn-secondary mb-3">Back</a>
+
+<div class="card">
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">Category ID</dt>
+            <dd class="col-sm-9">@Model.CategoryId</dd>
+
+            <dt class="col-sm-3">Name</dt>
+            <dd class="col-sm-9">@Model.Name</dd>
+
+            <dt class="col-sm-3">Last Updated</dt>
+            <dd class="col-sm-9">@Model.LastUpdate.ToString("dd MMM yyyy")</dd>
+        </dl>
+        <a asp-action="Edit" asp-route-id="@Model.CategoryId" class="btn btn-warning">Edit</a>
+    </div>
+</div>

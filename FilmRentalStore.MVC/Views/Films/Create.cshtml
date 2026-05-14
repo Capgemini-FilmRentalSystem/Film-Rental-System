@@ -1,0 +1,13 @@
+﻿@model FilmRentalStore.MVC.ViewModels.Film.FilmFormViewModel
+
+@{
+    ViewData["Title"] = "Add Film";
+}
+
+<h2>Add Film</h2>
+<a asp-action="Index" class="btn btn-secondary mb-3">Back</a>
+
+<form asp-action="Create" method="post">
+    @await Html.PartialAsync("_FilmForm", Model)
+    <button type="submit" class="btn btn-primary mt-3">Create Film</button>
+</form>

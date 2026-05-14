@@ -32,10 +32,6 @@ namespace FilmRentalStore.MVC.DTOs
         public bool IsActive { get; set; }
     }
 
-    public class LanguageSummaryDto
-    {
-        public string Name { get; set; } = string.Empty;
-    }
 
     public class FilmSummaryDto
     {
@@ -52,5 +48,25 @@ namespace FilmRentalStore.MVC.DTOs
         public DateTime RentalDate { get; set; }
         public FilmSummaryDto Film { get; set; } = null!;
         public DateTime? ReturnDate { get; set; }
+    }
+
+    public class LanguageSummaryDto
+    {
+        public byte LanguageId { get; set; }
+        public string Name { get; set; } = string.Empty;
+    }
+
+    public class ActorSummaryDto
+    {
+        public int ActorId { get; set; }
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string FullName => $"{FirstName} {LastName}";
+    }
+
+    public class CategorySummaryDto
+    {
+        public byte CategoryId { get; set; }
+        public string Name { get; set; } = string.Empty;
     }
 }
