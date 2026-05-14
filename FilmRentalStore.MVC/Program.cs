@@ -20,9 +20,6 @@ builder.Services.AddHttpClient<IApiClient, ApiClient>(client =>
     client.BaseAddress = new Uri(baseUrl!);
 });
 
-builder.Services.AddScoped<IApiClient, ApiClient>();
-
-
 builder.Services.AddScoped<IAuthApiService, AuthApiService>();
 builder.Services.AddScoped<IActorApiService, ActorApiService>();
 builder.Services.AddScoped<ICategoryApiService, CategoryApiService>();
