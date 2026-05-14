@@ -1,0 +1,25 @@
+﻿@model IEnumerable<FilmRentalStore.MVC.ViewModels.Payment.PaymentViewModel>
+
+<h1>My Payments</h1>
+
+<table class="table mt-3">
+    <thead>
+        <tr>
+            <th>Payment Id</th>
+            <th>Rental Id</th>
+            <th>Amount</th>
+            <th>Payment Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var payment in Model)
+        {
+            <tr>
+                <td>@payment.PaymentId</td>
+                <td>@payment.RentalId</td>
+                <td>@payment.Amount</td>
+                <td>@payment.PaymentDate</td>
+            </tr>
+        }
+    </tbody>
+</table>

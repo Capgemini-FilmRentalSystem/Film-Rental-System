@@ -1,0 +1,33 @@
+﻿@model IEnumerable<FilmRentalStore.MVC.ViewModels.Payment.PaymentViewModel>
+
+<h1>Payments</h1>
+
+<a asp-action="Create" class="btn btn-primary">Create Payment</a>
+
+<table class="table mt-3">
+    <thead>
+        <tr>
+            <th>Payment Id</th>
+            <th>Customer Id</th>
+            <th>Rental Id</th>
+            <th>Amount</th>
+            <th>Payment Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var payment in Model)
+        {
+            <tr>
+                <td>@payment.PaymentId</td>
+                <td>@payment.CustomerId</td>
+                <td>@payment.RentalId</td>
+                <td>@payment.Amount</td>
+                <td>@payment.PaymentDate</td>
+                <td>
+                    <a asp-action="Details" asp-route-paymentId="@payment.PaymentId">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,6 +1,7 @@
 using FilmRentalStore.MVC.Services.Interfaces;
 using FilmRentalStore.MVC.Services.Implementations;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
@@ -19,6 +20,7 @@ builder.Services.AddHttpClient<IApiClient, ApiClient>(client =>
     var baseUrl = builder.Configuration["ApiSettings:BaseUrl"];
     client.BaseAddress = new Uri(baseUrl!);
 });
+
 
 builder.Services.AddScoped<IAuthApiService, AuthApiService>();
 builder.Services.AddScoped<IActorApiService, ActorApiService>();
