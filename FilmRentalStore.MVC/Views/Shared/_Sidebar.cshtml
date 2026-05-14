@@ -1,0 +1,53 @@
+﻿@using FilmRentalStore.MVC.Helpers
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+@{
+    var role = HttpContextAccessor.HttpContext?.Session.GetString(SessionKeys.Role);
+}
+
+@if (!string.IsNullOrWhiteSpace(role))
+{
+    <div class="list-group">
+        <a class="list-group-item list-group-item-action" asp-controller="Dashboard" asp-action="Index">Dashboard</a>
+
+        @if (role == RoleConstants.Admin)
+        {
+            <a class="list-group-item list-group-item-action" asp-controller="Films" asp-action="Index">Films</a>
+            <a class="list-group-item list-group-item-action" asp-controller="Inventory" asp-action="Index">Inventory</a>
+            <a class="list-group-item list-group-item-action" asp-controller="Customers" asp-action="Index">Customers</a>
+            <a class="list-group-item list-group-item-action" asp-controller="Rentals" asp-action="Index">Rentals</a>
+            <a class="list-group-item list-group-item-action" asp-controller="Payments" asp-action="Index">Payments</a>
+            <a class="list-group-item list-group-item-action" asp-controller="Actors" asp-action="Index">Actors</a>
+            <a class="list-group-item list-group-item-action" asp-controller="Categories" asp-action="Index">Categories</a>
+            <a class="list-group-item list-group-item-action" asp-controller="Staff" asp-action="Index">Staff</a>
+            <a class="list-group-item list-group-item-action" asp-controller="Stores" asp-action="Index">Stores</a>
+        }
+        else if (role == RoleConstants.Manager)
+        {
+            <a class="list-group-item list-group-item-action" asp-controller="Films" asp-action="Index">Films</a>
+            <a class="list-group-item list-group-item-action" asp-controller="Inventory" asp-action="Index">Inventory</a>
+            <a class="list-group-item list-group-item-action" asp-controller="Customers" asp-action="Index">Customers</a>
+            <a class="list-group-item list-group-item-action" asp-controller="Rentals" asp-action="Index">Rentals</a>
+            <a class="list-group-item list-group-item-action" asp-controller="Payments" asp-action="Index">Payments</a>
+            <a class="list-group-item list-group-item-action" asp-controller="Actors" asp-action="Index">Actors</a>
+            <a class="list-group-item list-group-item-action" asp-controller="Categories" asp-action="Index">Categories</a>
+            <a class="list-group-item list-group-item-action" asp-controller="Stores" asp-action="Index">Stores</a>
+        }
+        else if (role == RoleConstants.Staff)
+        {
+            <a class="list-group-item list-group-item-action" asp-controller="Films" asp-action="Index">Films</a>
+            <a class="list-group-item list-group-item-action" asp-controller="Inventory" asp-action="Index">Inventory</a>
+            <a class="list-group-item list-group-item-action" asp-controller="Customers" asp-action="Index">Customers</a>
+            <a class="list-group-item list-group-item-action" asp-controller="Rentals" asp-action="Index">Rentals</a>
+            <a class="list-group-item list-group-item-action" asp-controller="Payments" asp-action="Index">Payments</a>
+        }
+        else if (role == RoleConstants.Customer)
+        {
+            <a class="list-group-item list-group-item-action" asp-controller="Films" asp-action="Index">Browse Films</a>
+            <a class="list-group-item list-group-item-action" asp-controller="Inventory" asp-action="Index">Browse Inventory</a>
+            <a class="list-group-item list-group-item-action" asp-controller="Customers" asp-action="Profile">My Profile</a>
+            <a class="list-group-item list-group-item-action" asp-controller="Rentals" asp-action="MyRentals">My Rentals</a>
+            <a class="list-group-item list-group-item-action" asp-controller="Payments" asp-action="MyPayments">My Payments</a>
+        }
+    </div>
+}
