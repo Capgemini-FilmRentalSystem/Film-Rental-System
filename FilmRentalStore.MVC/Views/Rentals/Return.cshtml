@@ -1,0 +1,18 @@
+@model FilmRentalStore.MVC.DTOs.Rental.RentalReturnRequestDto
+
+@{
+    ViewData["Title"] = "Return Rental";
+}
+
+<h1>Return Rental</h1>
+
+<form asp-action="Return" asp-route-id="@ViewBag.RentalId" method="post" class="mt-3">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="mb-3">
+        <label asp-for="ReturnDate" class="form-label">Return Date</label>
+        <input asp-for="ReturnDate" type="datetime-local" class="form-control" />
+        <span asp-validation-for="ReturnDate" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Details" asp-route-id="@ViewBag.RentalId" class="btn btn-secondary">Cancel</a>
+</form>

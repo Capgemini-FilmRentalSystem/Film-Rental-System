@@ -16,6 +16,7 @@ namespace FilmRentalStore.API.Services.Implementations
         private readonly IStoreRepository _storeRepository;
         private readonly ICustomerService _customerService;
         private readonly ITokenService _tokenService;
+        private readonly IAddressService? _addressService;
 
         public AuthService(
             IStaffRepository staffRepository,
@@ -23,7 +24,8 @@ namespace FilmRentalStore.API.Services.Implementations
             IAddressRepository addressRepository,
             IStoreRepository storeRepository,
             ICustomerService customerService,
-            ITokenService tokenService)
+            ITokenService tokenService,
+            IAddressService? addressService = null)
         {
             _staffRepository = staffRepository;
             _customerRepository = customerRepository;
@@ -31,6 +33,7 @@ namespace FilmRentalStore.API.Services.Implementations
             _storeRepository = storeRepository;
             _customerService = customerService;
             _tokenService = tokenService;
+            _addressService = addressService;
         }
 
         public async Task<LoginResponseDto> LoginStaffAsync(LoginRequestDto dto)
@@ -70,15 +73,26 @@ namespace FilmRentalStore.API.Services.Implementations
             if (usernameExists)
                 throw new ConflictException("Username already exists.");
 
-            var addressExists = await _addressRepository.GetByIdAsync(dto.AddressId);
-
-            if (addressExists == null)
-                throw new BadRequestException("Invalid address id.");
-
             var storeExists = await _storeRepository.StoreExists(dto.StoreId);
 
             if (!storeExists)
                 throw new BadRequestException("Invalid store id.");
+
+            if (dto.Address != null)
+            {
+                if (_addressService == null)
+                    throw new BadRequestException("Address details cannot be processed.");
+
+                var createdAddress = await _addressService.CreateAddressAsync(dto.Address);
+                dto.AddressId = createdAddress.AddressId;
+            }
+            else
+            {
+                var addressExists = await _addressRepository.GetByIdAsync(dto.AddressId);
+
+                if (addressExists == null)
+                    throw new BadRequestException("Invalid address id.");
+            }
 
             var staff = new Staff
             {

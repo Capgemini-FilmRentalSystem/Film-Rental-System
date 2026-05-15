@@ -1,3 +1,5 @@
+using FilmRentalStore.MVC.DTOs.Address;
+
 namespace FilmRentalStore.MVC.DTOs.Auth
 {
     public class RegisterRequestDto
@@ -10,5 +12,6 @@ namespace FilmRentalStore.MVC.DTOs.Auth
         public string Username { get; set; } = null!;
         public string Password { get; set; } = null!;
         public int RoleId { get; set; } = 3;
+        public AddressDto? Address { get; set; }
     }
 }

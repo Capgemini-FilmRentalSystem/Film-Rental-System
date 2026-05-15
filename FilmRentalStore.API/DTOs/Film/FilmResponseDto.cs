@@ -16,6 +16,14 @@ namespace FilmRentalStore.API.DTOs.Film
 
         public LanguageSummaryDto? OriginalLanguage { get; set; }
 
+        public List<byte> CategoryIds { get; set; } = new();
+
+        public List<int> ActorIds { get; set; } = new();
+
+        public List<CategorySummaryDto> Categories { get; set; } = new();
+
+        public List<ActorSummaryDto> Actors { get; set; } = new();
+
         public byte RentalDuration { get; set; }
 
         public decimal RentalRate { get; set; }

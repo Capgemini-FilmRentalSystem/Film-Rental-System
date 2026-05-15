@@ -4,6 +4,7 @@ namespace FilmRentalStore.API.Services.Interfaces
 {
     public interface IStoreService
     {
+        Task<IEnumerable<StoreResponseDto>> GetAllStoresAsync();
         Task<StoreResponseDto> GetStoreByIdAsync(int storeId);
         Task<StoreResponseDto> CreateStoreAsync(StoreRequestDto dto);
         Task<StoreResponseDto> UpdateStoreAsync(int storeId, StoreRequestDto dto);

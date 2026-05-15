@@ -30,6 +30,21 @@ namespace FilmRentalStore.API.Repositories.Implementations
             _context.Entry(staff).State = EntityState.Modified;
         }
 
+        public async Task<IEnumerable<Staff>> GetAllAsync()
+        {
+            return await _context.Staff
+                .AsNoTracking()
+                .Include(s => s.Role)
+                .Include(s => s.Address)
+                    .ThenInclude(a => a.City)
+                        .ThenInclude(c => c.Country)
+                .Include(s => s.Store)
+                    .ThenInclude(st => st.ManagerStaff)
+                        .ThenInclude(ms => ms.Role)
+                .OrderBy(s => s.StaffId)
+                .ToListAsync();
+        }
+
         public async Task<Staff?> GetByIdAsync(byte staffId)
         {
             return await _context.Staff

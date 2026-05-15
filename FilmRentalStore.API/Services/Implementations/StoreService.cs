@@ -11,11 +11,16 @@ namespace FilmRentalStore.API.Services.Implementations
     {
         private readonly IStoreRepository _storeRepository;
         private readonly IMapper _mapper;
+        private readonly IAddressService? _addressService;
 
-        public StoreService(IStoreRepository storeRepository, IMapper mapper)
+        public StoreService(
+            IStoreRepository storeRepository,
+            IMapper mapper,
+            IAddressService? addressService = null)
         {
             _storeRepository = storeRepository;
             _mapper = mapper;
+            _addressService = addressService;
         }
         public async Task<StoreResponseDto> CreateStoreAsync(StoreRequestDto dto)
         {
@@ -32,10 +37,21 @@ namespace FilmRentalStore.API.Services.Implementations
             if (managerAlreadyAssigned)
                 throw new ConflictException("Manager is already assigned to another store.");
 
-            var addressExists = await _storeRepository.AddressExistsAsync(dto.AddressId);
+            if (dto.Address != null)
+            {
+                if (_addressService == null)
+                    throw new BadRequestException("Address details cannot be processed.");
 
-            if (!addressExists)
-                throw new BadRequestException("Invalid Address Id,");
+                var createdAddress = await _addressService.CreateAddressAsync(dto.Address);
+                dto.AddressId = createdAddress.AddressId;
+            }
+            else
+            {
+                var addressExists = await _storeRepository.AddressExistsAsync(dto.AddressId);
+
+                if (!addressExists)
+                    throw new BadRequestException("Invalid Address Id,");
+            }
 
             var store = _mapper.Map<Store>(dto);
 
@@ -50,6 +66,16 @@ namespace FilmRentalStore.API.Services.Implementations
                 throw new NotFoundException("Created store record not found.");
 
             return _mapper.Map<StoreResponseDto>(createdStore);
+        }
+
+        public async Task<IEnumerable<StoreResponseDto>> GetAllStoresAsync()
+        {
+            var stores = await _storeRepository.GetAllAsync();
+
+            if (stores == null || !stores.Any())
+                throw new NotFoundException("No stores found.");
+
+            return _mapper.Map<IEnumerable<StoreResponseDto>>(stores);
         }
 
         public async Task<StoreResponseDto> GetStoreByIdAsync(int storeId)
@@ -83,10 +109,21 @@ namespace FilmRentalStore.API.Services.Implementations
             if (managerAlreadyAssigned)
                 throw new ConflictException("Manager is already assigned to another store.");
 
-            var addressExists = await _storeRepository.AddressExistsAsync(dto.AddressId);
+            if (dto.Address != null)
+            {
+                if (_addressService == null)
+                    throw new BadRequestException("Address details cannot be processed.");
 
-            if (!addressExists)
-                throw new BadRequestException("Invalid address id.");
+                await _addressService.UpdateAddressAsync(store.AddressId, dto.Address);
+                dto.AddressId = store.AddressId;
+            }
+            else
+            {
+                var addressExists = await _storeRepository.AddressExistsAsync(dto.AddressId);
+
+                if (!addressExists)
+                    throw new BadRequestException("Invalid address id.");
+            }
 
             _mapper.Map(dto, store);
 

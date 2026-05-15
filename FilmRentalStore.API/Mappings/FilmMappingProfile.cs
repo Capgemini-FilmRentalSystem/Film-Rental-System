@@ -17,7 +17,15 @@ namespace FilmRentalStore.API.Mappings
                 .ForMember(dest => dest.FilmCategories, opt => opt.Ignore())
                 .ForMember(dest => dest.Inventories, opt => opt.Ignore());
 
-            CreateMap<Film, FilmResponseDto>();
+            CreateMap<Film, FilmResponseDto>()
+                .ForMember(dest => dest.CategoryIds,
+                    opt => opt.MapFrom(src => src.FilmCategories.Select(fc => fc.CategoryId)))
+                .ForMember(dest => dest.ActorIds,
+                    opt => opt.MapFrom(src => src.FilmActors.Select(fa => fa.ActorId)))
+                .ForMember(dest => dest.Categories,
+                    opt => opt.MapFrom(src => src.FilmCategories.Select(fc => fc.Category)))
+                .ForMember(dest => dest.Actors,
+                    opt => opt.MapFrom(src => src.FilmActors.Select(fa => fa.Actor)));
         }
     }
 }

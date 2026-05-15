@@ -25,6 +25,19 @@ namespace FilmRentalStore.API.Repositories.Implementations
                 .AnyAsync(s => s.AddressId == addressId);
         }
 
+        public async Task<IEnumerable<Store>> GetAllAsync()
+        {
+            return await _context.Stores
+                .AsNoTracking()
+                .Include(s => s.ManagerStaff)
+                    .ThenInclude(ms => ms.Role)
+                .Include(s => s.Address)
+                    .ThenInclude(a => a.City)
+                        .ThenInclude(c => c.Country)
+                .OrderBy(s => s.StoreId)
+                .ToListAsync();
+        }
+
         public async Task<Store?> GetByIdAsync(int storeId)
         {
             return await _context.Stores

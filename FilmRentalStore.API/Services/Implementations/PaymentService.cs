@@ -35,10 +35,7 @@ namespace FilmRentalStore.API.Services.Implementations
 
             var (payments, _) = await _paymentRepository.GetAllAsync(page, pageSize);
 
-            if (payments is null || !payments.Any())
-                throw new NotFoundException("No payments found.");
-
-            return _mapper.Map<IEnumerable<PaymentResponseDto>>(payments);
+            return _mapper.Map<IEnumerable<PaymentResponseDto>>(payments ?? Enumerable.Empty<Payment>());
         }
 
         public async Task<PaymentResponseDto> GetPaymentByIdAsync(int paymentId)
@@ -57,10 +54,7 @@ namespace FilmRentalStore.API.Services.Implementations
 
             var payments = await _paymentRepository.GetByCustomerIdAsync(customerId, page, pageSize);
 
-            if (payments is null || !payments.Any())
-                throw new NotFoundException("No payments found.");
-
-            return _mapper.Map<IEnumerable<PaymentResponseDto>>(payments);
+            return _mapper.Map<IEnumerable<PaymentResponseDto>>(payments ?? Enumerable.Empty<Payment>());
         }
 
         public async Task<PaymentResponseDto> GetCustomerPaymentByIdAsync(int customerId, int paymentId)

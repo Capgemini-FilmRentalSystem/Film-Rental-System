@@ -1,4 +1,6 @@
 using FilmRentalStore.MVC.DTOs.Customers;
+using FilmRentalStore.MVC.DTOs.Address;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FilmRentalStore.MVC.ViewModels.Customer
 {
@@ -9,9 +11,11 @@ namespace FilmRentalStore.MVC.ViewModels.Customer
         public string FirstName { get; set; } = string.Empty;
         public string LastName { get; set; } = string.Empty;
         public string? Email { get; set; }
+        public string? Password { get; set; }
         public int StoreId { get; set; }
         public bool IsActive { get; set; } = true;
-        public List<StoreSelectItem> Stores { get; set; } = new List<StoreSelectItem>();
+        public AddressDto Address { get; set; } = new();
+        public List<SelectListItem> Stores { get; set; } = new();
         public bool IsEditMode => CustomerId > 0;
 
         public CustomerRequestDto ToRequestDto()
@@ -22,7 +26,9 @@ namespace FilmRentalStore.MVC.ViewModels.Customer
                 FirstName = FirstName,
                 LastName = LastName,
                 Email = Email,
-                StoreId = StoreId
+                StoreId = StoreId,
+                Password = string.IsNullOrWhiteSpace(Password) ? null : Password,
+                Address = Address.ToRequestDto()
             };
         }
 
@@ -36,14 +42,9 @@ namespace FilmRentalStore.MVC.ViewModels.Customer
                 LastName = dto.LastName,
                 Email = dto.Email,
                 StoreId = dto.StoreId,
-                IsActive = dto.IsActive
+                IsActive = dto.IsActive,
+                Address = AddressDto.FromResponseDto(dto.Address)
             };
         }
-    }
-
-    public class StoreSelectItem
-    {
-        public int StoreId { get; set; }
-        public string StoreName { get; set; } = string.Empty;
     }
 }

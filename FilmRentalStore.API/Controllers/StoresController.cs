@@ -16,6 +16,14 @@ namespace FilmRentalStore.API.Controllers
             _storeService = storeService;
         }
 
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetAllStores()
+        {
+            var stores = await _storeService.GetAllStoresAsync();
+            return Ok(stores);
+        }
+
         [HttpGet("{storeId}")]
         [Authorize(Roles = "Admin,Manager")]
         public async Task<IActionResult> GetStoreById(int storeId)

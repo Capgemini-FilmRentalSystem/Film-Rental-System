@@ -46,6 +46,7 @@ internal class Program
         // Service Dependency Injection
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddScoped<ITokenService, TokenService>();
+        builder.Services.AddScoped<IAddressService, AddressService>();
         builder.Services.AddScoped<IStaffService, StaffService>();
         builder.Services.AddScoped<IStoreService, StoreService>();
         builder.Services.AddScoped<IActorService, ActorService>();

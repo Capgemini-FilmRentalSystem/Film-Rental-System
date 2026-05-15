@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Addresses";
+    var role = Context.Session.GetString(SessionKeys.Role);
+    var canManageAddresses = role == RoleConstants.Admin || role == RoleConstants.Manager || role == RoleConstants.Staff;
 }
 
 <div class="container-fluid">
@@ -10,7 +12,10 @@
             <h1>Addresses</h1>
         </div>
         <div class="col-md-4 text-end">
-            <a href="@Url.Action("Create")" class="btn btn-primary">+ New Address</a>
+            @if (canManageAddresses)
+            {
+                <a href="@Url.Action("Create")" class="btn btn-primary">+ New Address</a>
+            }
         </div>
     </div>
 
@@ -38,12 +43,15 @@
                                     <td>@address.District</td>
                                     <td>@address.Phone</td>
                                     <td>
-                                        <a href="@Url.Action("Details", new { id = address.AddressLine.GetHashCode() })" class="btn btn-sm btn-info">View</a>
-                                        <a href="@Url.Action("Edit", new { id = address.AddressLine.GetHashCode() })" class="btn btn-sm btn-warning">Edit</a>
-                                        <form method="post" action="@Url.Action("Delete", new { id = address.AddressLine.GetHashCode() })" style="display:inline;">
-                                            @Html.AntiForgeryToken()
-                                            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?');">Delete</button>
-                                        </form>
+                                        <a href="@Url.Action("Details", new { id = address.AddressId })" class="btn btn-sm btn-info">View</a>
+                                        @if (canManageAddresses)
+                                        {
+                                            <a href="@Url.Action("Edit", new { id = address.AddressId })" class="btn btn-sm btn-warning">Edit</a>
+                                            <form method="post" action="@Url.Action("Delete", new { id = address.AddressId })" style="display:inline;">
+                                                @Html.AntiForgeryToken()
+                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?');">Delete</button>
+                                            </form>
+                                        }
                                     </td>
                                 </tr>
                             }

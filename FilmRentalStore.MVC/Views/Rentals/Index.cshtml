@@ -1,0 +1,86 @@
+@model List<FilmRentalStore.MVC.DTOs.Rental.RentalResponseDto>
+
+@{
+    ViewData["Title"] = (bool)(ViewBag.IsMine ?? false) ? "My Rentals" : "Rentals";
+    var isMine = (bool)(ViewBag.IsMine ?? false);
+    var currentPage = (int)(ViewBag.CurrentPage ?? 1);
+    var pageSize = (int)(ViewBag.PageSize ?? 10);
+    var hasNextPage = (bool)(ViewBag.HasNextPage ?? false);
+    var listAction = isMine ? "MyRentals" : "Index";
+    var sortOrder = (string)(ViewBag.SortOrder ?? "date_desc");
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>@ViewData["Title"]</h1>
+    @if (!isMine)
+    {
+        <a asp-action="Create" class="btn btn-primary">Create Rental</a>
+    }
+</div>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-4">
+        <select name="sortOrder" class="form-select">
+            <option value="date_desc" selected="@(sortOrder == "date_desc")">Newest rentals first</option>
+            <option value="date_asc" selected="@(sortOrder == "date_asc")">Oldest rentals first</option>
+        </select>
+    </div>
+    <div class="col-md-auto">
+        <button type="submit" class="btn btn-secondary">Apply</button>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>ID</th>
+                <th>Film</th>
+                <th>Customer</th>
+                <th>Rental Date</th>
+                <th>Return Date</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any())
+            {
+                foreach (var rental in Model)
+                {
+                    <tr>
+                        <td>@rental.RentalId</td>
+                        <td>@rental.Inventory?.Film?.Title</td>
+                        <td>@rental.Customer?.FullName</td>
+                        <td>@rental.RentalDate.ToString("g")</td>
+                        <td>@(rental.ReturnDate?.ToString("g") ?? "Open")</td>
+                        <td class="text-end">
+                            <a asp-action="@(isMine ? "MyDetails" : "Details")" asp-route-id="@rental.RentalId" class="btn btn-sm btn-info">Details</a>
+                            @if (!isMine && rental.ReturnDate == null)
+                            {
+                                <a asp-action="Return" asp-route-id="@rental.RentalId" class="btn btn-sm btn-warning">Return</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6" class="text-center text-muted">No rentals found.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<nav>
+    <ul class="pagination">
+        <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
+            <a class="page-link" asp-action="@listAction" asp-route-page="@(currentPage - 1)" asp-route-pageSize="@pageSize" asp-route-sortOrder="@sortOrder">Previous</a>
+        </li>
+        <li class="page-item disabled"><span class="page-link">Page @currentPage</span></li>
+        <li class="page-item @(hasNextPage ? "" : "disabled")">
+            <a class="page-link" asp-action="@listAction" asp-route-page="@(currentPage + 1)" asp-route-pageSize="@pageSize" asp-route-sortOrder="@sortOrder">Next</a>
+        </li>
+    </ul>
+</nav>

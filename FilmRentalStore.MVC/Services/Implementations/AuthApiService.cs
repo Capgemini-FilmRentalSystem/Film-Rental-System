@@ -1,4 +1,5 @@
 using FilmRentalStore.MVC.DTOs.Auth;
+using FilmRentalStore.MVC.DTOs.Customers;
 using FilmRentalStore.MVC.Helpers;
 using FilmRentalStore.MVC.Services.Interfaces;
 
@@ -27,5 +28,18 @@ namespace FilmRentalStore.MVC.Services.Implementations
                 dto);
         }
 
+        public async Task<LoginResponseDto?> StaffRegisterAsync(RegisterRequestDto dto)
+        {
+            return await _apiClient.PostAsync<RegisterRequestDto, LoginResponseDto>(
+                ApiRoutes.StaffRegister,
+                dto);
+        }
+
+        public async Task<LoginResponseDto?> CustomerRegisterAsync(CustomerRequestDto dto)
+        {
+            return await _apiClient.PostAsync<CustomerRequestDto, LoginResponseDto>(
+                ApiRoutes.CustomerRegister,
+                dto);
+        }
     }
 }

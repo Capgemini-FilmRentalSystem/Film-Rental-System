@@ -1,0 +1,15 @@
+@model FilmRentalStore.MVC.ViewModels.Store.StoreFormViewModel
+
+@{
+    ViewData["Title"] = "Edit Store";
+}
+
+<h1>Edit Store</h1>
+
+<form asp-action="Edit" asp-route-id="@Model.StoreId" method="post" class="mt-3">
+    <input type="hidden" asp-for="StoreId" />
+    <input type="hidden" asp-for="AddressId" />
+    <partial name="_StoreForm" model="Model" />
+    <button type="submit" class="btn btn-primary">Save</button>
+    <a asp-action="Details" asp-route-id="@Model.StoreId" class="btn btn-secondary">Cancel</a>
+</form>

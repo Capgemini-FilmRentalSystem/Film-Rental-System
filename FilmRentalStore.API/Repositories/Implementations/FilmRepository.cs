@@ -20,6 +20,10 @@ namespace FilmRentalStore.API.Repositories.Implementations
                 .AsNoTracking()
                 .Include(f => f.Language)
                 .Include(f => f.OriginalLanguage)
+                .Include(f => f.FilmCategories)
+                    .ThenInclude(fc => fc.Category)
+                .Include(f => f.FilmActors)
+                    .ThenInclude(fa => fa.Actor)
                 .ToListAsync();
         }
 
@@ -28,7 +32,11 @@ namespace FilmRentalStore.API.Repositories.Implementations
             var query = _context.Films
                 .AsNoTracking()
                 .Include(f => f.Language)
-                .Include(f => f.OriginalLanguage);
+                .Include(f => f.OriginalLanguage)
+                .Include(f => f.FilmCategories)
+                    .ThenInclude(fc => fc.Category)
+                .Include(f => f.FilmActors)
+                    .ThenInclude(fa => fa.Actor);
 
             var totalCount = await query.CountAsync();
 
@@ -47,6 +55,10 @@ namespace FilmRentalStore.API.Repositories.Implementations
                 .AsNoTracking()
                 .Include(f => f.Language)
                 .Include(f => f.OriginalLanguage)
+                .Include(f => f.FilmCategories)
+                    .ThenInclude(fc => fc.Category)
+                .Include(f => f.FilmActors)
+                    .ThenInclude(fa => fa.Actor)
                 .FirstOrDefaultAsync(f => f.FilmId == filmId);
         }
 
@@ -129,6 +141,48 @@ namespace FilmRentalStore.API.Repositories.Implementations
             if (filmCategory != null)
             {
                 _context.FilmCategories.Remove(filmCategory);
+            }
+        }
+
+        public async Task ReplaceActorsAsync(int filmId, IEnumerable<int> actorIds)
+        {
+            var selectedActorIds = actorIds.Distinct().ToHashSet();
+            var existing = await _context.FilmActors
+                .Where(fa => fa.FilmId == filmId)
+                .ToListAsync();
+
+            _context.FilmActors.RemoveRange(existing.Where(fa => !selectedActorIds.Contains(fa.ActorId)));
+
+            var existingActorIds = existing.Select(fa => fa.ActorId).ToHashSet();
+            foreach (var actorId in selectedActorIds.Where(actorId => !existingActorIds.Contains(actorId)))
+            {
+                await _context.FilmActors.AddAsync(new FilmActor
+                {
+                    FilmId = filmId,
+                    ActorId = actorId,
+                    LastUpdate = DateTime.Now
+                });
+            }
+        }
+
+        public async Task ReplaceCategoriesAsync(int filmId, IEnumerable<byte> categoryIds)
+        {
+            var selectedCategoryIds = categoryIds.Distinct().ToHashSet();
+            var existing = await _context.FilmCategories
+                .Where(fc => fc.FilmId == filmId)
+                .ToListAsync();
+
+            _context.FilmCategories.RemoveRange(existing.Where(fc => !selectedCategoryIds.Contains(fc.CategoryId)));
+
+            var existingCategoryIds = existing.Select(fc => fc.CategoryId).ToHashSet();
+            foreach (var categoryId in selectedCategoryIds.Where(categoryId => !existingCategoryIds.Contains(categoryId)))
+            {
+                await _context.FilmCategories.AddAsync(new FilmCategory
+                {
+                    FilmId = filmId,
+                    CategoryId = categoryId,
+                    LastUpdate = DateTime.Now
+                });
             }
         }
 

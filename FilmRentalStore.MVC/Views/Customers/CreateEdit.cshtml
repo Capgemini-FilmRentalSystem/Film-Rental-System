@@ -48,12 +48,8 @@
                 <div class="row mb-3">
                     <div class="col-md-6">
                         <label asp-for="StoreId" class="form-label">Store *</label>
-                        <select asp-for="StoreId" class="form-select" required>
+                        <select asp-for="StoreId" asp-items="Model.Stores" class="form-select" required>
                             <option value="">-- Select Store --</option>
-                            @foreach (var store in Model.Stores)
-                            {
-                                <option value="@store.StoreId">@store.StoreName</option>
-                            }
                         </select>
                         <span asp-validation-for="StoreId" class="text-danger"></span>
                     </div>

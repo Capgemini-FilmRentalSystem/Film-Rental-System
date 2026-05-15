@@ -1,0 +1,35 @@
+@model FilmRentalStore.MVC.DTOs.Rental.RentalResponseDto
+
+@{
+    ViewData["Title"] = "Rental Details";
+    var isMine = (bool)(ViewBag.IsMine ?? false);
+    var rentalDuration = Model.Inventory?.Film?.RentalDuration ?? 0;
+    var rentalRate = Model.Inventory?.Film?.RentalRate ?? 0m;
+    var totalRentalAmount = rentalDuration * rentalRate;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Rental Details</h1>
+    <div>
+        @if (!isMine && Model.ReturnDate == null)
+        {
+            <a asp-action="Return" asp-route-id="@Model.RentalId" class="btn btn-warning">Return</a>
+        }
+        <a asp-action="@(isMine ? "MyRentals" : "Index")" class="btn btn-secondary">Back</a>
+    </div>
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">Film</dt>
+    <dd class="col-sm-9">@Model.Inventory?.Film?.Title</dd>
+    <dt class="col-sm-3">Customer</dt>
+    <dd class="col-sm-9">@Model.Customer?.FullName</dd>
+    <dt class="col-sm-3">Total Rental Amount</dt>
+    <dd class="col-sm-9">@totalRentalAmount.ToString("C")</dd>
+    <dt class="col-sm-3">Rental Date</dt>
+    <dd class="col-sm-9">@Model.RentalDate.ToString("g")</dd>
+    <dt class="col-sm-3">Return Date</dt>
+    <dd class="col-sm-9">@(Model.ReturnDate?.ToString("g") ?? "Open")</dd>
+    <dt class="col-sm-3">Last Updated</dt>
+    <dd class="col-sm-9">@Model.LastUpdate.ToString("g")</dd>
+</dl>

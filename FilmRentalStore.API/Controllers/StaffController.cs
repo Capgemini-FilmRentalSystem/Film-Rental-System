@@ -7,7 +7,6 @@ namespace FilmRentalStore.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Admin")]
     public class StaffController : ControllerBase
     {
         private readonly IStaffService _staffService;
@@ -17,7 +16,16 @@ namespace FilmRentalStore.API.Controllers
             _staffService = staffService;
         }
 
+        [HttpGet]
+        [Authorize(Roles = "Admin,Manager,Staff")]
+        public async Task<IActionResult> GetAllStaff()
+        {
+            var staff = await _staffService.GetAllStaffAsync();
+            return Ok(staff);
+        }
+
         [HttpGet("{staffId}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetStaffById(byte staffId)
         {
             var staff = await _staffService.GetStaffByIdAsync(staffId);
@@ -26,6 +34,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateStaff([FromBody] StaffCreateRequestDto dto)
         {
             var createdStaff = await _staffService.CreateStaffAsync(dto);
@@ -38,6 +47,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPut("{staffId}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateStaff(byte staffId, [FromBody] StaffUpdateRequestDto dto)
         {
             var updatedStaff = await _staffService.UpdateStaffAsync(staffId, dto);
@@ -46,6 +56,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpDelete("{staffId}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeactivateStaff(byte staffId)
         {
             await _staffService.DeactivateStaffAsync(staffId);

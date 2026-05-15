@@ -1,4 +1,4 @@
-﻿using FilmRentalStore.MVC.DTOs.Actor;
+using FilmRentalStore.MVC.DTOs;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FilmRentalStore.MVC.ViewModels.Film
@@ -7,8 +7,8 @@ namespace FilmRentalStore.MVC.ViewModels.Film
     {
         public int FilmId { get; set; }
         public string FilmTitle { get; set; } = null!;
-        public int SelectedActorId { get; set; }
+        public List<int> SelectedActorIds { get; set; } = new();
         public List<SelectListItem> Actors { get; set; } = new();
-        public List<ActorResponseDto> AssignedActors { get; set; } = new();
+        public List<ActorSummaryDto> AssignedActors { get; set; } = new();
     }
 }

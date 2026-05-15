@@ -1,3 +1,5 @@
+using FilmRentalStore.API.DTOs.Address;
+
 namespace FilmRentalStore.API.DTOs.Staff
 {
     public class StaffCreateRequestDto
@@ -11,5 +13,6 @@ namespace FilmRentalStore.API.DTOs.Staff
         public string Username { get; set; } = null!;
         public string Password { get; set; } = null!;
         public int RoleId { get; set; }
+        public AddressDto? Address { get; set; }
     }
 }

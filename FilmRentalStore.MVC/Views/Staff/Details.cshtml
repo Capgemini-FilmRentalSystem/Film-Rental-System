@@ -1,0 +1,28 @@
+@model FilmRentalStore.MVC.DTOs.Staff.StaffResponseDto
+
+@{
+    ViewData["Title"] = "Staff Details";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Staff Details</h1>
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.StaffId" class="btn btn-warning">Edit</a>
+        <a asp-action="Index" class="btn btn-secondary">Back</a>
+    </div>
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">Staff ID</dt>
+    <dd class="col-sm-9">@Model.StaffId</dd>
+    <dt class="col-sm-3">Name</dt>
+    <dd class="col-sm-9">@Model.FirstName @Model.LastName</dd>
+    <dt class="col-sm-3">Username</dt>
+    <dd class="col-sm-9">@Model.Username</dd>
+    <dt class="col-sm-3">Email</dt>
+    <dd class="col-sm-9">@(Model.Email ?? "-")</dd>
+    <dt class="col-sm-3">Role</dt>
+    <dd class="col-sm-9">@Model.Role?.RoleTitle</dd>
+    <dt class="col-sm-3">Address</dt>
+    <dd class="col-sm-9">@Model.Address?.AddressLine, @Model.Address?.City, @Model.Address?.Country</dd>
+</dl>

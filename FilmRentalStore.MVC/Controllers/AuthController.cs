@@ -3,16 +3,19 @@ using FilmRentalStore.MVC.Helpers;
 using FilmRentalStore.MVC.Services.Interfaces;
 using FilmRentalStore.MVC.ViewModels.Auth;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FilmRentalStore.MVC.Controllers
 {
     public class AuthController : Controller
     {
         private readonly IAuthApiService _authApiService;
+        private readonly IStoreApiService _storeApiService;
 
-        public AuthController(IAuthApiService authApiService)
+        public AuthController(IAuthApiService authApiService, IStoreApiService storeApiService)
         {
             _authApiService = authApiService;
+            _storeApiService = storeApiService;
         }
 
         [HttpGet]
@@ -59,6 +62,48 @@ namespace FilmRentalStore.MVC.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> StaffRegister()
+        {
+            var vm = new StaffRegisterViewModel();
+            await PopulateRegisterOptions(vm);
+            return View(vm);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> StaffRegister(StaffRegisterViewModel vm)
+        {
+            if (!ModelState.IsValid)
+            {
+                await PopulateRegisterOptions(vm);
+                return View(vm);
+            }
+
+            try
+            {
+                var result = await _authApiService.StaffRegisterAsync(vm.ToRequestDto());
+
+                if (result == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid registration response from API.");
+                    await PopulateRegisterOptions(vm);
+                    return View(vm);
+                }
+
+                StoreLoginSession(result);
+
+                TempData["Success"] = "Registration successful.";
+                return RedirectToAction("Index", "Dashboard");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"Registration failed: {ex.Message}");
+                await PopulateRegisterOptions(vm);
+                return View(vm);
+            }
+        }
+
+        [HttpGet]
         public IActionResult CustomerLogin()
         {
             return View();
@@ -101,6 +146,48 @@ namespace FilmRentalStore.MVC.Controllers
             }
         }
 
+        [HttpGet]
+        public async Task<IActionResult> CustomerRegister()
+        {
+            var vm = new CustomerRegisterViewModel();
+            await PopulateRegisterOptions(vm);
+            return View(vm);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CustomerRegister(CustomerRegisterViewModel vm)
+        {
+            if (!ModelState.IsValid)
+            {
+                await PopulateRegisterOptions(vm);
+                return View(vm);
+            }
+
+            try
+            {
+                var result = await _authApiService.CustomerRegisterAsync(vm.ToRequestDto());
+
+                if (result == null)
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid registration response from API.");
+                    await PopulateRegisterOptions(vm);
+                    return View(vm);
+                }
+
+                StoreLoginSession(result);
+
+                TempData["Success"] = "Registration successful.";
+                return RedirectToAction("Index", "Dashboard");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"Registration failed: {ex.Message}");
+                await PopulateRegisterOptions(vm);
+                return View(vm);
+            }
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult Logout()
@@ -126,6 +213,50 @@ namespace FilmRentalStore.MVC.Controllers
             {
                 HttpContext.Session.SetInt32(SessionKeys.CustomerId, result.CustomerId.Value);
             }
+        }
+
+        private async Task PopulateRegisterOptions(CustomerRegisterViewModel vm)
+        {
+            vm.Stores = await BuildStoreItems(vm.StoreId);
+        }
+
+        private async Task PopulateRegisterOptions(StaffRegisterViewModel vm)
+        {
+            vm.Stores = await BuildStoreItems(vm.StoreId);
+            vm.Roles = BuildRoleItems(vm.RoleId);
+        }
+
+        private async Task<List<SelectListItem>> BuildStoreItems(int selectedStoreId)
+        {
+            var stores = await _storeApiService.GetAllAsync();
+            return stores.Select(store => new SelectListItem
+            {
+                Value = store.StoreId.ToString(),
+                Text = FormatStoreOption(store),
+                Selected = store.StoreId == selectedStoreId
+            }).ToList();
+        }
+
+        private static List<SelectListItem> BuildRoleItems(int selectedRoleId)
+        {
+            return new List<SelectListItem>
+            {
+                new() { Value = "1", Text = RoleConstants.Admin, Selected = selectedRoleId == 1 },
+                new() { Value = "2", Text = RoleConstants.Manager, Selected = selectedRoleId == 2 },
+                new() { Value = "3", Text = RoleConstants.Staff, Selected = selectedRoleId == 3 }
+            };
+        }
+
+        private static string FormatStoreOption(FilmRentalStore.MVC.DTOs.Store.StoreResponseDto store)
+        {
+            var location = store.Address == null
+                ? string.Empty
+                : string.Join(", ", new[] { store.Address.City, store.Address.Country }
+                    .Where(part => !string.IsNullOrWhiteSpace(part)));
+
+            return string.IsNullOrWhiteSpace(location)
+                ? $"Store #{store.StoreId}"
+                : $"Store #{store.StoreId} - {location}";
         }
     }
 }

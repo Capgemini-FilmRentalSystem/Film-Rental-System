@@ -1,0 +1,55 @@
+@model FilmRentalStore.MVC.ViewModels.Store.StoreFormViewModel
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="row mb-3">
+    <div class="col-md-6">
+        <label asp-for="ManagerStaffId" class="form-label">Manager</label>
+        <select asp-for="ManagerStaffId" asp-items="Model.Managers" class="form-select" required>
+            <option value="">-- Select Manager --</option>
+        </select>
+        <span asp-validation-for="ManagerStaffId" class="text-danger"></span>
+    </div>
+</div>
+
+<h5 class="mt-4">Address</h5>
+<div class="row mb-3">
+    <div class="col-md-6">
+        <label asp-for="Address.AddressLine" class="form-label">Address</label>
+        <input asp-for="Address.AddressLine" class="form-control" required />
+        <span asp-validation-for="Address.AddressLine" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Address.Address2" class="form-label">Address 2</label>
+        <input asp-for="Address.Address2" class="form-control" />
+        <span asp-validation-for="Address.Address2" class="text-danger"></span>
+    </div>
+</div>
+<div class="row mb-3">
+    <div class="col-md-4">
+        <label asp-for="Address.District" class="form-label">District</label>
+        <input asp-for="Address.District" class="form-control" required />
+        <span asp-validation-for="Address.District" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Address.City" class="form-label">City</label>
+        <input asp-for="Address.City" class="form-control" required />
+        <span asp-validation-for="Address.City" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Address.Country" class="form-label">Country</label>
+        <input asp-for="Address.Country" class="form-control" required />
+        <span asp-validation-for="Address.Country" class="text-danger"></span>
+    </div>
+</div>
+<div class="row mb-3">
+    <div class="col-md-6">
+        <label asp-for="Address.PostalCode" class="form-label">Postal Code</label>
+        <input asp-for="Address.PostalCode" class="form-control" />
+        <span asp-validation-for="Address.PostalCode" class="text-danger"></span>
+    </div>
+    <div class="col-md-6">
+        <label asp-for="Address.Phone" class="form-label">Phone</label>
+        <input asp-for="Address.Phone" class="form-control" required />
+        <span asp-validation-for="Address.Phone" class="text-danger"></span>
+    </div>
+</div>

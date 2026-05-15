@@ -8,5 +8,6 @@ namespace FilmRentalStore.MVC.ViewModels.Film
         public int CurrentPage { get; set; }
         public int PageSize { get; set; }
         public bool HasNextPage { get; set; }
+        public string? SearchTerm { get; set; }
     }
 }

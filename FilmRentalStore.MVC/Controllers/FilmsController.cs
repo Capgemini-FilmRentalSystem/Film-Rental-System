@@ -1,4 +1,6 @@
-﻿using FilmRentalStore.MVC.DTOs.Film;
+using FilmRentalStore.MVC.DTOs.Film;
+using FilmRentalStore.MVC.Filters;
+using FilmRentalStore.MVC.Helpers;
 using FilmRentalStore.MVC.Services.Interfaces;
 using FilmRentalStore.MVC.ViewModels.Film;
 using Microsoft.AspNetCore.Mvc;
@@ -6,52 +8,73 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FilmRentalStore.MVC.Controllers
 {
+    [TokenRequired]
+    [RoleAuthorize(RoleConstants.Admin, RoleConstants.Manager, RoleConstants.Staff, RoleConstants.Customer)]
     public class FilmsController : Controller
     {
         private readonly IFilmApiService _filmService;
+        private const int LookupPageSize = 100;
 
         public FilmsController(IFilmApiService filmService)
         {
             _filmService = filmService;
         }
 
-        // GET: /Films?page=1&pageSize=10
-        public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
+        public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string? searchTerm = null)
         {
-            var films = await _filmService.GetAllFilmsAsync(page, pageSize);
+            var allFilms = string.IsNullOrWhiteSpace(searchTerm)
+                ? await _filmService.GetAllFilmsAsync(page, pageSize)
+                : FilterFilms(await GetAllFilmsForLookupAsync(), searchTerm).ToList();
+
+            var films = string.IsNullOrWhiteSpace(searchTerm)
+                ? allFilms
+                : allFilms
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToList();
+
             var vm = new FilmIndexViewModel
             {
                 Films = films,
                 CurrentPage = page,
                 PageSize = pageSize,
-                HasNextPage = films.Count == pageSize
+                HasNextPage = string.IsNullOrWhiteSpace(searchTerm)
+                    ? films.Count == pageSize
+                    : page * pageSize < allFilms.Count,
+                SearchTerm = searchTerm
             };
+
             return View(vm);
         }
 
-        // GET: /Films/Details/5
         public async Task<IActionResult> Details(int id)
         {
             var film = await _filmService.GetFilmByIdAsync(id);
             if (film == null) return NotFound();
 
-            var vm = new FilmDetailViewModel { Film = film };
+            var vm = new FilmDetailViewModel
+            {
+                Film = film,
+                Actors = film.Actors,
+                Categories = film.Categories
+            };
             return View(vm);
         }
 
-        // GET: /Films/Create
+        [RoleAuthorize(RoleConstants.Admin, RoleConstants.Manager)]
         public async Task<IActionResult> Create()
         {
             var vm = await BuildFilmFormViewModel();
             return View(vm);
         }
 
-        // POST: /Films/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RoleAuthorize(RoleConstants.Admin, RoleConstants.Manager)]
         public async Task<IActionResult> Create(FilmFormViewModel vm)
         {
             BuildSpecialFeaturesString(vm);
+            ApplySelectedRelationships(vm);
 
             if (!ModelState.IsValid)
             {
@@ -64,7 +87,7 @@ namespace FilmRentalStore.MVC.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // GET: /Films/Edit/5
+        [RoleAuthorize(RoleConstants.Admin, RoleConstants.Manager)]
         public async Task<IActionResult> Edit(int id)
         {
             var film = await _filmService.GetFilmByIdAsync(id);
@@ -76,30 +99,39 @@ namespace FilmRentalStore.MVC.Controllers
                 Title = film.Title,
                 Description = film.Description,
                 ReleaseYear = film.ReleaseYear,
-                LanguageId = film.Language?.LanguageId ?? 0,
-                OriginalLanguageId = film.OriginalLanguage?.LanguageId,
+                LanguageId = FindLanguageId(vm.Languages, film.Language?.Name),
+                OriginalLanguageId = FindOptionalLanguageId(vm.OriginalLanguages, film.OriginalLanguage?.Name),
                 RentalDuration = film.RentalDuration,
                 RentalRate = film.RentalRate,
                 Length = film.Length,
                 ReplacementCost = film.ReplacementCost,
                 Rating = film.Rating,
-                SpecialFeatures = film.SpecialFeatures
+                SpecialFeatures = film.SpecialFeatures,
+                ActorIds = film.ActorIds,
+                CategoryIds = film.CategoryIds
             };
+            vm.SelectedActorIds = film.ActorIds.ToList();
+            vm.SelectedCategoryIds = film.CategoryIds.ToList();
 
             if (!string.IsNullOrEmpty(film.SpecialFeatures))
+            {
                 vm.SelectedSpecialFeatures = film.SpecialFeatures
-                    .Split(',').Select(s => s.Trim()).ToList();
+                    .Split(',')
+                    .Select(feature => feature.Trim())
+                    .ToList();
+            }
 
             ViewBag.FilmId = id;
             return View(vm);
         }
 
-        // POST: /Films/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RoleAuthorize(RoleConstants.Admin, RoleConstants.Manager)]
         public async Task<IActionResult> Edit(int id, FilmFormViewModel vm)
         {
             BuildSpecialFeaturesString(vm);
+            ApplySelectedRelationships(vm);
 
             if (!ModelState.IsValid)
             {
@@ -113,44 +145,56 @@ namespace FilmRentalStore.MVC.Controllers
             return RedirectToAction(nameof(Details), new { id });
         }
 
-        // GET: /Films/AssignActor/5
+        [RoleAuthorize(RoleConstants.Admin, RoleConstants.Manager)]
         public async Task<IActionResult> AssignActor(int id)
         {
             var film = await _filmService.GetFilmByIdAsync(id);
             if (film == null) return NotFound();
 
             var allActors = await _filmService.GetActorsAsync();
+            var assignedActorIds = film.ActorIds.ToHashSet();
 
             var vm = new FilmAssignActorViewModel
             {
                 FilmId = id,
                 FilmTitle = film.Title,
-                Actors = allActors.Select(a => new SelectListItem
-                {
-                    Value = a.ActorId.ToString(),
-                    Text = a.FullName
-                }).ToList()
+                AssignedActors = film.Actors,
+                Actors = allActors
+                    .Where(actor => !assignedActorIds.Contains(actor.ActorId))
+                    .Select(actor => new SelectListItem
+                    {
+                        Value = actor.ActorId.ToString(),
+                        Text = actor.FullName
+                    }).ToList()
             };
 
             return View(vm);
         }
 
-        // POST: /Films/AssignActor/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RoleAuthorize(RoleConstants.Admin, RoleConstants.Manager)]
         public async Task<IActionResult> AssignActor(int id, FilmAssignActorViewModel vm)
         {
-            await _filmService.AssignActorAsync(id, new FilmActorAssignRequestDto
+            var film = await _filmService.GetFilmByIdAsync(id);
+            if (film == null) return NotFound();
+
+            var assignedActorIds = film.ActorIds.ToHashSet();
+            foreach (var actorId in vm.SelectedActorIds.Distinct().Where(actorId => !assignedActorIds.Contains(actorId)))
             {
-                ActorId = vm.SelectedActorId
-            });
-            TempData["Success"] = "Actor assigned successfully.";
+                await _filmService.AssignActorAsync(id, new FilmActorAssignRequestDto
+                {
+                    ActorId = actorId
+                });
+            }
+
+            TempData["Success"] = "Actors assigned successfully.";
             return RedirectToAction(nameof(Details), new { id });
         }
 
-        // POST: /Films/RemoveActor
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RoleAuthorize(RoleConstants.Admin, RoleConstants.Manager)]
         public async Task<IActionResult> RemoveActor(int filmId, int actorId)
         {
             await _filmService.RemoveActorAsync(filmId, actorId);
@@ -158,44 +202,56 @@ namespace FilmRentalStore.MVC.Controllers
             return RedirectToAction(nameof(Details), new { id = filmId });
         }
 
-        // GET: /Films/AssignCategory/5
+        [RoleAuthorize(RoleConstants.Admin, RoleConstants.Manager)]
         public async Task<IActionResult> AssignCategory(int id)
         {
             var film = await _filmService.GetFilmByIdAsync(id);
             if (film == null) return NotFound();
 
             var allCategories = await _filmService.GetCategoriesAsync();
+            var assignedCategoryIds = film.CategoryIds.ToHashSet();
 
             var vm = new FilmAssignCategoryViewModel
             {
                 FilmId = id,
                 FilmTitle = film.Title,
-                Categories = allCategories.Select(c => new SelectListItem
-                {
-                    Value = c.CategoryId.ToString(),
-                    Text = c.Name
-                }).ToList()
+                AssignedCategories = film.Categories,
+                Categories = allCategories
+                    .Where(category => !assignedCategoryIds.Contains(category.CategoryId))
+                    .Select(category => new SelectListItem
+                    {
+                        Value = category.CategoryId.ToString(),
+                        Text = category.Name
+                    }).ToList()
             };
 
             return View(vm);
         }
 
-        // POST: /Films/AssignCategory/5
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RoleAuthorize(RoleConstants.Admin, RoleConstants.Manager)]
         public async Task<IActionResult> AssignCategory(int id, FilmAssignCategoryViewModel vm)
         {
-            await _filmService.AssignCategoryAsync(id, new FilmCategoryAssignRequestDto
+            var film = await _filmService.GetFilmByIdAsync(id);
+            if (film == null) return NotFound();
+
+            var assignedCategoryIds = film.CategoryIds.ToHashSet();
+            foreach (var categoryId in vm.SelectedCategoryIds.Distinct().Where(categoryId => !assignedCategoryIds.Contains(categoryId)))
             {
-                CategoryId = vm.SelectedCategoryId
-            });
-            TempData["Success"] = "Category assigned successfully.";
+                await _filmService.AssignCategoryAsync(id, new FilmCategoryAssignRequestDto
+                {
+                    CategoryId = categoryId
+                });
+            }
+
+            TempData["Success"] = "Categories assigned successfully.";
             return RedirectToAction(nameof(Details), new { id });
         }
 
-        // POST: /Films/RemoveCategory
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RoleAuthorize(RoleConstants.Admin, RoleConstants.Manager)]
         public async Task<IActionResult> RemoveCategory(int filmId, byte categoryId)
         {
             await _filmService.RemoveCategoryAsync(filmId, categoryId);
@@ -203,41 +259,134 @@ namespace FilmRentalStore.MVC.Controllers
             return RedirectToAction(nameof(Details), new { id = filmId });
         }
 
-        // ── Private Helpers ───────────────────────────────────────────────────
-
         private async Task<FilmFormViewModel> BuildFilmFormViewModel()
         {
             var languages = await _filmService.GetLanguagesAsync();
-            var langItems = languages.Select(l => new SelectListItem
+            var languageItems = languages.Select(language => new SelectListItem
             {
-                Value = l.LanguageId.ToString(),
-                Text = l.Name
+                Value = language.LanguageId.ToString(),
+                Text = language.Name
             }).ToList();
+
+            var actors = await _filmService.GetActorsAsync();
+            var categories = await _filmService.GetCategoriesAsync();
 
             return new FilmFormViewModel
             {
-                Languages = langItems,
-                OriginalLanguages = new List<SelectListItem>(langItems)
+                Languages = languageItems,
+                OriginalLanguages = new List<SelectListItem>(languageItems),
+                Actors = actors.Select(actor => new SelectListItem
+                {
+                    Value = actor.ActorId.ToString(),
+                    Text = actor.FullName
+                }).ToList(),
+                Categories = categories.Select(category => new SelectListItem
+                {
+                    Value = category.CategoryId.ToString(),
+                    Text = category.Name
+                }).ToList()
             };
         }
 
         private async Task RepopulateDropdowns(FilmFormViewModel vm)
         {
             var languages = await _filmService.GetLanguagesAsync();
-            vm.Languages = languages.Select(l => new SelectListItem
+            vm.Languages = languages.Select(language => new SelectListItem
             {
-                Value = l.LanguageId.ToString(),
-                Text = l.Name
+                Value = language.LanguageId.ToString(),
+                Text = language.Name
             }).ToList();
             vm.OriginalLanguages = new List<SelectListItem>(vm.Languages);
+
+            var actors = await _filmService.GetActorsAsync();
+            vm.Actors = actors.Select(actor => new SelectListItem
+            {
+                Value = actor.ActorId.ToString(),
+                Text = actor.FullName,
+                Selected = vm.SelectedActorIds.Contains(actor.ActorId)
+            }).ToList();
+
+            var categories = await _filmService.GetCategoriesAsync();
+            vm.Categories = categories.Select(category => new SelectListItem
+            {
+                Value = category.CategoryId.ToString(),
+                Text = category.Name,
+                Selected = vm.SelectedCategoryIds.Contains(category.CategoryId)
+            }).ToList();
         }
 
         private static void BuildSpecialFeaturesString(FilmFormViewModel vm)
         {
-            if (vm.SelectedSpecialFeatures != null && vm.SelectedSpecialFeatures.Any())
-                vm.Film.SpecialFeatures = string.Join(", ", vm.SelectedSpecialFeatures);
-            else
-                vm.Film.SpecialFeatures = null;
+            vm.Film.SpecialFeatures = vm.SelectedSpecialFeatures != null && vm.SelectedSpecialFeatures.Any()
+                ? string.Join(", ", vm.SelectedSpecialFeatures)
+                : null;
+        }
+
+        private static void ApplySelectedRelationships(FilmFormViewModel vm)
+        {
+            vm.Film.ActorIds = vm.SelectedActorIds?.Distinct().ToList() ?? new List<int>();
+            vm.Film.CategoryIds = vm.SelectedCategoryIds?.Distinct().ToList() ?? new List<byte>();
+        }
+
+        private static byte FindLanguageId(IEnumerable<SelectListItem> languages, string? name)
+        {
+            return FindOptionalLanguageId(languages, name) ?? 0;
+        }
+
+        private static byte? FindOptionalLanguageId(IEnumerable<SelectListItem> languages, string? name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return null;
+            }
+
+            var match = languages.FirstOrDefault(language =>
+                string.Equals(language.Text, name, StringComparison.OrdinalIgnoreCase));
+
+            return byte.TryParse(match?.Value, out var id) ? id : null;
+        }
+
+        private async Task<List<FilmResponseDto>> GetAllFilmsForLookupAsync()
+        {
+            var films = new List<FilmResponseDto>();
+
+            for (var page = 1; ; page++)
+            {
+                var batch = await _filmService.GetAllFilmsAsync(page, LookupPageSize);
+                if (!batch.Any())
+                {
+                    break;
+                }
+
+                films.AddRange(batch);
+
+                if (batch.Count < LookupPageSize)
+                {
+                    break;
+                }
+            }
+
+            return films;
+        }
+
+        private static IEnumerable<FilmResponseDto> FilterFilms(IEnumerable<FilmResponseDto> films, string searchTerm)
+        {
+            var term = searchTerm.Trim();
+
+            return films.Where(film =>
+                Contains(film.Title, term)
+                || Contains(film.Description, term)
+                || Contains(film.Rating, term)
+                || Contains(film.Language?.Name, term)
+                || Contains(film.OriginalLanguage?.Name, term)
+                || film.Actors.Any(actor => Contains(actor.FullName, term))
+                || film.Categories.Any(category => Contains(category.Name, term)));
+        }
+
+        private static bool Contains(string? value, string searchTerm)
+        {
+            return !string.IsNullOrWhiteSpace(value)
+                && value.Contains(searchTerm, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

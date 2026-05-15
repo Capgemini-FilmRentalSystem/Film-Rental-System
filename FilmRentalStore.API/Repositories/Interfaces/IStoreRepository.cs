@@ -4,6 +4,7 @@ namespace FilmRentalStore.API.Repositories.Interfaces
 {
     public interface IStoreRepository
     {
+        Task<IEnumerable<Store>> GetAllAsync();
         Task<Store?> GetByIdAsync(int storeId);
         Task<Store?> GetEntityByIdAsync(int storeId);
         Task<bool> StoreExists(int storeId);

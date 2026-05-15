@@ -2,11 +2,16 @@
 
 @{
     ViewData["Title"] = "Categories";
+    var role = Context.Session.GetString(SessionKeys.Role);
+    var canManageCategories = role == RoleConstants.Admin || role == RoleConstants.Manager;
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>Categories</h2>
-    <a asp-action="Create" class="btn btn-primary">+ Add Category</a>
+    @if (canManageCategories)
+    {
+        <a asp-action="Create" class="btn btn-primary">+ Add Category</a>
+    }
 </div>
 
 @if (TempData["Success"] != null)
@@ -33,8 +38,11 @@
                 <td>
                     <a asp-action="Details" asp-route-id="@cat.CategoryId"
                        class="btn btn-sm btn-info">Details</a>
-                    <a asp-action="Edit" asp-route-id="@cat.CategoryId"
-                       class="btn btn-sm btn-warning">Edit</a>
+                    @if (canManageCategories)
+                    {
+                        <a asp-action="Edit" asp-route-id="@cat.CategoryId"
+                           class="btn btn-sm btn-warning">Edit</a>
+                    }
                 </td>
             </tr>
         }

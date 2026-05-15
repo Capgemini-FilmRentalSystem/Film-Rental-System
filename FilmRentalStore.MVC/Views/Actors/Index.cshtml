@@ -1,0 +1,54 @@
+@model List<FilmRentalStore.MVC.DTOs.Actor.ActorResponseDto>
+
+@{
+    ViewData["Title"] = "Actors";
+    var role = Context.Session.GetString(SessionKeys.Role);
+    var canManageActors = role == RoleConstants.Admin || role == RoleConstants.Manager;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Actors</h1>
+    @if (canManageActors)
+    {
+        <a asp-action="Create" class="btn btn-primary">Add Actor</a>
+    }
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Last Updated</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any())
+            {
+                foreach (var actor in Model)
+                {
+                    <tr>
+                        <td>@actor.ActorId</td>
+                        <td>@actor.FullName</td>
+                        <td>@actor.LastUpdate.ToString("g")</td>
+                        <td class="text-end">
+                            <a asp-action="Details" asp-route-id="@actor.ActorId" class="btn btn-sm btn-info">Details</a>
+                            @if (canManageActors)
+                            {
+                                <a asp-action="Edit" asp-route-id="@actor.ActorId" class="btn btn-sm btn-warning">Edit</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4" class="text-center text-muted">No actors found.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

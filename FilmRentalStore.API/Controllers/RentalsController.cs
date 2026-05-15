@@ -19,7 +19,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpGet]
-        [Authorize(Roles = "Admin,Manager")]
+        [Authorize(Roles = "Admin,Manager,Staff")]
         public async Task<IActionResult> GetAllRentals(
             [FromQuery] int page = IRentalService.DefaultPage,
             [FromQuery] int pageSize = IRentalService.DefaultPageSize)

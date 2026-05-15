@@ -32,10 +32,7 @@ namespace FilmRentalStore.API.Services.Implementations
 
             var (inventory, _) = await _inventoryRepository.GetAllAsync(page, pageSize);
 
-            if (inventory is null || !inventory.Any())
-                throw new NotFoundException("No inventory items found.");
-
-            return _mapper.Map<IEnumerable<InventoryResponseDto>>(inventory);
+            return _mapper.Map<IEnumerable<InventoryResponseDto>>(inventory ?? Enumerable.Empty<Inventory>());
         }
 
         public async Task<InventoryResponseDto> GetInventoryByIdAsync(int inventoryId)

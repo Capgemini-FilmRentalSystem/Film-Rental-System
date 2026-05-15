@@ -22,9 +22,19 @@ builder.Services.AddHttpClient<IApiClient, ApiClient>(client =>
 
 builder.Services.AddScoped<IAuthApiService, AuthApiService>();
 builder.Services.AddScoped<IActorApiService, ActorApiService>();
-builder.Services.AddScoped<ICategoryApiService, CategoryApiService>();
+builder.Services.AddHttpClient<ICategoryApiService, CategoryApiService>(client =>
+{
+    var baseUrl = builder.Configuration["ApiSettings:BaseUrl"];
+    client.BaseAddress = new Uri(baseUrl!);
+});
+
 builder.Services.AddScoped<ICustomerApiService, CustomerApiService>();
-builder.Services.AddScoped<IFilmApiService, FilmApiService>();
+builder.Services.AddHttpClient<IFilmApiService, FilmApiService>(client =>
+{
+    var baseUrl = builder.Configuration["ApiSettings:BaseUrl"];
+    client.BaseAddress = new Uri(baseUrl!);
+});
+
 builder.Services.AddScoped<IInventoryApiService, InventoryApiService>();
 builder.Services.AddScoped<ILanguageApiService, LanguageApiService>();
 builder.Services.AddScoped<IAddressApiService, AddressApiService>();
@@ -51,7 +61,12 @@ app.UseSession();
 app.UseAuthorization();
 
 app.MapControllerRoute(
+    name: "root",
+    pattern: "",
+    defaults: new { controller = "Auth", action = "StaffLogin" });
+
+app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Auth}/{action=StaffLogin}/{id?}");
+    pattern: "{controller}/{action=Index}/{id?}");
 
 app.Run();

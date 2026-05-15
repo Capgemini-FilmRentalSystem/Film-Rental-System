@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Languages";
+    var role = Context.Session.GetString(SessionKeys.Role);
+    var canManageLanguages = role == RoleConstants.Admin || role == RoleConstants.Manager;
 }
 
 <div class="container-fluid">
@@ -10,7 +12,10 @@
             <h1>Languages</h1>
         </div>
         <div class="col-md-4 text-end">
-            <a href="@Url.Action("Create")" class="btn btn-primary">+ New Language</a>
+            @if (canManageLanguages)
+            {
+                <a href="@Url.Action("Create")" class="btn btn-primary">+ New Language</a>
+            }
         </div>
     </div>
 
@@ -37,7 +42,10 @@
                                     <td>@language.LastUpdate.ToString("g")</td>
                                     <td>
                                         <a href="@Url.Action("Details", new { id = language.LanguageId })" class="btn btn-sm btn-info">View</a>
-                                        <a href="@Url.Action("Edit", new { id = language.LanguageId })" class="btn btn-sm btn-warning">Edit</a>
+                                        @if (canManageLanguages)
+                                        {
+                                            <a href="@Url.Action("Edit", new { id = language.LanguageId })" class="btn btn-sm btn-warning">Edit</a>
+                                        }
                                     </td>
                                 </tr>
                             }

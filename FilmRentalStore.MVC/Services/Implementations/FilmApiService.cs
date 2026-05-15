@@ -3,6 +3,7 @@ using FilmRentalStore.MVC.DTOs.Category;
 using FilmRentalStore.MVC.DTOs.Film;
 using FilmRentalStore.MVC.DTOs.Language;
 using FilmRentalStore.MVC.Services.Interfaces;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -40,6 +41,11 @@ namespace FilmRentalStore.MVC.Services.Implementations
         {
             AttachToken();
             var response = await _http.GetAsync($"api/Films?page={page}&pageSize={pageSize}");
+            if (response.StatusCode == HttpStatusCode.NotFound)
+            {
+                return new();
+            }
+
             response.EnsureSuccessStatusCode();
             var json = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<List<FilmResponseDto>>(json, JsonOptions) ?? new();

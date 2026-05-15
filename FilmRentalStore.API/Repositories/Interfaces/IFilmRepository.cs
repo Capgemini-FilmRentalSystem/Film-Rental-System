@@ -30,6 +30,10 @@ namespace FilmRentalStore.API.Repositories.Interfaces
 
         Task RemoveCategoryAsync(int filmId, byte categoryId);
 
+        Task ReplaceActorsAsync(int filmId, IEnumerable<int> actorIds);
+
+        Task ReplaceCategoriesAsync(int filmId, IEnumerable<byte> categoryIds);
+
         Task<bool> SaveChangesAsync();
     }
 }

@@ -1,3 +1,5 @@
+using FilmRentalStore.MVC.DTOs.Address;
+
 namespace FilmRentalStore.MVC.DTOs.Staff
 {
     public class StaffUpdateRequestDto
@@ -8,5 +10,6 @@ namespace FilmRentalStore.MVC.DTOs.Staff
         public string? Email { get; set; }
         public bool Active { get; set; } = true;
         public int RoleId { get; set; }
+        public AddressDto? Address { get; set; }
     }
 }

@@ -37,6 +37,14 @@ namespace FilmRentalStore.API.Validators
             RuleFor(x => x.ReleaseYear)
                 .Length(4).WithMessage("Release year must be 4 characters.")
                 .When(x => x.ReleaseYear != null);
+
+            RuleForEach(x => x.ActorIds)
+                .GreaterThan(0).WithMessage("Actor ID must be greater than 0.")
+                .When(x => x.ActorIds != null);
+
+            RuleForEach(x => x.CategoryIds)
+                .GreaterThan((byte)0).WithMessage("Category ID must be greater than 0.")
+                .When(x => x.CategoryIds != null);
         }
     }
 

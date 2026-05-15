@@ -14,17 +14,20 @@ namespace FilmRentalStore.API.Services.Implementations
         private readonly IAddressRepository _addressRepository;
         private readonly IStoreRepository _storeRepository;
         private readonly IMapper _mapper;
+        private readonly IAddressService? _addressService;
 
         public StaffService(
             IStaffRepository staffRepository,
             IAddressRepository addressRepository,
             IStoreRepository storeRepository,
-            IMapper mapper)
+            IMapper mapper,
+            IAddressService? addressService = null)
         {
             _staffRepository = staffRepository;
             _addressRepository = addressRepository;
             _storeRepository = storeRepository;
             _mapper = mapper;
+            _addressService = addressService;
         }
 
         public async Task<StaffResponseDto> CreateStaffAsync(StaffCreateRequestDto dto)
@@ -40,15 +43,26 @@ namespace FilmRentalStore.API.Services.Implementations
             if (usernameExists)
                 throw new ConflictException("Username already exists.");
 
-            var addressExists = await _addressRepository.GetByIdAsync(dto.AddressId);
-
-            if (addressExists == null)
-                throw new BadRequestException("Invalid address id.");
-
             var storeExists = await _storeRepository.StoreExists(dto.StoreId);
 
             if (!storeExists)
                 throw new BadRequestException("Invalid store id.");
+
+            if (dto.Address != null)
+            {
+                if (_addressService == null)
+                    throw new BadRequestException("Address details cannot be processed.");
+
+                var createdAddress = await _addressService.CreateAddressAsync(dto.Address);
+                dto.AddressId = createdAddress.AddressId;
+            }
+            else
+            {
+                var addressExists = await _addressRepository.GetByIdAsync(dto.AddressId);
+
+                if (addressExists == null)
+                    throw new BadRequestException("Invalid address id.");
+            }
 
             var staff = _mapper.Map<Staff>(dto);
 
@@ -64,6 +78,16 @@ namespace FilmRentalStore.API.Services.Implementations
                 throw new NotFoundException("Created staff record not found.");
 
             return _mapper.Map<StaffResponseDto>(createdStaff);
+        }
+
+        public async Task<IEnumerable<StaffResponseDto>> GetAllStaffAsync()
+        {
+            var staff = await _staffRepository.GetAllAsync();
+
+            if (staff == null || !staff.Any())
+                throw new NotFoundException("No staff members found.");
+
+            return _mapper.Map<IEnumerable<StaffResponseDto>>(staff);
         }
 
         public async Task DeactivateStaffAsync(byte staffId)
@@ -98,10 +122,21 @@ namespace FilmRentalStore.API.Services.Implementations
             if (staff == null)
                 throw new NotFoundException("Staff not found.");
 
-            var addressExists = await _addressRepository.GetByIdAsync(dto.AddressId);
+            if (dto.Address != null)
+            {
+                if (_addressService == null)
+                    throw new BadRequestException("Address details cannot be processed.");
 
-            if (addressExists == null)
-                throw new BadRequestException("Invalid address id.");
+                await _addressService.UpdateAddressAsync(staff.AddressId, dto.Address);
+                dto.AddressId = staff.AddressId;
+            }
+            else
+            {
+                var addressExists = await _addressRepository.GetByIdAsync(dto.AddressId);
+
+                if (addressExists == null)
+                    throw new BadRequestException("Invalid address id.");
+            }
 
             _mapper.Map(dto, staff);
 

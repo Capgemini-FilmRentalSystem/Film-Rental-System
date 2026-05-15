@@ -1,0 +1,75 @@
+@model List<FilmRentalStore.MVC.DTOs.Inventory.InventoryResponseDto>
+@using FilmRentalStore.MVC.Helpers
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+@{
+    ViewData["Title"] = "Inventory";
+    var currentPage = (int)(ViewBag.CurrentPage ?? 1);
+    var pageSize = (int)(ViewBag.PageSize ?? 10);
+    var hasNextPage = (bool)(ViewBag.HasNextPage ?? false);
+    var role = HttpContextAccessor.HttpContext?.Session.GetString(SessionKeys.Role);
+    var canManage = role == RoleConstants.Admin || role == RoleConstants.Manager;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Inventory</h1>
+    @if (canManage)
+    {
+        <a asp-action="Create" class="btn btn-primary">Add Inventory</a>
+    }
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>Film</th>
+                <th>Store</th>
+                <th>Available Copies</th>
+                <th>Total Copies</th>
+                <th>Last Updated</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any())
+            {
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Film?.Title</td>
+                        <td>@item.StoreId</td>
+                        <td>@item.AvailableCopies</td>
+                        <td>@item.TotalCopies</td>
+                        <td>@item.LastUpdate.ToString("g")</td>
+                        <td class="text-end">
+                            <a asp-action="Details" asp-route-id="@item.InventoryId" class="btn btn-sm btn-info">Details</a>
+                            @if (canManage)
+                            {
+                                <a asp-action="Edit" asp-route-id="@item.InventoryId" class="btn btn-sm btn-warning">Edit</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="6" class="text-center text-muted">No inventory found.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<nav>
+    <ul class="pagination">
+        <li class="page-item @(currentPage <= 1 ? "disabled" : "")">
+            <a class="page-link" asp-action="Index" asp-route-page="@(currentPage - 1)" asp-route-pageSize="@pageSize">Previous</a>
+        </li>
+        <li class="page-item disabled"><span class="page-link">Page @currentPage</span></li>
+        <li class="page-item @(hasNextPage ? "" : "disabled")">
+            <a class="page-link" asp-action="Index" asp-route-page="@(currentPage + 1)" asp-route-pageSize="@pageSize">Next</a>
+        </li>
+    </ul>
+</nav>

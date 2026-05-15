@@ -1,0 +1,63 @@
+@model FilmRentalStore.MVC.DTOs.Actor.ActorResponseDto
+
+@{
+    ViewData["Title"] = "Actor Details";
+    var films = ViewBag.Films as List<FilmRentalStore.MVC.DTOs.Film.FilmResponseDto> ?? new();
+    var role = Context.Session.GetString(SessionKeys.Role);
+    var canManageActors = role == RoleConstants.Admin || role == RoleConstants.Manager;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Actor Details</h1>
+    <div>
+        @if (canManageActors)
+        {
+            <a asp-action="Edit" asp-route-id="@Model.ActorId" class="btn btn-warning">Edit</a>
+        }
+        <a asp-action="Index" class="btn btn-secondary">Back</a>
+    </div>
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">First Name</dt>
+    <dd class="col-sm-9">@Model.FirstName</dd>
+    <dt class="col-sm-3">Last Name</dt>
+    <dd class="col-sm-9">@Model.LastName</dd>
+    <dt class="col-sm-3">Last Updated</dt>
+    <dd class="col-sm-9">@Model.LastUpdate.ToString("g")</dd>
+</dl>
+
+<h3 class="mt-4">Films</h3>
+
+@if (films.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Title</th>
+                    <th>Release Year</th>
+                    <th>Language</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var film in films)
+                {
+                    <tr>
+                        <td>@film.Title</td>
+                        <td>@(film.ReleaseYear ?? "-")</td>
+                        <td>@film.Language?.Name</td>
+                        <td class="text-end">
+                            <a asp-controller="Films" asp-action="Details" asp-route-id="@film.FilmId" class="btn btn-sm btn-info">View</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <p class="text-muted">No films found for this actor.</p>
+}

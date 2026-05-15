@@ -1,0 +1,66 @@
+@model List<FilmRentalStore.MVC.DTOs.Store.StoreResponseDto>
+
+@{
+    ViewData["Title"] = "Stores";
+    int? searchId = ViewBag.SearchId as int?;
+    var role = Context.Session.GetString(SessionKeys.Role);
+    var canManageStores = role == RoleConstants.Admin;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Stores</h1>
+    @if (canManageStores)
+    {
+        <a asp-action="Create" class="btn btn-primary">Add Store</a>
+    }
+</div>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-4">
+        <input name="id" type="number" class="form-control" value="@searchId" placeholder="Store ID" />
+    </div>
+    <div class="col-md-auto">
+        <button type="submit" class="btn btn-secondary">Find</button>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>ID</th>
+                <th>Manager</th>
+                <th>Address</th>
+                <th>Last Updated</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any())
+            {
+                foreach (var store in Model)
+                {
+                    <tr>
+                        <td>@store.StoreId</td>
+                        <td>@store.ManagerStaff?.FullName</td>
+                        <td>@store.Address?.AddressLine</td>
+                        <td>@store.LastUpdate.ToString("g")</td>
+                        <td class="text-end">
+                            <a asp-action="Details" asp-route-id="@store.StoreId" class="btn btn-sm btn-info">Details</a>
+                            @if (canManageStores)
+                            {
+                                <a asp-action="Edit" asp-route-id="@store.StoreId" class="btn btn-sm btn-warning">Edit</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5" class="text-center text-muted">Enter a store ID to load a record.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

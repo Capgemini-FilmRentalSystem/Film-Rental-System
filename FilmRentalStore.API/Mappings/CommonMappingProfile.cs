@@ -33,6 +33,8 @@ namespace FilmRentalStore.API.Mappings
 
             CreateMap<Language, LanguageSummaryDto>();
             CreateMap<Film, FilmSummaryDto>();
+            CreateMap<Actor, ActorSummaryDto>();
+            CreateMap<Category, CategorySummaryDto>();
             CreateMap<Inventory, InventorySummaryDto>();
 
             CreateMap<Rental, RentalSummaryDto>()

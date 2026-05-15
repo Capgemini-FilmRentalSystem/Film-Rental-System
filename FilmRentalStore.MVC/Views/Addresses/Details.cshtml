@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Address Details";
+    var role = Context.Session.GetString(SessionKeys.Role);
+    var canManageAddresses = role == RoleConstants.Admin || role == RoleConstants.Manager || role == RoleConstants.Staff;
 }
 
 <div class="container-fluid">
@@ -11,7 +13,10 @@
         </div>
         <div class="col-md-4 text-end">
             <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
-            <a href="@Url.Action("Edit", new { id = Model.Address?.AddressLine.GetHashCode() })" class="btn btn-warning">Edit</a>
+            @if (canManageAddresses)
+            {
+                <a href="@Url.Action("Edit", new { id = Model.Address?.AddressId })" class="btn btn-warning">Edit</a>
+            }
         </div>
     </div>
 

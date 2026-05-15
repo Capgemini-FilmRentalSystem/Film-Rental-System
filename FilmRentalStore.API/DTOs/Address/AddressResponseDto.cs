@@ -2,6 +2,7 @@ namespace FilmRentalStore.API.DTOs.Address
 {
     public class AddressResponseDto
     {
+        public int AddressId { get; set; }
         public string AddressLine { get; set; } = string.Empty;
         public string? Address2 { get; set; }
         public string District { get; set; } = string.Empty;

@@ -13,14 +13,13 @@
 }
 
 <div class="card mb-4">
-    <div class="card-header">Assign Category</div>
+    <div class="card-header">Assign Categories</div>
     <div class="card-body">
         <form asp-action="AssignCategory" asp-route-id="@Model.FilmId" method="post">
             @Html.AntiForgeryToken()
-            <div class="d-flex gap-2">
-                <select asp-for="SelectedCategoryId" asp-items="Model.Categories"
-                        class="form-select">
-                    <option value="">-- Select Category --</option>
+            <div class="d-flex gap-2 align-items-start">
+                <select asp-for="SelectedCategoryIds" asp-items="Model.Categories"
+                        class="form-select" multiple size="6">
                 </select>
                 <button type="submit" class="btn btn-primary">Assign</button>
             </div>
@@ -58,4 +57,8 @@
             }
         </tbody>
     </table>
+}
+else
+{
+    <p class="text-muted">No categories assigned.</p>
 }

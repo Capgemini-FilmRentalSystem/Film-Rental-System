@@ -1,0 +1,28 @@
+@model FilmRentalStore.MVC.DTOs.Payment.PaymentResponseDto
+
+@{
+    ViewData["Title"] = "Payment Details";
+    var isMine = (bool)(ViewBag.IsMine ?? false);
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Payment Details</h1>
+    <a asp-action="@(isMine ? "MyPayments" : "Index")" class="btn btn-secondary">Back</a>
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">Payment ID</dt>
+    <dd class="col-sm-9">@Model.PaymentId</dd>
+    <dt class="col-sm-3">Customer</dt>
+    <dd class="col-sm-9">@Model.Customer?.FullName</dd>
+    <dt class="col-sm-3">Staff</dt>
+    <dd class="col-sm-9">@Model.Staff?.FullName</dd>
+    <dt class="col-sm-3">Rental Date</dt>
+    <dd class="col-sm-9">@(Model.Rental?.RentalDate.ToString("g") ?? "No rental")</dd>
+    <dt class="col-sm-3">Amount</dt>
+    <dd class="col-sm-9">@Model.Amount.ToString("C")</dd>
+    <dt class="col-sm-3">Payment Date</dt>
+    <dd class="col-sm-9">@Model.PaymentDate.ToString("g")</dd>
+    <dt class="col-sm-3">Last Updated</dt>
+    <dd class="col-sm-9">@Model.LastUpdate.ToString("g")</dd>
+</dl>

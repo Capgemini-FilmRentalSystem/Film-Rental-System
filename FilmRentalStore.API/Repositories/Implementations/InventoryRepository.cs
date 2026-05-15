@@ -25,6 +25,7 @@ namespace FilmRentalStore.API.Repositories.Implementations
                     .ThenInclude(s => s.ManagerStaff)
                         .ThenInclude(ms => ms.Role)
                 .Include(i => i.Rentals.Where(r => r.ReturnDate == null))
+                .OrderBy(i => i.InventoryId)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();

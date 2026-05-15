@@ -1,0 +1,61 @@
+@model List<FilmRentalStore.MVC.DTOs.Staff.StaffResponseDto>
+
+@{
+    ViewData["Title"] = "Staff";
+    byte? searchId = ViewBag.SearchId as byte?;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Staff</h1>
+    <a asp-action="Create" class="btn btn-primary">Add Staff</a>
+</div>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-4">
+        <input name="id" type="number" class="form-control" value="@searchId" placeholder="Staff ID" />
+    </div>
+    <div class="col-md-auto">
+        <button type="submit" class="btn btn-secondary">Find</button>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead class="table-light">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Username</th>
+                <th>Role</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Any())
+            {
+                foreach (var staff in Model)
+                {
+                    <tr>
+                        <td>@staff.StaffId</td>
+                        <td>@staff.FirstName @staff.LastName</td>
+                        <td>@staff.Username</td>
+                        <td>@staff.Role?.RoleTitle</td>
+                        <td class="text-end">
+                            <a asp-action="Details" asp-route-id="@staff.StaffId" class="btn btn-sm btn-info">Details</a>
+                            <a asp-action="Edit" asp-route-id="@staff.StaffId" class="btn btn-sm btn-warning">Edit</a>
+                            <form asp-action="Deactivate" asp-route-id="@staff.StaffId" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-danger">Deactivate</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="5" class="text-center text-muted">Enter a staff ID to load a record.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

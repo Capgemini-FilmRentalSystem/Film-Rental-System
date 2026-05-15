@@ -1,7 +1,9 @@
-﻿using FilmRentalStore.MVC.Helpers;
+using FilmRentalStore.MVC.Helpers;
 using FilmRentalStore.MVC.Services.Interfaces;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace FilmRentalStore.MVC.Services.Implementations
 {
@@ -36,7 +38,7 @@ namespace FilmRentalStore.MVC.Services.Implementations
             var response = await _httpClient.GetAsync(endpoint);
             await EnsureSuccess(response);
 
-            return await response.Content.ReadFromJsonAsync<T>();
+            return await ReadResponse<T>(response);
         }
 
         public async Task<TResponse?> PostAsync<TRequest, TResponse>(string endpoint, TRequest data)
@@ -46,7 +48,7 @@ namespace FilmRentalStore.MVC.Services.Implementations
             var response = await _httpClient.PostAsJsonAsync(endpoint, data);
             await EnsureSuccess(response);
 
-            return await response.Content.ReadFromJsonAsync<TResponse>();
+            return await ReadResponse<TResponse>(response);
         }
 
         public async Task<TResponse?> PutAsync<TRequest, TResponse>(string endpoint, TRequest data)
@@ -56,7 +58,7 @@ namespace FilmRentalStore.MVC.Services.Implementations
             var response = await _httpClient.PutAsJsonAsync(endpoint, data);
             await EnsureSuccess(response);
 
-            return await response.Content.ReadFromJsonAsync<TResponse>();
+            return await ReadResponse<TResponse>(response);
         }
 
         public async Task<TResponse?> PatchAsync<TRequest, TResponse>(string endpoint, TRequest data)
@@ -71,7 +73,7 @@ namespace FilmRentalStore.MVC.Services.Implementations
             var response = await _httpClient.SendAsync(request);
             await EnsureSuccess(response);
 
-            return await response.Content.ReadFromJsonAsync<TResponse>();
+            return await ReadResponse<TResponse>(response);
         }
 
         public async Task<bool> DeleteAsync(string endpoint)
@@ -93,6 +95,25 @@ namespace FilmRentalStore.MVC.Services.Implementations
                     ? "API request failed."
                     : error);
             }
+        }
+
+        private static async Task<T?> ReadResponse<T>(HttpResponseMessage response)
+        {
+            if (response.StatusCode == HttpStatusCode.NoContent)
+            {
+                return default;
+            }
+
+            var content = await response.Content.ReadAsStringAsync();
+            if (string.IsNullOrWhiteSpace(content))
+            {
+                return default;
+            }
+
+            return JsonSerializer.Deserialize<T>(content, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
         }
     }
 }

@@ -5,6 +5,7 @@ namespace FilmRentalStore.MVC.Services.Interfaces
     public interface ICustomerApiService
     {
         Task<List<CustomerResponseDto>> GetAllAsync(int page = 1, int pageSize = 10);
+        Task<CustomerResponseDto> GetMeAsync();
         Task<CustomerResponseDto> GetByIdAsync(int id);
         Task<List<CustomerResponseDto>> SearchAsync(string? name, string? email);
         Task<List<CustomerResponseDto>> GetActiveAsync();

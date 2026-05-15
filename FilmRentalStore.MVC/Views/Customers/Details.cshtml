@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Customer Details";
+    var isProfile = (bool)(ViewBag.IsProfile ?? false);
 }
 
 <div class="container-fluid">
@@ -10,8 +11,15 @@
             <h1>Customer Details</h1>
         </div>
         <div class="col-md-4 text-end">
-            <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
-            <a href="@Url.Action("Edit", new { id = Model.Customer?.CustomerId })" class="btn btn-warning">Edit</a>
+            @if (isProfile)
+            {
+                <a asp-controller="Dashboard" asp-action="Customer" class="btn btn-secondary">Back</a>
+            }
+            else
+            {
+                <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
+                <a href="@Url.Action("Edit", new { id = Model.Customer?.CustomerId })" class="btn btn-warning">Edit</a>
+            }
         </div>
     </div>
 
@@ -55,7 +63,7 @@
                     </div>
                     <div class="col-md-6">
                         <label class="form-label"><strong>Role:</strong></label>
-                        <p>@(Model.Customer.Role != null ? Model.Customer.Role.GetType().GetProperty("Name")?.GetValue(Model.Customer.Role) ?? "N/A" : "N/A")</p>
+                        <p>@(Model.Customer.Role?.RoleTitle ?? "N/A")</p>
                     </div>
                 </div>
                 <div class="row mb-3">

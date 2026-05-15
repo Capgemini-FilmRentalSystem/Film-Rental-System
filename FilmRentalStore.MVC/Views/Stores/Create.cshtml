@@ -1,0 +1,13 @@
+@model FilmRentalStore.MVC.ViewModels.Store.StoreFormViewModel
+
+@{
+    ViewData["Title"] = "Create Store";
+}
+
+<h1>Create Store</h1>
+
+<form asp-action="Create" method="post" class="mt-3">
+    <partial name="_StoreForm" model="Model" />
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

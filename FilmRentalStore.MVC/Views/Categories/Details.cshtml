@@ -1,24 +1,61 @@
-﻿@model FilmRentalStore.MVC.DTOs.Category.CategoryResponseDto
+@model FilmRentalStore.MVC.ViewModels.Category.CategoryDetailsViewModel
 
 @{
-    ViewData["Title"] = Model.Name;
+    ViewData["Title"] = Model.Category.Name;
+    var role = Context.Session.GetString(SessionKeys.Role);
+    var canManageCategories = role == RoleConstants.Admin || role == RoleConstants.Manager;
 }
 
-<h2>@Model.Name</h2>
+<h2>@Model.Category.Name</h2>
 <a asp-action="Index" class="btn btn-secondary mb-3">Back</a>
 
 <div class="card">
     <div class="card-body">
         <dl class="row">
-            <dt class="col-sm-3">Category ID</dt>
-            <dd class="col-sm-9">@Model.CategoryId</dd>
-
             <dt class="col-sm-3">Name</dt>
-            <dd class="col-sm-9">@Model.Name</dd>
+            <dd class="col-sm-9">@Model.Category.Name</dd>
 
             <dt class="col-sm-3">Last Updated</dt>
-            <dd class="col-sm-9">@Model.LastUpdate.ToString("dd MMM yyyy")</dd>
+            <dd class="col-sm-9">@Model.Category.LastUpdate.ToString("dd MMM yyyy")</dd>
         </dl>
-        <a asp-action="Edit" asp-route-id="@Model.CategoryId" class="btn btn-warning">Edit</a>
+        @if (canManageCategories)
+        {
+            <a asp-action="Edit" asp-route-id="@Model.Category.CategoryId" class="btn btn-warning">Edit</a>
+        }
     </div>
 </div>
+
+<h3 class="mt-4">Films</h3>
+
+@if (Model.Films.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Title</th>
+                    <th>Release Year</th>
+                    <th>Language</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var film in Model.Films)
+                {
+                    <tr>
+                        <td>@film.Title</td>
+                        <td>@(film.ReleaseYear ?? "-")</td>
+                        <td>@film.Language?.Name</td>
+                        <td class="text-end">
+                            <a asp-controller="Films" asp-action="Details" asp-route-id="@film.FilmId" class="btn btn-sm btn-info">View</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <p class="text-muted">No films found for this category.</p>
+}

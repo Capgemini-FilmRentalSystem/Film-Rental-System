@@ -3,6 +3,8 @@
 @{
     ViewData["Title"] = Model.Film.Title;
     var film = Model.Film;
+    var role = Context.Session.GetString(SessionKeys.Role);
+    var canManageFilms = role == RoleConstants.Admin || role == RoleConstants.Manager;
 }
 
 @if (TempData["Success"] != null)
@@ -13,7 +15,10 @@
 <div class="d-flex justify-content-between mb-3">
     <h2>@film.Title</h2>
     <div>
-        <a asp-action="Edit" asp-route-id="@film.FilmId" class="btn btn-warning">Edit</a>
+        @if (canManageFilms)
+        {
+            <a asp-action="Edit" asp-route-id="@film.FilmId" class="btn btn-warning">Edit</a>
+        }
         <a asp-action="Index" class="btn btn-secondary">Back</a>
     </div>
 </div>
@@ -32,6 +37,30 @@
 
             <dt class="col-sm-3">Original Language</dt>
             <dd class="col-sm-9">@(film.OriginalLanguage?.Name ?? "—")</dd>
+
+            <dt class="col-sm-3">Categories</dt>
+            <dd class="col-sm-9">
+                @if (Model.Categories.Any())
+                {
+                    @string.Join(", ", Model.Categories.Select(category => $"{category.Name} (#{category.CategoryId})"))
+                }
+                else
+                {
+                    <span>—</span>
+                }
+            </dd>
+
+            <dt class="col-sm-3">Actors</dt>
+            <dd class="col-sm-9">
+                @if (Model.Actors.Any())
+                {
+                    @string.Join(", ", Model.Actors.Select(actor => actor.FullName))
+                }
+                else
+                {
+                    <span>—</span>
+                }
+            </dd>
 
             <dt class="col-sm-3">Rating</dt>
             <dd class="col-sm-9">@(film.Rating ?? "—")</dd>
@@ -57,11 +86,3 @@
     </div>
 </div>
 
-<div class="d-flex gap-2 mb-3">
-    <a asp-action="AssignActor" asp-route-id="@film.FilmId" class="btn btn-outline-primary">
-        Manage Actors
-    </a>
-    <a asp-action="AssignCategory" asp-route-id="@film.FilmId" class="btn btn-outline-primary">
-        Manage Categories
-    </a>
-</div>

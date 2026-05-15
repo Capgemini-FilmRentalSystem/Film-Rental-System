@@ -18,13 +18,13 @@ namespace FilmRentalStore.MVC.ViewModels.Address
         {
             return new AddressRequestDto
             {
-                Address1 = AddressLine,
+                AddressLine = AddressLine,
                 Address2 = Address2,
                 District = District,
                 PostalCode = PostalCode,
                 Phone = Phone,
-                City = City,
-                Country = Country
+                CityName = City,
+                CountryName = Country
             };
         }
 
@@ -32,6 +32,7 @@ namespace FilmRentalStore.MVC.ViewModels.Address
         {
             return new AddressCreateEditViewModel
             {
+                AddressId = dto.AddressId,
                 AddressLine = dto.AddressLine,
                 Address2 = dto.Address2,
                 District = dto.District,

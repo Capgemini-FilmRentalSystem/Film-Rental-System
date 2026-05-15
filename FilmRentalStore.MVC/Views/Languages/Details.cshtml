@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Language Details";
+    var role = Context.Session.GetString(SessionKeys.Role);
+    var canManageLanguages = role == RoleConstants.Admin || role == RoleConstants.Manager;
 }
 
 <div class="container-fluid">
@@ -11,7 +13,10 @@
         </div>
         <div class="col-md-4 text-end">
             <a href="@Url.Action("Index")" class="btn btn-secondary">Back to List</a>
-            <a href="@Url.Action("Edit", new { id = Model.Language?.LanguageId })" class="btn btn-warning">Edit</a>
+            @if (canManageLanguages)
+            {
+                <a href="@Url.Action("Edit", new { id = Model.Language?.LanguageId })" class="btn btn-warning">Edit</a>
+            }
         </div>
     </div>
 
@@ -20,10 +25,6 @@
         <div class="card">
             <div class="card-body">
                 <div class="row mb-3">
-                    <div class="col-md-6">
-                        <label class="form-label"><strong>Language ID:</strong></label>
-                        <p>@Model.Language.LanguageId</p>
-                    </div>
                     <div class="col-md-6">
                         <label class="form-label"><strong>Name:</strong></label>
                         <p>@Model.Language.Name</p>
@@ -38,5 +39,40 @@
                 </div>
             </div>
         </div>
+    }
+
+    <h3 class="mt-4">Films</h3>
+
+    @if (Model.Films.Any())
+    {
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Title</th>
+                        <th>Release Year</th>
+                        <th>Rating</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var film in Model.Films)
+                    {
+                        <tr>
+                            <td>@film.Title</td>
+                            <td>@(film.ReleaseYear ?? "-")</td>
+                            <td>@(film.Rating ?? "-")</td>
+                            <td class="text-end">
+                                <a asp-controller="Films" asp-action="Details" asp-route-id="@film.FilmId" class="btn btn-sm btn-info">View</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <p class="text-muted">No films found for this language.</p>
     }
 </div>

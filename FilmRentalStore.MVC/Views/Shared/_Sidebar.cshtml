@@ -19,6 +19,7 @@
             <a class="list-group-item list-group-item-action" asp-controller="Payments" asp-action="Index">Payments</a>
             <a class="list-group-item list-group-item-action" asp-controller="Actors" asp-action="Index">Actors</a>
             <a class="list-group-item list-group-item-action" asp-controller="Categories" asp-action="Index">Categories</a>
+            <a class="list-group-item list-group-item-action" asp-controller="Languages" asp-action="Index">Languages</a>
             <a class="list-group-item list-group-item-action" asp-controller="Staff" asp-action="Index">Staff</a>
             <a class="list-group-item list-group-item-action" asp-controller="Stores" asp-action="Index">Stores</a>
         }
@@ -31,6 +32,7 @@
             <a class="list-group-item list-group-item-action" asp-controller="Payments" asp-action="Index">Payments</a>
             <a class="list-group-item list-group-item-action" asp-controller="Actors" asp-action="Index">Actors</a>
             <a class="list-group-item list-group-item-action" asp-controller="Categories" asp-action="Index">Categories</a>
+            <a class="list-group-item list-group-item-action" asp-controller="Languages" asp-action="Index">Languages</a>
             <a class="list-group-item list-group-item-action" asp-controller="Stores" asp-action="Index">Stores</a>
         }
         else if (role == RoleConstants.Staff)
@@ -38,8 +40,6 @@
             <a class="list-group-item list-group-item-action" asp-controller="Films" asp-action="Index">Films</a>
             <a class="list-group-item list-group-item-action" asp-controller="Inventory" asp-action="Index">Inventory</a>
             <a class="list-group-item list-group-item-action" asp-controller="Customers" asp-action="Index">Customers</a>
-            <a class="list-group-item list-group-item-action" asp-controller="Rentals" asp-action="Index">Rentals</a>
-            <a class="list-group-item list-group-item-action" asp-controller="Payments" asp-action="Index">Payments</a>
         }
         else if (role == RoleConstants.Customer)
         {

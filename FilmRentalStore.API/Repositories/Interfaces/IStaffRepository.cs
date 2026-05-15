@@ -4,6 +4,7 @@ namespace FilmRentalStore.API.Repositories.Interfaces
 {
     public interface IStaffRepository
     {
+        Task<IEnumerable<Staff>> GetAllAsync();
         Task<Staff?> GetByIdAsync(byte staffId);
         Task<Staff?> GetEntityByIdAsync(byte staffId);
         Task<Staff?> GetByUsernameAsync(string username);

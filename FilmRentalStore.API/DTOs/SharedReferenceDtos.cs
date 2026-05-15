@@ -34,12 +34,30 @@ namespace FilmRentalStore.API.DTOs
 
     public class LanguageSummaryDto
     {
+        public byte LanguageId { get; set; }
         public string Name { get; set; } = string.Empty;
     }
 
     public class FilmSummaryDto
     {
+        public int FilmId { get; set; }
         public string Title { get; set; } = string.Empty;
+        public byte RentalDuration { get; set; }
+        public decimal RentalRate { get; set; }
+    }
+
+    public class ActorSummaryDto
+    {
+        public int ActorId { get; set; }
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string FullName => $"{FirstName} {LastName}";
+    }
+
+    public class CategorySummaryDto
+    {
+        public byte CategoryId { get; set; }
+        public string Name { get; set; } = string.Empty;
     }
 
     public class InventorySummaryDto

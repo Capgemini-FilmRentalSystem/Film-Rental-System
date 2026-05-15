@@ -1,0 +1,13 @@
+@model FilmRentalStore.MVC.DTOs.Actor.ActorRequestDto
+
+@{
+    ViewData["Title"] = "Create Actor";
+}
+
+<h1>Create Actor</h1>
+
+<form asp-action="Create" method="post" class="mt-3">
+    <partial name="_ActorForm" model="Model" />
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

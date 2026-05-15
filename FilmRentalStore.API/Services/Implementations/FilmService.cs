@@ -87,12 +87,30 @@ namespace FilmRentalStore.API.Services.Implementations
                     throw new BadRequestException("Invalid original language id");
             }
 
+            await ValidateActorIdsAsync(filmDto.ActorIds);
+            await ValidateCategoryIdsAsync(filmDto.CategoryIds);
+
             var film = _mapper.Map<Film>(filmDto);
 
             film.LastUpdate = DateTime.Now;
 
             await _filmRepository.AddAsync(film);
             await _filmRepository.SaveChangesAsync();
+
+            if (filmDto.ActorIds != null)
+            {
+                await _filmRepository.ReplaceActorsAsync(film.FilmId, filmDto.ActorIds);
+            }
+
+            if (filmDto.CategoryIds != null)
+            {
+                await _filmRepository.ReplaceCategoriesAsync(film.FilmId, filmDto.CategoryIds);
+            }
+
+            if (filmDto.ActorIds != null || filmDto.CategoryIds != null)
+            {
+                await _filmRepository.SaveChangesAsync();
+            }
 
             var createdFilm = await _filmRepository.GetByIdAsync(film.FilmId);
 
@@ -126,11 +144,25 @@ namespace FilmRentalStore.API.Services.Implementations
                     throw new BadRequestException("Invalid original language id");
             }
 
+            await ValidateActorIdsAsync(filmDto.ActorIds);
+            await ValidateCategoryIdsAsync(filmDto.CategoryIds);
+
             _mapper.Map(filmDto, film);
 
             film.LastUpdate = DateTime.Now;
 
             _filmRepository.Update(film);
+
+            if (filmDto.ActorIds != null)
+            {
+                await _filmRepository.ReplaceActorsAsync(filmId, filmDto.ActorIds);
+            }
+
+            if (filmDto.CategoryIds != null)
+            {
+                await _filmRepository.ReplaceCategoriesAsync(filmId, filmDto.CategoryIds);
+            }
+
             await _filmRepository.SaveChangesAsync();
 
             var updatedFilm = await _filmRepository.GetByIdAsync(filmId);
@@ -229,6 +261,34 @@ namespace FilmRentalStore.API.Services.Implementations
 
             await _filmRepository.RemoveCategoryAsync(filmId, categoryId);
             await _filmRepository.SaveChangesAsync();
+        }
+
+        private async Task ValidateActorIdsAsync(IEnumerable<int>? actorIds)
+        {
+            if (actorIds == null)
+                return;
+
+            foreach (var actorId in actorIds.Distinct())
+            {
+                var actorExists = await _actorRepository.ActorExistsAsync(actorId);
+
+                if (!actorExists)
+                    throw new NotFoundException($"Actor with ID {actorId} was not found");
+            }
+        }
+
+        private async Task ValidateCategoryIdsAsync(IEnumerable<byte>? categoryIds)
+        {
+            if (categoryIds == null)
+                return;
+
+            foreach (var categoryId in categoryIds.Distinct())
+            {
+                var categoryExists = await _categoryRepository.ExistsAsync(categoryId);
+
+                if (!categoryExists)
+                    throw new NotFoundException($"Category with ID {categoryId} was not found");
+            }
         }
     }
 }

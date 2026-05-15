@@ -1,3 +1,5 @@
+using FilmRentalStore.API.DTOs.Address;
+
 namespace FilmRentalStore.API.DTOs.Auth
 {
     public class RegisterRequestDto
@@ -10,5 +12,6 @@ namespace FilmRentalStore.API.DTOs.Auth
         public string Username { get; set; } = null!;
         public string Password { get; set; } = null!;
         public int RoleId { get; set; } = 3;
+        public AddressDto? Address { get; set; }
     }
 }

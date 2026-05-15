@@ -13,5 +13,7 @@ namespace FilmRentalStore.MVC.DTOs.Film
         public decimal ReplacementCost { get; set; }
         public string? Rating { get; set; }
         public string? SpecialFeatures { get; set; }
+        public List<int>? ActorIds { get; set; }
+        public List<byte>? CategoryIds { get; set; }
     }
 }

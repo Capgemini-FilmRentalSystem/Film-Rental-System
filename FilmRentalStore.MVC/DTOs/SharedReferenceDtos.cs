@@ -35,7 +35,10 @@ namespace FilmRentalStore.MVC.DTOs
 
     public class FilmSummaryDto
     {
+        public int FilmId { get; set; }
         public string Title { get; set; } = string.Empty;
+        public byte RentalDuration { get; set; }
+        public decimal RentalRate { get; set; }
     }
 
     public class InventorySummaryDto

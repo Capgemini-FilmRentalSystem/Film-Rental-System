@@ -1,0 +1,13 @@
+@model FilmRentalStore.MVC.ViewModels.Inventory.InventoryFormViewModel
+
+@{
+    ViewData["Title"] = "Create Inventory";
+}
+
+<h1>Create Inventory</h1>
+
+<form asp-action="Create" method="post" class="mt-3">
+    <partial name="_InventoryForm" model="Model" />
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+</form>

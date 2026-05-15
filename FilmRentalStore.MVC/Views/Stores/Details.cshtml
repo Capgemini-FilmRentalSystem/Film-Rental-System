@@ -1,0 +1,29 @@
+@model FilmRentalStore.MVC.DTOs.Store.StoreResponseDto
+
+@{
+    ViewData["Title"] = "Store Details";
+    var role = Context.Session.GetString(SessionKeys.Role);
+    var canManageStores = role == RoleConstants.Admin;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Store Details</h1>
+    <div>
+        @if (canManageStores)
+        {
+            <a asp-action="Edit" asp-route-id="@Model.StoreId" class="btn btn-warning">Edit</a>
+        }
+        <a asp-action="Index" class="btn btn-secondary">Back</a>
+    </div>
+</div>
+
+<dl class="row">
+    <dt class="col-sm-3">Store ID</dt>
+    <dd class="col-sm-9">@Model.StoreId</dd>
+    <dt class="col-sm-3">Manager</dt>
+    <dd class="col-sm-9">@Model.ManagerStaff?.FullName</dd>
+    <dt class="col-sm-3">Address</dt>
+    <dd class="col-sm-9">@Model.Address?.AddressLine, @Model.Address?.City, @Model.Address?.Country</dd>
+    <dt class="col-sm-3">Last Updated</dt>
+    <dd class="col-sm-9">@Model.LastUpdate.ToString("g")</dd>
+</dl>

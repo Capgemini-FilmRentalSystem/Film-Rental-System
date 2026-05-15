@@ -11,6 +11,8 @@ namespace FilmRentalStore.MVC.ViewModels.Film
         // Dropdowns
         public List<SelectListItem> Languages { get; set; } = new();
         public List<SelectListItem> OriginalLanguages { get; set; } = new();
+        public List<SelectListItem> Actors { get; set; } = new();
+        public List<SelectListItem> Categories { get; set; } = new();
 
         public List<string> RatingOptions { get; set; } = new()
         {
@@ -24,5 +26,7 @@ namespace FilmRentalStore.MVC.ViewModels.Film
 
         // Selected special features (multi-select helper)
         public List<string> SelectedSpecialFeatures { get; set; } = new();
+        public List<int> SelectedActorIds { get; set; } = new();
+        public List<byte> SelectedCategoryIds { get; set; } = new();
     }
 }
