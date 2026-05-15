@@ -4,6 +4,7 @@
     ViewData["Title"] = "Store Details";
     var role = Context.Session.GetString(SessionKeys.Role);
     var canManageStores = role == RoleConstants.Admin;
+    var canSeeStoreId = role == RoleConstants.Admin;
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -18,8 +19,11 @@
 </div>
 
 <dl class="row">
-    <dt class="col-sm-3">Store ID</dt>
-    <dd class="col-sm-9">@Model.StoreId</dd>
+    @if (canSeeStoreId)
+    {
+        <dt class="col-sm-3">Store ID</dt>
+        <dd class="col-sm-9">@Model.StoreId</dd>
+    }
     <dt class="col-sm-3">Manager</dt>
     <dd class="col-sm-9">@Model.ManagerStaff?.FullName</dd>
     <dt class="col-sm-3">Address</dt>

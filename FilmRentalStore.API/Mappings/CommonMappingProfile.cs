@@ -38,6 +38,8 @@ namespace FilmRentalStore.API.Mappings
             CreateMap<Inventory, InventorySummaryDto>();
 
             CreateMap<Rental, RentalSummaryDto>()
+                .ForMember(dest => dest.StoreId,
+                    opt => opt.MapFrom(src => src.Inventory.StoreId))
                 .ForMember(dest => dest.Film,
                     opt => opt.MapFrom(src => src.Inventory.Film));
         }

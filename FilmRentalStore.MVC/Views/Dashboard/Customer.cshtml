@@ -1,6 +1,7 @@
-﻿@{
-    ViewData["Title"] = "Customer Dashboard";
+@model DashboardViewModel
+
+@{
+    ViewData["Title"] = Model.Title;
 }
 
-<h2>Customer Dashboard</h2>
-<p>Welcome to the Customer dashboard.</p>
+@await Html.PartialAsync("_DashboardSummary", Model)

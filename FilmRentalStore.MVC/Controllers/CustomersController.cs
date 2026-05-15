@@ -32,9 +32,18 @@ namespace FilmRentalStore.MVC.Controllers
                 {
                     customers = await _customerService.SearchAsync(searchName, searchEmail);
                 }
+                else if (GetScopedStoreId() is int storeId)
+                {
+                    customers = await _customerService.GetByStoreAsync(storeId);
+                }
                 else
                 {
                     customers = await _customerService.GetAllAsync(page, pageSize);
+                }
+
+                if (GetScopedStoreId() is int scopedStoreId)
+                {
+                    customers = customers.Where(customer => customer.StoreId == scopedStoreId).ToList();
                 }
 
                 var viewModel = new CustomerIndexViewModel
@@ -64,6 +73,8 @@ namespace FilmRentalStore.MVC.Controllers
             {
                 var customer = await _customerService.GetByIdAsync(id);
                 if (customer == null)
+                    return NotFound();
+                if (!CanAccessStore(customer.StoreId))
                     return NotFound();
 
                 var viewModel = new CustomerDetailsViewModel { Customer = customer };
@@ -119,6 +130,8 @@ namespace FilmRentalStore.MVC.Controllers
         {
             try
             {
+                ApplyScopedStore(viewModel);
+
                 if (!ModelState.IsValid)
                 {
                     await PopulateStores(viewModel);
@@ -154,6 +167,8 @@ namespace FilmRentalStore.MVC.Controllers
                 var customer = await _customerService.GetByIdAsync(id);
                 if (customer == null)
                     return NotFound();
+                if (!CanAccessStore(customer.StoreId))
+                    return NotFound();
 
                 var viewModel = CustomerCreateEditViewModel.FromResponseDto(customer);
                 await PopulateStores(viewModel);
@@ -177,6 +192,14 @@ namespace FilmRentalStore.MVC.Controllers
 
             try
             {
+                var existingCustomer = await _customerService.GetByIdAsync(id);
+                if (existingCustomer == null)
+                    return NotFound();
+                if (!CanAccessStore(existingCustomer.StoreId))
+                    return NotFound();
+
+                ApplyScopedStore(viewModel);
+
                 if (!ModelState.IsValid)
                 {
                     await PopulateStores(viewModel);
@@ -204,6 +227,12 @@ namespace FilmRentalStore.MVC.Controllers
         {
             try
             {
+                var customer = await _customerService.GetByIdAsync(id);
+                if (customer == null)
+                    return NotFound();
+                if (!CanAccessStore(customer.StoreId))
+                    return NotFound();
+
                 await _customerService.ActivateAsync(id);
                 return RedirectToAction(nameof(Index));
             }
@@ -222,6 +251,12 @@ namespace FilmRentalStore.MVC.Controllers
         {
             try
             {
+                var customer = await _customerService.GetByIdAsync(id);
+                if (customer == null)
+                    return NotFound();
+                if (!CanAccessStore(customer.StoreId))
+                    return NotFound();
+
                 await _customerService.DeactivateAsync(id);
                 return RedirectToAction(nameof(Index));
             }
@@ -235,6 +270,12 @@ namespace FilmRentalStore.MVC.Controllers
         private async Task PopulateStores(CustomerCreateEditViewModel viewModel)
         {
             var stores = await _storeService.GetAllAsync();
+            if (GetScopedStoreId() is int storeId)
+            {
+                stores = stores.Where(store => store.StoreId == storeId).ToList();
+                viewModel.StoreId = storeId;
+            }
+
             viewModel.Stores = stores.Select(store => new SelectListItem
             {
                 Value = store.StoreId.ToString(),
@@ -251,8 +292,28 @@ namespace FilmRentalStore.MVC.Controllers
                     .Where(part => !string.IsNullOrWhiteSpace(part)));
 
             return string.IsNullOrWhiteSpace(location)
-                ? $"Store #{store.StoreId}"
-                : $"Store #{store.StoreId} - {location}";
+                ? "Store"
+                : location;
+        }
+
+        private bool CanAccessStore(int storeId)
+        {
+            var scopedStoreId = GetScopedStoreId();
+            return !scopedStoreId.HasValue || storeId == scopedStoreId.Value;
+        }
+
+        private void ApplyScopedStore(CustomerCreateEditViewModel viewModel)
+        {
+            if (GetScopedStoreId() is int storeId)
+            {
+                viewModel.StoreId = storeId;
+            }
+        }
+
+        private int? GetScopedStoreId()
+        {
+            var role = HttpContext.Session.GetString(SessionKeys.Role);
+            return role == RoleConstants.Admin ? null : HttpContext.Session.GetInt32(SessionKeys.StoreId);
         }
     }
 }

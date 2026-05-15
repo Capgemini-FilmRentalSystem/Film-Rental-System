@@ -43,11 +43,13 @@ namespace FilmRentalStore.MVC.DTOs
 
     public class InventorySummaryDto
     {
+        public int StoreId { get; set; }
         public FilmSummaryDto Film { get; set; } = null!;
     }
 
     public class RentalSummaryDto
     {
+        public int StoreId { get; set; }
         public DateTime RentalDate { get; set; }
         public FilmSummaryDto Film { get; set; } = null!;
         public DateTime? ReturnDate { get; set; }

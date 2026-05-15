@@ -4,6 +4,9 @@
     ViewData["Title"] = "Addresses";
     var role = Context.Session.GetString(SessionKeys.Role);
     var canManageAddresses = role == RoleConstants.Admin || role == RoleConstants.Manager || role == RoleConstants.Staff;
+    var currentPage = Model.CurrentPage;
+    var pageSize = Model.PageSize;
+    var hasNextPage = Model.Addresses.Count == pageSize;
 }
 
 <div class="container-fluid">
@@ -65,6 +68,19 @@
                     </tbody>
                 </table>
             </div>
+            <nav aria-label="Addresses pagination">
+                <ul class="pagination mb-0">
+                    <li class="page-item @(currentPage > 1 ? "" : "disabled")">
+                        <a class="page-link" asp-action="Index" asp-route-page="@(currentPage - 1)" asp-route-pageSize="@pageSize">Previous</a>
+                    </li>
+                    <li class="page-item disabled">
+                        <span class="page-link">Page @currentPage</span>
+                    </li>
+                    <li class="page-item @(hasNextPage ? "" : "disabled")">
+                        <a class="page-link" asp-action="Index" asp-route-page="@(currentPage + 1)" asp-route-pageSize="@pageSize">Next</a>
+                    </li>
+                </ul>
+            </nav>
         </div>
     </div>
 </div>

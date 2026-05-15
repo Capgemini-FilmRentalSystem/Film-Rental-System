@@ -26,7 +26,7 @@ namespace FilmRentalStore.API.Controllers
         }
 
         [HttpPost("staff/register")]
-        [AllowAnonymous]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> StaffRegister([FromBody] RegisterRequestDto dto)
         {
             var result = await _authService.RegisterStaffAsync(dto);

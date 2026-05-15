@@ -18,9 +18,9 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 </head>
 
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-dark bg-dark border-bottom box-shadow mb-3">
+<body class="@(isLoggedIn ? "app-body app-body-authenticated" : "app-body")">
+    <header class="app-header">
+        <nav class="navbar navbar-expand-sm navbar-dark bg-dark border-bottom box-shadow">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-controller="Dashboard" asp-action="Index">FilmRentalStore</a>
 
@@ -46,32 +46,31 @@
         </nav>
     </header>
 
-    <div class="container-fluid">
-        <div class="row">
-            @if (isLoggedIn)
-            {
-                <aside class="col-md-2 mb-3">
-                    <partial name="_Sidebar" />
-                </aside>
+    <div class="app-shell">
+        @if (isLoggedIn)
+        {
+            <aside class="app-sidebar">
+                <partial name="_Sidebar" />
+            </aside>
 
-                <main class="col-md-10">
-                    <partial name="_Alert" />
-                    @RenderBody()
-                </main>
-            }
-            else
-            {
-                <main class="col-md-12">
-                    @RenderBody()
-                </main>
-            }
-        </div>
+            <main class="app-content">
+                <partial name="_Alert" />
+                @RenderBody()
+            </main>
+        }
+        else
+        {
+            <main class="app-content app-content-public">
+                @RenderBody()
+            </main>
+        }
     </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
     <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
 
     @await RenderSectionAsync("Scripts", required: false)
 </body>

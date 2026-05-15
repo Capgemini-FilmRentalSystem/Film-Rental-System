@@ -30,6 +30,12 @@ namespace FilmRentalStore.MVC.Controllers
         public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
         {
             var inventory = await GetAllInventoryForSummaryAsync();
+            var scopedStoreId = GetScopedStoreId();
+            if (scopedStoreId.HasValue)
+            {
+                inventory = inventory.Where(item => item.StoreId == scopedStoreId.Value).ToList();
+            }
+
             var groupedInventory = inventory
                 .GroupBy(item => new { item.FilmId, item.StoreId })
                 .Select(group =>
@@ -52,7 +58,6 @@ namespace FilmRentalStore.MVC.Controllers
                     };
                 })
                 .OrderBy(item => item.Film?.Title)
-                .ThenBy(item => item.StoreId)
                 .ToList();
 
             var items = groupedInventory
@@ -72,6 +77,9 @@ namespace FilmRentalStore.MVC.Controllers
             var item = await _inventoryService.GetByIdAsync(id);
             if (item == null) return NotFound();
 
+            var scopedStoreId = GetScopedStoreId();
+            if (scopedStoreId.HasValue && item.StoreId != scopedStoreId.Value) return NotFound();
+
             return View(item);
         }
 
@@ -88,6 +96,8 @@ namespace FilmRentalStore.MVC.Controllers
         [RoleAuthorize(RoleConstants.Admin, RoleConstants.Manager)]
         public async Task<IActionResult> Create(InventoryFormViewModel vm)
         {
+            ApplyScopedStore(vm);
+
             if (!ModelState.IsValid)
             {
                 await PopulateInventoryFormOptions(vm);
@@ -104,6 +114,7 @@ namespace FilmRentalStore.MVC.Controllers
         {
             var item = await _inventoryService.GetByIdAsync(id);
             if (item == null) return NotFound();
+            if (!CanAccessStore(item.StoreId)) return NotFound();
 
             ViewBag.InventoryId = id;
             var vm = new InventoryFormViewModel
@@ -124,6 +135,12 @@ namespace FilmRentalStore.MVC.Controllers
         [RoleAuthorize(RoleConstants.Admin, RoleConstants.Manager)]
         public async Task<IActionResult> Edit(int id, InventoryFormViewModel vm)
         {
+            var item = await _inventoryService.GetByIdAsync(id);
+            if (item == null) return NotFound();
+            if (!CanAccessStore(item.StoreId)) return NotFound();
+
+            ApplyScopedStore(vm);
+
             if (!ModelState.IsValid)
             {
                 ViewBag.InventoryId = id;
@@ -147,6 +164,13 @@ namespace FilmRentalStore.MVC.Controllers
             }).ToList();
 
             var stores = await _storeService.GetAllAsync();
+            var scopedStoreId = GetScopedStoreId();
+            if (scopedStoreId.HasValue)
+            {
+                stores = stores.Where(store => store.StoreId == scopedStoreId.Value).ToList();
+                vm.Inventory.StoreId = scopedStoreId.Value;
+            }
+
             vm.Stores = stores.Select(store => new SelectListItem
             {
                 Value = store.StoreId.ToString(),
@@ -163,8 +187,28 @@ namespace FilmRentalStore.MVC.Controllers
                     .Where(part => !string.IsNullOrWhiteSpace(part)));
 
             return string.IsNullOrWhiteSpace(location)
-                ? $"Store #{store.StoreId}"
-                : $"Store #{store.StoreId} - {location}";
+                ? "Store"
+                : location;
+        }
+
+        private int? GetScopedStoreId()
+        {
+            var role = HttpContext.Session.GetString(SessionKeys.Role);
+            return role == RoleConstants.Admin ? null : HttpContext.Session.GetInt32(SessionKeys.StoreId);
+        }
+
+        private bool CanAccessStore(int storeId)
+        {
+            var scopedStoreId = GetScopedStoreId();
+            return !scopedStoreId.HasValue || storeId == scopedStoreId.Value;
+        }
+
+        private void ApplyScopedStore(InventoryFormViewModel vm)
+        {
+            if (GetScopedStoreId() is int storeId)
+            {
+                vm.Inventory.StoreId = storeId;
+            }
         }
 
         private async Task<List<InventoryResponseDto>> GetAllInventoryForSummaryAsync()

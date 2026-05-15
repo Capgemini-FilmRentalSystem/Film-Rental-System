@@ -9,6 +9,7 @@
     var hasNextPage = (bool)(ViewBag.HasNextPage ?? false);
     var role = HttpContextAccessor.HttpContext?.Session.GetString(SessionKeys.Role);
     var canManage = role == RoleConstants.Admin || role == RoleConstants.Manager;
+    var canSeeStoreId = role == RoleConstants.Admin;
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -24,7 +25,10 @@
         <thead class="table-light">
             <tr>
                 <th>Film</th>
-                <th>Store</th>
+                @if (canSeeStoreId)
+                {
+                    <th>Store</th>
+                }
                 <th>Available Copies</th>
                 <th>Total Copies</th>
                 <th>Last Updated</th>
@@ -38,7 +42,10 @@
                 {
                     <tr>
                         <td>@item.Film?.Title</td>
-                        <td>@item.StoreId</td>
+                        @if (canSeeStoreId)
+                        {
+                            <td>@item.StoreId</td>
+                        }
                         <td>@item.AvailableCopies</td>
                         <td>@item.TotalCopies</td>
                         <td>@item.LastUpdate.ToString("g")</td>
@@ -55,7 +62,7 @@
             else
             {
                 <tr>
-                    <td colspan="6" class="text-center text-muted">No inventory found.</td>
+                    <td colspan="@(canSeeStoreId ? 6 : 5)" class="text-center text-muted">No inventory found.</td>
                 </tr>
             }
         </tbody>

@@ -1,0 +1,43 @@
+@model DashboardViewModel
+
+<div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+        <h1 class="h2 mb-1">@Model.Title</h1>
+        @if (!string.IsNullOrWhiteSpace(Model.Summary))
+        {
+            <p class="text-muted mb-0">@Model.Summary</p>
+        }
+    </div>
+</div>
+
+@if (Model.Cards.Any())
+{
+    <div class="row row-cols-1 row-cols-md-3 g-3 mb-4">
+        @foreach (var card in Model.Cards)
+        {
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="text-muted small">@card.Label</div>
+                        <div class="h3 mb-1">@card.Value</div>
+                        @if (!string.IsNullOrWhiteSpace(card.Note))
+                        {
+                            <div class="small text-muted">@card.Note</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@if (Model.Links.Any())
+{
+    <h2 class="h5 mb-2">Quick Actions</h2>
+    <div class="d-flex flex-wrap gap-2">
+        @foreach (var link in Model.Links)
+        {
+            <a asp-controller="@link.Controller" asp-action="@link.Action" class="btn btn-outline-primary btn-sm">@link.Text</a>
+        }
+    </div>
+}

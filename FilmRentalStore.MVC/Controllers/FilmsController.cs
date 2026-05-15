@@ -13,34 +13,48 @@ namespace FilmRentalStore.MVC.Controllers
     public class FilmsController : Controller
     {
         private readonly IFilmApiService _filmService;
+        private readonly IInventoryApiService _inventoryService;
         private const int LookupPageSize = 100;
 
-        public FilmsController(IFilmApiService filmService)
+        public FilmsController(IFilmApiService filmService, IInventoryApiService inventoryService)
         {
             _filmService = filmService;
+            _inventoryService = inventoryService;
         }
 
         public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string? searchTerm = null)
         {
-            var allFilms = string.IsNullOrWhiteSpace(searchTerm)
-                ? await _filmService.GetAllFilmsAsync(page, pageSize)
-                : FilterFilms(await GetAllFilmsForLookupAsync(), searchTerm).ToList();
+            var scopedStoreId = GetScopedStoreId();
+            var needsLocalFilter = scopedStoreId.HasValue || !string.IsNullOrWhiteSpace(searchTerm);
 
-            var films = string.IsNullOrWhiteSpace(searchTerm)
+            var allFilms = needsLocalFilter
+                ? await GetAllFilmsForLookupAsync()
+                : await _filmService.GetAllFilmsAsync(page, pageSize);
+
+            if (scopedStoreId.HasValue)
+            {
+                var filmIds = await GetFilmIdsForStoreAsync(scopedStoreId.Value);
+                allFilms = allFilms.Where(film => filmIds.Contains(film.FilmId)).ToList();
+            }
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                allFilms = FilterFilms(allFilms, searchTerm).ToList();
+            }
+
+            var films = needsLocalFilter
                 ? allFilms
-                : allFilms
                     .Skip((page - 1) * pageSize)
                     .Take(pageSize)
-                    .ToList();
+                    .ToList()
+                : allFilms;
 
             var vm = new FilmIndexViewModel
             {
                 Films = films,
                 CurrentPage = page,
                 PageSize = pageSize,
-                HasNextPage = string.IsNullOrWhiteSpace(searchTerm)
-                    ? films.Count == pageSize
-                    : page * pageSize < allFilms.Count,
+                HasNextPage = needsLocalFilter ? page * pageSize < allFilms.Count : films.Count == pageSize,
                 SearchTerm = searchTerm
             };
 
@@ -51,6 +65,13 @@ namespace FilmRentalStore.MVC.Controllers
         {
             var film = await _filmService.GetFilmByIdAsync(id);
             if (film == null) return NotFound();
+
+            var scopedStoreId = GetScopedStoreId();
+            if (scopedStoreId.HasValue)
+            {
+                var filmIds = await GetFilmIdsForStoreAsync(scopedStoreId.Value);
+                if (!filmIds.Contains(id)) return NotFound();
+            }
 
             var vm = new FilmDetailViewModel
             {
@@ -92,6 +113,7 @@ namespace FilmRentalStore.MVC.Controllers
         {
             var film = await _filmService.GetFilmByIdAsync(id);
             if (film == null) return NotFound();
+            if (!await CanAccessFilmAsync(id)) return NotFound();
 
             var vm = await BuildFilmFormViewModel();
             vm.Film = new FilmRequestDto
@@ -130,6 +152,8 @@ namespace FilmRentalStore.MVC.Controllers
         [RoleAuthorize(RoleConstants.Admin, RoleConstants.Manager)]
         public async Task<IActionResult> Edit(int id, FilmFormViewModel vm)
         {
+            if (!await CanAccessFilmAsync(id)) return NotFound();
+
             BuildSpecialFeaturesString(vm);
             ApplySelectedRelationships(vm);
 
@@ -150,6 +174,7 @@ namespace FilmRentalStore.MVC.Controllers
         {
             var film = await _filmService.GetFilmByIdAsync(id);
             if (film == null) return NotFound();
+            if (!await CanAccessFilmAsync(id)) return NotFound();
 
             var allActors = await _filmService.GetActorsAsync();
             var assignedActorIds = film.ActorIds.ToHashSet();
@@ -178,6 +203,7 @@ namespace FilmRentalStore.MVC.Controllers
         {
             var film = await _filmService.GetFilmByIdAsync(id);
             if (film == null) return NotFound();
+            if (!await CanAccessFilmAsync(id)) return NotFound();
 
             var assignedActorIds = film.ActorIds.ToHashSet();
             foreach (var actorId in vm.SelectedActorIds.Distinct().Where(actorId => !assignedActorIds.Contains(actorId)))
@@ -197,6 +223,8 @@ namespace FilmRentalStore.MVC.Controllers
         [RoleAuthorize(RoleConstants.Admin, RoleConstants.Manager)]
         public async Task<IActionResult> RemoveActor(int filmId, int actorId)
         {
+            if (!await CanAccessFilmAsync(filmId)) return NotFound();
+
             await _filmService.RemoveActorAsync(filmId, actorId);
             TempData["Success"] = "Actor removed successfully.";
             return RedirectToAction(nameof(Details), new { id = filmId });
@@ -207,6 +235,7 @@ namespace FilmRentalStore.MVC.Controllers
         {
             var film = await _filmService.GetFilmByIdAsync(id);
             if (film == null) return NotFound();
+            if (!await CanAccessFilmAsync(id)) return NotFound();
 
             var allCategories = await _filmService.GetCategoriesAsync();
             var assignedCategoryIds = film.CategoryIds.ToHashSet();
@@ -235,6 +264,7 @@ namespace FilmRentalStore.MVC.Controllers
         {
             var film = await _filmService.GetFilmByIdAsync(id);
             if (film == null) return NotFound();
+            if (!await CanAccessFilmAsync(id)) return NotFound();
 
             var assignedCategoryIds = film.CategoryIds.ToHashSet();
             foreach (var categoryId in vm.SelectedCategoryIds.Distinct().Where(categoryId => !assignedCategoryIds.Contains(categoryId)))
@@ -254,6 +284,8 @@ namespace FilmRentalStore.MVC.Controllers
         [RoleAuthorize(RoleConstants.Admin, RoleConstants.Manager)]
         public async Task<IActionResult> RemoveCategory(int filmId, byte categoryId)
         {
+            if (!await CanAccessFilmAsync(filmId)) return NotFound();
+
             await _filmService.RemoveCategoryAsync(filmId, categoryId);
             TempData["Success"] = "Category removed successfully.";
             return RedirectToAction(nameof(Details), new { id = filmId });
@@ -367,6 +399,50 @@ namespace FilmRentalStore.MVC.Controllers
             }
 
             return films;
+        }
+
+        private async Task<HashSet<int>> GetFilmIdsForStoreAsync(int storeId)
+        {
+            var filmIds = new HashSet<int>();
+
+            for (var page = 1; ; page++)
+            {
+                var batch = await _inventoryService.GetAllAsync(page, LookupPageSize);
+                if (!batch.Any())
+                {
+                    break;
+                }
+
+                foreach (var item in batch.Where(item => item.StoreId == storeId))
+                {
+                    filmIds.Add(item.FilmId);
+                }
+
+                if (batch.Count < LookupPageSize)
+                {
+                    break;
+                }
+            }
+
+            return filmIds;
+        }
+
+        private int? GetScopedStoreId()
+        {
+            var role = HttpContext.Session.GetString(SessionKeys.Role);
+            return role == RoleConstants.Admin ? null : HttpContext.Session.GetInt32(SessionKeys.StoreId);
+        }
+
+        private async Task<bool> CanAccessFilmAsync(int filmId)
+        {
+            var scopedStoreId = GetScopedStoreId();
+            if (!scopedStoreId.HasValue)
+            {
+                return true;
+            }
+
+            var filmIds = await GetFilmIdsForStoreAsync(scopedStoreId.Value);
+            return filmIds.Contains(filmId);
         }
 
         private static IEnumerable<FilmResponseDto> FilterFilms(IEnumerable<FilmResponseDto> films, string searchTerm)

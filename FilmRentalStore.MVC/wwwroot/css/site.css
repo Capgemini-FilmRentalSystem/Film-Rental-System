@@ -1,5 +1,6 @@
 html {
   font-size: 14px;
+  height: 100%;
 }
 
 @media (min-width: 768px) {
@@ -18,5 +19,97 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+  height: 100%;
+  margin-bottom: 0;
+}
+
+:root {
+  --app-header-height: 56px;
+  --app-sidebar-width: 260px;
+}
+
+.app-body {
+  overflow: hidden;
+}
+
+.app-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1030;
+}
+
+.app-header .navbar {
+  min-height: var(--app-header-height);
+}
+
+.app-shell {
+  height: calc(100vh - var(--app-header-height));
+  margin-top: var(--app-header-height);
+}
+
+.app-sidebar {
+  position: fixed;
+  top: var(--app-header-height);
+  bottom: 0;
+  left: 0;
+  width: var(--app-sidebar-width);
+  overflow-y: auto;
+  padding: 1rem;
+  background: #fff;
+  border-right: 1px solid #dee2e6;
+}
+
+.app-sidebar .list-group {
+  margin-bottom: 0;
+}
+
+.app-content {
+  height: calc(100vh - var(--app-header-height));
+  margin-left: var(--app-sidebar-width);
+  overflow-y: auto;
+  padding: 1.25rem;
+}
+
+.app-content-public {
+  margin-left: 0;
+}
+
+.table-responsive {
+  max-width: 100%;
+}
+
+.client-pagination:empty {
+  display: none;
+}
+
+@media (max-width: 767.98px) {
+  .app-body {
+    overflow: auto;
+  }
+
+  .app-header {
+    position: sticky;
+  }
+
+  .app-shell {
+    height: auto;
+    margin-top: 0;
+  }
+
+  .app-sidebar {
+    position: static;
+    width: auto;
+    max-height: none;
+    border-right: 0;
+    border-bottom: 1px solid #dee2e6;
+  }
+
+  .app-content {
+    height: auto;
+    margin-left: 0;
+    overflow: visible;
+    padding: 1rem;
+  }
 }

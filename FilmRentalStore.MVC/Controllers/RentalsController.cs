@@ -30,7 +30,7 @@ namespace FilmRentalStore.MVC.Controllers
             _staffService = staffService;
         }
 
-        [RoleAuthorize(RoleConstants.Admin, RoleConstants.Manager)]
+        [RoleAuthorize(RoleConstants.Admin, RoleConstants.Manager, RoleConstants.Staff)]
         public async Task<IActionResult> Index(int page = 1, int pageSize = 10, string sortOrder = "date_desc")
         {
             ViewBag.IsMine = false;
@@ -38,7 +38,8 @@ namespace FilmRentalStore.MVC.Controllers
             ViewBag.PageSize = pageSize;
             ViewBag.SortOrder = sortOrder;
 
-            var allRentals = SortRentals(await GetAllRentalsAsync(false), sortOrder).ToList();
+            var allRentals = FilterByStore(await GetAllRentalsAsync(false));
+            allRentals = SortRentals(allRentals, sortOrder).ToList();
             var rentals = allRentals
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
@@ -73,6 +74,7 @@ namespace FilmRentalStore.MVC.Controllers
         {
             var rental = await _rentalService.GetByIdAsync(id);
             if (rental == null) return NotFound();
+            if (!CanAccessStore(rental.Inventory?.StoreId)) return NotFound();
 
             ViewBag.IsMine = false;
             return View(rental);
@@ -107,6 +109,13 @@ namespace FilmRentalStore.MVC.Controllers
                 return View(vm);
             }
 
+            if (!await RentalRequestBelongsToScopedStoreAsync(vm.Rental))
+            {
+                ModelState.AddModelError("", "Selected rental data is not available for your store.");
+                await PopulateRentalFormOptions(vm);
+                return View(vm);
+            }
+
             var created = await _rentalService.CreateAsync(vm.Rental);
             TempData["Success"] = "Rental created successfully.";
             return created == null
@@ -115,8 +124,12 @@ namespace FilmRentalStore.MVC.Controllers
         }
 
         [RoleAuthorize(RoleConstants.Admin, RoleConstants.Manager, RoleConstants.Staff)]
-        public IActionResult Return(int id)
+        public async Task<IActionResult> Return(int id)
         {
+            var rental = await _rentalService.GetByIdAsync(id);
+            if (rental == null) return NotFound();
+            if (!CanAccessStore(rental.Inventory?.StoreId)) return NotFound();
+
             ViewBag.RentalId = id;
             return View(new RentalReturnRequestDto { ReturnDate = DateTime.Now });
         }
@@ -126,6 +139,10 @@ namespace FilmRentalStore.MVC.Controllers
         [RoleAuthorize(RoleConstants.Admin, RoleConstants.Manager, RoleConstants.Staff)]
         public async Task<IActionResult> Return(int id, RentalReturnRequestDto dto)
         {
+            var rental = await _rentalService.GetByIdAsync(id);
+            if (rental == null) return NotFound();
+            if (!CanAccessStore(rental.Inventory?.StoreId)) return NotFound();
+
             if (!ModelState.IsValid)
             {
                 ViewBag.RentalId = id;
@@ -140,14 +157,16 @@ namespace FilmRentalStore.MVC.Controllers
         private async Task PopulateRentalFormOptions(RentalFormViewModel vm)
         {
             var inventory = await _inventoryService.GetAllAsync(1, 100);
+            inventory = FilterByStore(inventory).ToList();
             vm.InventoryItems = inventory.Where(item => item.IsAvailable).Select(item => new SelectListItem
             {
                 Value = item.InventoryId.ToString(),
-                Text = $"#{item.InventoryId} - {item.Film?.Title ?? "Unknown film"} (Store {item.StoreId})",
+                Text = $"#{item.InventoryId} - {item.Film?.Title ?? "Unknown film"}",
                 Selected = item.InventoryId == vm.Rental.InventoryId
             }).ToList();
 
             var customers = await _customerService.GetActiveAsync();
+            customers = FilterByStore(customers).ToList();
             vm.Customers = customers.Select(customer => new SelectListItem
             {
                 Value = customer.CustomerId.ToString(),
@@ -156,6 +175,7 @@ namespace FilmRentalStore.MVC.Controllers
             }).ToList();
 
             var staff = await _staffService.GetAllAsync();
+            staff = FilterByStore(staff).ToList();
             vm.Staff = staff.Where(member => member.Active).Select(member => new SelectListItem
             {
                 Value = member.StaffId.ToString(),
@@ -188,6 +208,77 @@ namespace FilmRentalStore.MVC.Controllers
             }
 
             return rentals;
+        }
+
+        private List<RentalResponseDto> FilterByStore(IEnumerable<RentalResponseDto> rentals)
+        {
+            var scopedStoreId = GetScopedStoreId();
+            return scopedStoreId.HasValue
+                ? rentals.Where(rental => rental.Inventory?.StoreId == scopedStoreId.Value).ToList()
+                : rentals.ToList();
+        }
+
+        private IEnumerable<FilmRentalStore.MVC.DTOs.Inventory.InventoryResponseDto> FilterByStore(
+            IEnumerable<FilmRentalStore.MVC.DTOs.Inventory.InventoryResponseDto> inventory)
+        {
+            var scopedStoreId = GetScopedStoreId();
+            return scopedStoreId.HasValue
+                ? inventory.Where(item => item.StoreId == scopedStoreId.Value)
+                : inventory;
+        }
+
+        private IEnumerable<FilmRentalStore.MVC.DTOs.Customers.CustomerResponseDto> FilterByStore(
+            IEnumerable<FilmRentalStore.MVC.DTOs.Customers.CustomerResponseDto> customers)
+        {
+            var scopedStoreId = GetScopedStoreId();
+            return scopedStoreId.HasValue
+                ? customers.Where(customer => customer.StoreId == scopedStoreId.Value)
+                : customers;
+        }
+
+        private IEnumerable<FilmRentalStore.MVC.DTOs.Staff.StaffResponseDto> FilterByStore(
+            IEnumerable<FilmRentalStore.MVC.DTOs.Staff.StaffResponseDto> staff)
+        {
+            var scopedStoreId = GetScopedStoreId();
+            return scopedStoreId.HasValue
+                ? staff.Where(member => member.StoreId == scopedStoreId.Value)
+                : staff;
+        }
+
+        private bool CanAccessStore(int? storeId)
+        {
+            var scopedStoreId = GetScopedStoreId();
+            return !scopedStoreId.HasValue || storeId == scopedStoreId.Value;
+        }
+
+        private async Task<bool> RentalRequestBelongsToScopedStoreAsync(RentalRequestDto rental)
+        {
+            var scopedStoreId = GetScopedStoreId();
+            if (!scopedStoreId.HasValue)
+            {
+                return true;
+            }
+
+            var inventory = await _inventoryService.GetByIdAsync(rental.InventoryId);
+            if (inventory?.StoreId != scopedStoreId.Value)
+            {
+                return false;
+            }
+
+            var customer = await _customerService.GetByIdAsync(rental.CustomerId);
+            if (customer?.StoreId != scopedStoreId.Value)
+            {
+                return false;
+            }
+
+            var staff = await _staffService.GetAllAsync();
+            return staff.Any(member => member.StaffId == rental.StaffId && member.StoreId == scopedStoreId.Value);
+        }
+
+        private int? GetScopedStoreId()
+        {
+            var role = HttpContext.Session.GetString(SessionKeys.Role);
+            return role == RoleConstants.Admin ? null : HttpContext.Session.GetInt32(SessionKeys.StoreId);
         }
 
         private static IEnumerable<RentalResponseDto> SortRentals(IEnumerable<RentalResponseDto> rentals, string sortOrder)

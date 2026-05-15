@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 namespace FilmRentalStore.MVC.Controllers
 {
     [TokenRequired]
-    [RoleAuthorize(RoleConstants.Admin)]
+    [RoleAuthorize(RoleConstants.Admin, RoleConstants.Manager)]
     public class StaffController : Controller
     {
         private readonly IStaffApiService _staffService;
@@ -50,6 +50,7 @@ namespace FilmRentalStore.MVC.Controllers
             return View(staff);
         }
 
+        [RoleAuthorize(RoleConstants.Admin)]
         public async Task<IActionResult> Create()
         {
             var vm = new StaffFormViewModel
@@ -64,6 +65,7 @@ namespace FilmRentalStore.MVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RoleAuthorize(RoleConstants.Admin)]
         public async Task<IActionResult> Create(StaffFormViewModel vm)
         {
             if (string.IsNullOrWhiteSpace(vm.Password))
@@ -82,6 +84,7 @@ namespace FilmRentalStore.MVC.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [RoleAuthorize(RoleConstants.Admin)]
         public async Task<IActionResult> Edit(byte id)
         {
             var staff = await _staffService.GetByIdAsync(id);
@@ -95,6 +98,7 @@ namespace FilmRentalStore.MVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RoleAuthorize(RoleConstants.Admin)]
         public async Task<IActionResult> Edit(byte id, StaffFormViewModel vm)
         {
             if (id != vm.StaffId)
@@ -115,6 +119,7 @@ namespace FilmRentalStore.MVC.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [RoleAuthorize(RoleConstants.Admin)]
         public async Task<IActionResult> Deactivate(byte id)
         {
             await _staffService.DeactivateAsync(id);
@@ -152,8 +157,8 @@ namespace FilmRentalStore.MVC.Controllers
                     .Where(part => !string.IsNullOrWhiteSpace(part)));
 
             return string.IsNullOrWhiteSpace(location)
-                ? $"Store #{store.StoreId}"
-                : $"Store #{store.StoreId} - {location}";
+                ? "Store"
+                : location;
         }
     }
 }

@@ -19,32 +19,44 @@
     <div class="alert alert-success">@TempData["Success"]</div>
 }
 
-<table class="table table-bordered table-hover">
-    <thead class="table-dark">
-        <tr>
-            <th>#</th>
-            <th>Name</th>
-            <th>Last Updated</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var cat in Model.Categories)
-        {
+<div class="table-responsive">
+    <table class="table table-bordered table-hover" data-client-pagination="true" data-page-size="10">
+        <thead class="table-dark">
             <tr>
-                <td>@cat.CategoryId</td>
-                <td>@cat.Name</td>
-                <td>@cat.LastUpdate.ToString("dd MMM yyyy")</td>
-                <td>
-                    <a asp-action="Details" asp-route-id="@cat.CategoryId"
-                       class="btn btn-sm btn-info">Details</a>
-                    @if (canManageCategories)
-                    {
-                        <a asp-action="Edit" asp-route-id="@cat.CategoryId"
-                           class="btn btn-sm btn-warning">Edit</a>
-                    }
-                </td>
+                <th>#</th>
+                <th>Name</th>
+                <th>Last Updated</th>
+                <th>Actions</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @if (Model.Categories.Any())
+            {
+                @foreach (var cat in Model.Categories)
+                {
+                    <tr>
+                        <td>@cat.CategoryId</td>
+                        <td>@cat.Name</td>
+                        <td>@cat.LastUpdate.ToString("dd MMM yyyy")</td>
+                        <td>
+                            <a asp-action="Details" asp-route-id="@cat.CategoryId"
+                               class="btn btn-sm btn-info">Details</a>
+                            @if (canManageCategories)
+                            {
+                                <a asp-action="Edit" asp-route-id="@cat.CategoryId"
+                                   class="btn btn-sm btn-warning">Edit</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="4" class="text-center text-muted">No categories found.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<nav class="client-pagination" aria-label="Categories pagination"></nav>

@@ -62,48 +62,6 @@ namespace FilmRentalStore.MVC.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> StaffRegister()
-        {
-            var vm = new StaffRegisterViewModel();
-            await PopulateRegisterOptions(vm);
-            return View(vm);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> StaffRegister(StaffRegisterViewModel vm)
-        {
-            if (!ModelState.IsValid)
-            {
-                await PopulateRegisterOptions(vm);
-                return View(vm);
-            }
-
-            try
-            {
-                var result = await _authApiService.StaffRegisterAsync(vm.ToRequestDto());
-
-                if (result == null)
-                {
-                    ModelState.AddModelError(string.Empty, "Invalid registration response from API.");
-                    await PopulateRegisterOptions(vm);
-                    return View(vm);
-                }
-
-                StoreLoginSession(result);
-
-                TempData["Success"] = "Registration successful.";
-                return RedirectToAction("Index", "Dashboard");
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, $"Registration failed: {ex.Message}");
-                await PopulateRegisterOptions(vm);
-                return View(vm);
-            }
-        }
-
-        [HttpGet]
         public IActionResult CustomerLogin()
         {
             return View();
@@ -213,17 +171,16 @@ namespace FilmRentalStore.MVC.Controllers
             {
                 HttpContext.Session.SetInt32(SessionKeys.CustomerId, result.CustomerId.Value);
             }
+
+            if (result.StoreId.HasValue)
+            {
+                HttpContext.Session.SetInt32(SessionKeys.StoreId, result.StoreId.Value);
+            }
         }
 
         private async Task PopulateRegisterOptions(CustomerRegisterViewModel vm)
         {
             vm.Stores = await BuildStoreItems(vm.StoreId);
-        }
-
-        private async Task PopulateRegisterOptions(StaffRegisterViewModel vm)
-        {
-            vm.Stores = await BuildStoreItems(vm.StoreId);
-            vm.Roles = BuildRoleItems(vm.RoleId);
         }
 
         private async Task<List<SelectListItem>> BuildStoreItems(int selectedStoreId)
@@ -237,16 +194,6 @@ namespace FilmRentalStore.MVC.Controllers
             }).ToList();
         }
 
-        private static List<SelectListItem> BuildRoleItems(int selectedRoleId)
-        {
-            return new List<SelectListItem>
-            {
-                new() { Value = "1", Text = RoleConstants.Admin, Selected = selectedRoleId == 1 },
-                new() { Value = "2", Text = RoleConstants.Manager, Selected = selectedRoleId == 2 },
-                new() { Value = "3", Text = RoleConstants.Staff, Selected = selectedRoleId == 3 }
-            };
-        }
-
         private static string FormatStoreOption(FilmRentalStore.MVC.DTOs.Store.StoreResponseDto store)
         {
             var location = store.Address == null
@@ -255,8 +202,8 @@ namespace FilmRentalStore.MVC.Controllers
                     .Where(part => !string.IsNullOrWhiteSpace(part)));
 
             return string.IsNullOrWhiteSpace(location)
-                ? $"Store #{store.StoreId}"
-                : $"Store #{store.StoreId} - {location}";
+                ? "Store"
+                : location;
         }
     }
 }

@@ -10,6 +10,8 @@ namespace FilmRentalStore.MVC.DTOs.Auth
         public byte? StaffId     { get; set; }
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public int? CustomerId     { get; set; }
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public int? StoreId     { get; set; }
         public string Username  { get; set; } = null!;
         public string Role      { get; set; } = null!;
     }

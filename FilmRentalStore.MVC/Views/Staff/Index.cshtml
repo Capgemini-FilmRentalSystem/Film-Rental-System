@@ -3,11 +3,16 @@
 @{
     ViewData["Title"] = "Staff";
     byte? searchId = ViewBag.SearchId as byte?;
+    var role = Context.Session.GetString(SessionKeys.Role);
+    var canManageStaff = role == RoleConstants.Admin;
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h1>Staff</h1>
-    <a asp-action="Create" class="btn btn-primary">Add Staff</a>
+    @if (canManageStaff)
+    {
+        <a asp-action="Create" class="btn btn-primary">Add Staff</a>
+    }
 </div>
 
 <form method="get" class="row g-2 mb-3">
@@ -20,7 +25,7 @@
 </form>
 
 <div class="table-responsive">
-    <table class="table table-hover align-middle">
+    <table class="table table-hover align-middle" data-client-pagination="true" data-page-size="10">
         <thead class="table-light">
             <tr>
                 <th>ID</th>
@@ -42,10 +47,13 @@
                         <td>@staff.Role?.RoleTitle</td>
                         <td class="text-end">
                             <a asp-action="Details" asp-route-id="@staff.StaffId" class="btn btn-sm btn-info">Details</a>
-                            <a asp-action="Edit" asp-route-id="@staff.StaffId" class="btn btn-sm btn-warning">Edit</a>
-                            <form asp-action="Deactivate" asp-route-id="@staff.StaffId" method="post" class="d-inline">
-                                <button type="submit" class="btn btn-sm btn-danger">Deactivate</button>
-                            </form>
+                            @if (canManageStaff)
+                            {
+                                <a asp-action="Edit" asp-route-id="@staff.StaffId" class="btn btn-sm btn-warning">Edit</a>
+                                <form asp-action="Deactivate" asp-route-id="@staff.StaffId" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-danger">Deactivate</button>
+                                </form>
+                            }
                         </td>
                     </tr>
                 }
@@ -59,3 +67,4 @@
         </tbody>
     </table>
 </div>
+<nav class="client-pagination" aria-label="Staff pagination"></nav>

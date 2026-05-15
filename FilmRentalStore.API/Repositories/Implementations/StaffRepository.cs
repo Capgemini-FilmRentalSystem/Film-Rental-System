@@ -45,6 +45,22 @@ namespace FilmRentalStore.API.Repositories.Implementations
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<Staff>> GetByStoreIdAndRoleAsync(int storeId, string roleTitle)
+        {
+            return await _context.Staff
+                .AsNoTracking()
+                .Include(s => s.Role)
+                .Include(s => s.Address)
+                    .ThenInclude(a => a.City)
+                        .ThenInclude(c => c.Country)
+                .Include(s => s.Store)
+                    .ThenInclude(st => st.ManagerStaff)
+                        .ThenInclude(ms => ms.Role)
+                .Where(s => s.StoreId == storeId && s.Role != null && s.Role.RoleTitle == roleTitle)
+                .OrderBy(s => s.StaffId)
+                .ToListAsync();
+        }
+
         public async Task<Staff?> GetByIdAsync(byte staffId)
         {
             return await _context.Staff

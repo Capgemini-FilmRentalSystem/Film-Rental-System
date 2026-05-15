@@ -13,11 +13,16 @@ namespace FilmRentalStore.MVC.Controllers
     {
         private readonly ICategoryApiService _categoryService;
         private readonly IFilmApiService _filmService;
+        private readonly IInventoryApiService _inventoryService;
 
-        public CategoriesController(ICategoryApiService categoryService, IFilmApiService filmService)
+        public CategoriesController(
+            ICategoryApiService categoryService,
+            IFilmApiService filmService,
+            IInventoryApiService inventoryService)
         {
             _categoryService = categoryService;
             _filmService = filmService;
+            _inventoryService = inventoryService;
         }
 
         public async Task<IActionResult> Index()
@@ -108,11 +113,49 @@ namespace FilmRentalStore.MVC.Controllers
 
                 if (batch.Count < pageSize)
                 {
-                    return films;
+                    break;
                 }
 
                 page++;
             }
+
+            var scopedStoreId = GetScopedStoreId();
+            if (!scopedStoreId.HasValue)
+            {
+                return films;
+            }
+
+            var filmIds = await GetFilmIdsForStoreAsync(scopedStoreId.Value);
+            return films.Where(film => filmIds.Contains(film.FilmId)).ToList();
+        }
+
+        private async Task<HashSet<int>> GetFilmIdsForStoreAsync(int storeId)
+        {
+            const int pageSize = 100;
+            var page = 1;
+            var filmIds = new HashSet<int>();
+
+            while (true)
+            {
+                var batch = await _inventoryService.GetAllAsync(page, pageSize);
+                foreach (var item in batch.Where(item => item.StoreId == storeId))
+                {
+                    filmIds.Add(item.FilmId);
+                }
+
+                if (batch.Count < pageSize)
+                {
+                    return filmIds;
+                }
+
+                page++;
+            }
+        }
+
+        private int? GetScopedStoreId()
+        {
+            var role = HttpContext.Session.GetString(SessionKeys.Role);
+            return role == RoleConstants.Admin ? null : HttpContext.Session.GetInt32(SessionKeys.StoreId);
         }
     }
 }

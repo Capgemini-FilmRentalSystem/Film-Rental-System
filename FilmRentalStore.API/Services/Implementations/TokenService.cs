@@ -26,7 +26,10 @@ namespace FilmRentalStore.API.Services.Implementations
                 new Claim(JwtRegisteredClaimNames.Sub,    staff.StaffId.ToString()),
                 new Claim(JwtRegisteredClaimNames.UniqueName, staff.Username),
                 new Claim(JwtRegisteredClaimNames.Jti,   Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.Role,               staff.Role.RoleTitle)
+                new Claim(ClaimTypes.Role,               staff.Role.RoleTitle),
+                new Claim(ClaimTypes.NameIdentifier,     staff.StaffId.ToString()),
+                new Claim("staff_id",                    staff.StaffId.ToString()),
+                new Claim("store_id",                    staff.StoreId.ToString())
             };
 
             var token = CreateToken(claims, expiresAt);
@@ -36,6 +39,7 @@ namespace FilmRentalStore.API.Services.Implementations
                 Token     = new JwtSecurityTokenHandler().WriteToken(token),
                 ExpiresAt = expiresAt,
                 StaffId   = staff.StaffId,
+                StoreId   = staff.StoreId,
                 Username  = staff.Username,
                 Role      = staff.Role.RoleTitle
             };
@@ -52,7 +56,8 @@ namespace FilmRentalStore.API.Services.Implementations
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.Role, customer.Role.RoleTitle),
                 new Claim(ClaimTypes.NameIdentifier, customer.CustomerId.ToString()),
-                new Claim("customer_id", customer.CustomerId.ToString())
+                new Claim("customer_id", customer.CustomerId.ToString()),
+                new Claim("store_id", customer.StoreId.ToString())
             };
 
             var token = CreateToken(claims, expiresAt);
@@ -62,6 +67,7 @@ namespace FilmRentalStore.API.Services.Implementations
                 Token = new JwtSecurityTokenHandler().WriteToken(token),
                 ExpiresAt = expiresAt,
                 CustomerId = customer.CustomerId,
+                StoreId = customer.StoreId,
                 Username = customer.Username,
                 Role = customer.Role.RoleTitle
             };

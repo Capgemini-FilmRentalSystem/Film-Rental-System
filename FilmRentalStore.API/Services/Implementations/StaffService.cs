@@ -90,6 +90,17 @@ namespace FilmRentalStore.API.Services.Implementations
             return _mapper.Map<IEnumerable<StaffResponseDto>>(staff);
         }
 
+        public async Task<IEnumerable<StaffResponseDto>> GetStaffForManagerStoreAsync(byte managerStaffId)
+        {
+            var manager = await _staffRepository.GetByIdAsync(managerStaffId);
+
+            if (manager == null || manager.Role?.RoleTitle != "Manager")
+                throw new NotFoundException("Manager staff record not found.");
+
+            var staff = await _staffRepository.GetByStoreIdAndRoleAsync(manager.StoreId, "Staff");
+            return _mapper.Map<IEnumerable<StaffResponseDto>>(staff ?? Enumerable.Empty<Staff>());
+        }
+
         public async Task DeactivateStaffAsync(byte staffId)
         {
             var staff = await _staffRepository.GetEntityByIdAsync(staffId);
@@ -108,6 +119,23 @@ namespace FilmRentalStore.API.Services.Implementations
 
             if (staff == null)
                 throw new NotFoundException("Staff not found.");
+
+            return _mapper.Map<StaffResponseDto>(staff);
+        }
+
+        public async Task<StaffResponseDto> GetStaffByIdForManagerStoreAsync(byte managerStaffId, byte staffId)
+        {
+            var manager = await _staffRepository.GetByIdAsync(managerStaffId);
+            var staff = await _staffRepository.GetByIdAsync(staffId);
+
+            if (manager == null ||
+                manager.Role?.RoleTitle != "Manager" ||
+                staff == null ||
+                staff.StoreId != manager.StoreId ||
+                staff.Role?.RoleTitle != "Staff")
+            {
+                throw new NotFoundException("Staff not found.");
+            }
 
             return _mapper.Map<StaffResponseDto>(staff);
         }

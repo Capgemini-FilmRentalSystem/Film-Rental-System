@@ -2,6 +2,12 @@
 
 @{
     ViewData["Title"] = "Customers";
+    var role = Context.Session.GetString(SessionKeys.Role);
+    var canSeeStoreId = role == RoleConstants.Admin;
+    var currentPage = Model.CurrentPage;
+    var pageSize = Model.PageSize;
+    var showServerPager = canSeeStoreId && string.IsNullOrWhiteSpace(Model.SearchName) && string.IsNullOrWhiteSpace(Model.SearchEmail);
+    var hasNextPage = Model.Customers.Count == pageSize;
 }
 
 <div class="container-fluid">
@@ -17,13 +23,16 @@
     <div class="card">
         <div class="card-body">
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover" data-client-pagination="@(showServerPager ? "false" : "true")" data-page-size="@pageSize">
                     <thead class="table-light">
                         <tr>
                             <th>Username</th>
                             <th>Full Name</th>
                             <th>Email</th>
-                            <th>Store ID</th>
+                            @if (canSeeStoreId)
+                            {
+                                <th>Store ID</th>
+                            }
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -37,7 +46,10 @@
                                     <td>@customer.Username</td>
                                     <td>@customer.FullName</td>
                                     <td>@customer.Email</td>
-                                    <td>@customer.StoreId</td>
+                                    @if (canSeeStoreId)
+                                    {
+                                        <td>@customer.StoreId</td>
+                                    }
                                     <td>
                                         @if (customer.IsActive)
                                         {
@@ -72,12 +84,32 @@
                         else
                         {
                             <tr>
-                                <td colspan="6" class="text-center text-muted">No customers found</td>
+                                <td colspan="@(canSeeStoreId ? 6 : 5)" class="text-center text-muted">No customers found</td>
                             </tr>
                         }
                     </tbody>
                 </table>
             </div>
+            @if (showServerPager)
+            {
+                <nav aria-label="Customers pagination">
+                    <ul class="pagination mb-0">
+                        <li class="page-item @(currentPage > 1 ? "" : "disabled")">
+                            <a class="page-link" asp-action="Index" asp-route-page="@(currentPage - 1)" asp-route-pageSize="@pageSize">Previous</a>
+                        </li>
+                        <li class="page-item disabled">
+                            <span class="page-link">Page @currentPage</span>
+                        </li>
+                        <li class="page-item @(hasNextPage ? "" : "disabled")">
+                            <a class="page-link" asp-action="Index" asp-route-page="@(currentPage + 1)" asp-route-pageSize="@pageSize">Next</a>
+                        </li>
+                    </ul>
+                </nav>
+            }
+            else
+            {
+                <nav class="client-pagination" aria-label="Customers pagination"></nav>
+            }
         </div>
     </div>
 </div>

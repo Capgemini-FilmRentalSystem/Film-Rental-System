@@ -24,8 +24,17 @@ namespace FilmRentalStore.MVC.Controllers
         public async Task<IActionResult> Index(int? id)
         {
             var stores = new List<StoreResponseDto>();
+            var scopedStoreId = GetScopedStoreId();
 
-            if (id.HasValue)
+            if (scopedStoreId.HasValue)
+            {
+                var result = await _storeService.GetByIdAsync(scopedStoreId.Value);
+                if (result != null)
+                {
+                    stores.Add(result);
+                }
+            }
+            else if (id.HasValue)
             {
                 var result = await _storeService.GetByIdAsync(id.Value);
                 if (result != null)
@@ -44,6 +53,9 @@ namespace FilmRentalStore.MVC.Controllers
 
         public async Task<IActionResult> Details(int id)
         {
+            var scopedStoreId = GetScopedStoreId();
+            if (scopedStoreId.HasValue && id != scopedStoreId.Value) return NotFound();
+
             var store = await _storeService.GetByIdAsync(id);
             if (store == null) return NotFound();
 
@@ -119,6 +131,12 @@ namespace FilmRentalStore.MVC.Controllers
                     Selected = member.StaffId == vm.ManagerStaffId
                 })
                 .ToList();
+        }
+
+        private int? GetScopedStoreId()
+        {
+            var role = HttpContext.Session.GetString(SessionKeys.Role);
+            return role == RoleConstants.Admin ? null : HttpContext.Session.GetInt32(SessionKeys.StoreId);
         }
     }
 }
